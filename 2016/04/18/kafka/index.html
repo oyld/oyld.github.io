@@ -80,15 +80,19 @@
 
 
 
-<meta name="description">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Stay hungry. Stay foolish.">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="4.7 ReplicationKafka根据配置文件中的设置对topic的partition进行复制，你可以给每个topic设置不同的的复制因子（replication factor）。Replication机制能够实现自动故障转移，使得一台server宕机后消息仍然可用。
+其它的消息系统也提供了复制功能，但是，就我们的观点而言，这些都是附加的功能，没有得到广泛应用，其最大的缺点在于：从机是不活跃">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kafka">
+<meta property="og:url" content="http://yoursite.com/2016/04/18/kafka/index.html">
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
-<meta property="og:description">
+<meta property="og:description" content="4.7 ReplicationKafka根据配置文件中的设置对topic的partition进行复制，你可以给每个topic设置不同的的复制因子（replication factor）。Replication机制能够实现自动故障转移，使得一台server宕机后消息仍然可用。
+其它的消息系统也提供了复制功能，但是，就我们的观点而言，这些都是附加的功能，没有得到广泛应用，其最大的缺点在于：从机是不活跃">
+<meta property="og:updated_time" content="2016-04-22T01:51:45.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Stay hungry. Stay foolish.">
-<meta name="twitter:description">
+<meta name="twitter:title" content="kafka">
+<meta name="twitter:description" content="4.7 ReplicationKafka根据配置文件中的设置对topic的partition进行复制，你可以给每个topic设置不同的的复制因子（replication factor）。Replication机制能够实现自动故障转移，使得一台server宕机后消息仍然可用。
+其它的消息系统也提供了复制功能，但是，就我们的观点而言，这些都是附加的功能，没有得到广泛应用，其最大的缺点在于：从机是不活跃">
 
 
 
@@ -106,7 +110,7 @@
   };
 </script>
 
-  <title> Stay hungry. Stay foolish. </title>
+  <title> kafka | Stay hungry. Stay foolish. </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -127,9 +131,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left 
-   page-home 
- ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -206,9 +208,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
   
@@ -228,103 +230,7 @@
             
             
               
-                
-                <a class="post-title-link" href="/2016/04/22/test/" itemprop="url">
-                  test
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-04-22T17:55:24+08:00" content="2016-04-22">
-              2016-04-22
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-    
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/04/18/kafka/" itemprop="url">
-                  kafka
-                </a>
+                kafka
               
             
           </h1>
@@ -364,9 +270,7 @@
       
 
       
-        
-          
-            <h2 id="4-7-Replication"><a href="#4-7-Replication" class="headerlink" title="4.7 Replication"></a>4.7 Replication</h2><p>Kafka根据配置文件中的设置对topic的partition进行复制，你可以给每个topic设置不同的的复制因子（replication factor）。Replication机制能够实现自动故障转移，使得一台server宕机后消息仍然可用。</p>
+        <h2 id="4-7-Replication"><a href="#4-7-Replication" class="headerlink" title="4.7 Replication"></a>4.7 Replication</h2><p>Kafka根据配置文件中的设置对topic的partition进行复制，你可以给每个topic设置不同的的复制因子（replication factor）。Replication机制能够实现自动故障转移，使得一台server宕机后消息仍然可用。</p>
 <p>其它的消息系统也提供了复制功能，但是，就我们的观点而言，这些都是附加的功能，没有得到广泛应用，其最大的缺点在于：<strong>从机是不活跃的（inactive），吞吐量受到很大影响，需要依赖繁琐的手动配置等</strong>。Kafka对replication的默认策略是：topic在创建时replication factor为1，即不进行备份。</p>
 <p>复制是以partition作为最小单位的。在没有broker失效的情况下，每一个partition在集群中都有唯一的broker作为leader以及0个或多个broker作为follower。一个partition的备份数量（包括leader上的那份）即备份因子。客户端的读写请求均通过leader。通常，partition的数量会大于broker，leader的角色将均匀分配到集群的各个broker。Follower上的log数据和leader上是相同的——相同的offset以及相同的message顺序（例外是leader末尾的message还未来得及同步到follow）。</p>
 <p>Follower会像一个普通的conusmer那样从leader消费数据然后保存到本地log文件。这样做有一个好处是可以利用consumer的batch特性一次拉取多条message，提高吞吐量。</p>
@@ -402,16 +306,18 @@
 <p>这可能就是为什么quorum算法常常出现在存储元数据的系统中，例如ZooKeeper，而很少出现在原始数据的存储中。例如HDFS的namenode的高可用性就是以<a href="http://blog.cloudera.com/blog/2012/10/quorum-based-journaling-in-cdh4-1/" target="_blank" rel="external">majority vote</a>作为基础，但它并没有用在datanode中。</p>
 <p>Kafka选择了采用了稍微不同的方法来选择quorum集合。不同于majority vote，Kakfa动态地维护一个叫做in-sync replicas（ISR）的集合，集合内的节点去追赶复制leader。只有这个集合中的成员才有资格选举为leader。<strong>只有所有ISR都接收了数据，才认为数据被提交成功</strong>。ISR集合保存在ZooKeeper中，动态变化，所以，ISR中的成员是有资格成为leader的。</p>
 
-          
-        
       
     </div>
     
     <div>
       
+        
+      
     </div>
 
     <div>
+      
+        
       
     </div>
 
@@ -419,113 +325,36 @@
       
 
       
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
+              <a href="/2016/04/17/hello/" rel="next" title="First Blood">
+                <i class="fa fa-chevron-left"></i> First Blood
+              </a>
             
-              
-                
-                <a class="post-title-link" href="/2016/04/17/hello/" itemprop="url">
-                  First Blood
-                </a>
-              
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
             
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-04-17T18:48:33+08:00" content="2016-04-17">
-              2016-04-17
-            </time>
-          </span>
-
-          
-
-          
+              <a href="/2016/04/22/test/" rel="prev" title="test">
+                test <i class="fa fa-chevron-right"></i>
+              </a>
             
-          
-
-          
-
-          
-          
-
-          
+          </div>
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>这是我的第一篇文章，关于我的 <a href="https://oyld.github.io/" target="_blank" rel="external">blog</a>。本博客框架采用 <a href="https://hexo.io/zh-cn/" target="_blank" rel="external">Hexo</a>，主题采用 <a href="http://theme-next.iissnan.com/" target="_blank" rel="external">NexT</a>.</p>
-<h2 id="建站步骤"><a href="#建站步骤" class="headerlink" title="建站步骤"></a>建站步骤</h2>
-          
-        
-      
-    </div>
-    
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -533,6 +362,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -552,8 +385,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel  sidebar-panel-active ">
+      <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/default_avatar.jpg"
@@ -589,6 +431,17 @@
 
       </section>
 
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-7-Replication"><span class="nav-number">1.</span> <span class="nav-text">4.7 Replication</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Replicated-Logs-Quorums-ISRs-and-State-Machines"><span class="nav-number">1.0.1.</span> <span class="nav-text">Replicated Logs: Quorums, ISRs, and State Machines</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
       
 
     </div>
@@ -685,6 +538,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
 
   
 
