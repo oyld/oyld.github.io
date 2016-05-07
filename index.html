@@ -229,6 +229,231 @@
             
               
                 
+                <a class="post-title-link" href="/2016/04/22/ActiveMQ/" itemprop="url">
+                  ActiveMQ
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-22T17:55:24+08:00" content="2016-04-22">
+              2016-04-22
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="feature概览"><a href="#feature概览" class="headerlink" title="feature概览"></a>feature概览</h1><ul>
+<li>遵从JMS规范</li>
+<li>支持多种连接协议</li>
+<li>支持多种存储方式</li>
+<li>支持多种安全机制</li>
+<li>Broker能够嵌入到JAVA应用程序中，通过class启动ActiveMQ实例，同一应用程序中的client和broker通过通过VM协议相连</li>
+<li>可与各种application server相结合，通过网页收发消息</li>
+<li>提供多种语言的客户端</li>
+<li>支持多种拓扑结构的集群（network of brokers）</li>
+<li>支持多种监控方法</li>
+</ul>
+<h1 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h1><p>ActiveMQ提供了一种名为connector的连接机制（connectivity mechanism），提供了client到broker的连接（称为transport connectors）和broker之间的连接（称为network connectors）。</p>
+<blockquote>
+<p>connector类似于protocol，协议是一种更通用的概念，而connector是ActiveMQ中的概念，每一种connector的底层实现都对应一种protocol。</p>
+</blockquote>
+<p>不同的broker通过URI来区分。例如client使用<em>tcp://localhost:61616</em>表示用TCP协议连接到本地61616端口的broker。</p>
+<h3 id="Transport-connectors"><a href="#Transport-connectors" class="headerlink" title="Transport connectors"></a>Transport connectors</h3><p>为应对不同场景（偏重性能或安全等），ActiveMQ提供了多种协议供client和broker之间传输数据。在源码目录的conf/activemq.xml中可以找到关于transport connectors的配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;transportConnectors&gt;</span><br><span class="line">	&lt;!-- DOS protection, limit concurrent connections to 1000 and frame size to 100MB --&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;openwire&quot; uri=&quot;tcp://0.0.0.0:61616?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;amqp&quot; uri=&quot;amqp://0.0.0.0:5672?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;stomp&quot; uri=&quot;stomp://0.0.0.0:61613?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;mqtt&quot; uri=&quot;mqtt://0.0.0.0:1883?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;ws&quot; uri=&quot;ws://0.0.0.0:61614?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">&lt;/transportConnectors&gt;</span><br></pre></td></tr></table></figure>
+<p>上面的配置定义了一组transport connectors，不同的协议监听在不同的端口。Client可以通过如下代码连接到指定的transport connector。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(&quot;tcp://localhost:61616&quot;);</span><br><span class="line">Connection conn = factory.createConnection();</span><br><span class="line">Session sess = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);</span><br><span class="line">conn.start();</span><br></pre></td></tr></table></figure>
+<h3 id="Network-connectors"><a href="#Network-connectors" class="headerlink" title="Network connectors"></a>Network connectors</h3><p>Network connector是broker间的通信协议。一个network connector是单向（unidirectional）的，也就是说broker间收发数据需要建立两个network connector，这种模式成为forwarding bridge。ActiveMQ还提供了全双工的duplex connector。</p>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Static</td>
+<td>静态地配置一个网络，网络中的broker地址都已知</td>
+</tr>
+<tr>
+<td>Failover</td>
+<td>利用自动重连机制连接broker集群或单台broker</td>
+</tr>
+<tr>
+<td>Multicast</td>
+<td>利用IP组播动态组建broker集群</td>
+</tr>
+<tr>
+<td>Discovery</td>
+<td>利用IP组播动态寻找可用的broker并连接</td>
+</tr>
+<tr>
+<td>Peer</td>
+<td>将local broker和其它位置的local broker自动相连的方式</td>
+</tr>
+<tr>
+<td>Fanout</td>
+<td>producer同时向多台没有相互连接的broker发送相同数据</td>
+</tr>
+</tbody>
+</table>
+<p>不同的协议适用于不同的场景，有的偏重于伸缩性，有的偏重于可用性。</p>
+<h1 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h1><p>JMS规范定义了两种消息递送方式，ActiveMQ对这两种方式都支持：</p>
+<ol>
+<li>持久化——数据需要保存到持久化存储设备中</li>
+<li>非持久化——数据无需保存到持久化设备中，但要尽力递送</li>
+</ol>
+<p>存储方式上，ActiveMQ支持queue模式和topic模式的存储方式，每种存储方式又有多种实现。</p>
+<table>
+<thead>
+<tr>
+<th>存储方式</th>
+<th>特性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>queue</td>
+<td>broker作为queue存储message，一条message只能被一个consumer消费，消费完后即删除</td>
+</tr>
+<tr>
+<td>topic</td>
+<td>broker作为topic存储message，一条message可以被多个consumer订阅并消费，递送到所有相关consumer后才能删除</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/images/queue.png" alt=""><br><img src="/images/topic.png" alt=""></p>
+<table>
+<thead>
+<tr>
+<th>存储实现</th>
+<th>特性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基于内存</td>
+<td>性能高，易丢失</td>
+</tr>
+<tr>
+<td>基于文件</td>
+<td>数据文件+索引文件+内存cache，性能与可扩展性的折衷，例如KahaDB、AMQ等</td>
+</tr>
+<tr>
+<td>基于RDB</td>
+<td>可利用现有RDB，支持主流RDB</td>
+</tr>
+</tbody>
+</table>
+<h1 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h1><p>为了保证HA，ActiveMQ采用了master/slave模型。一台broker作为master，其它的broker作为slave，当master挂了之后，slave中的一个会成为新的master。</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>共享文件系统</td>
+<td>不同broker共享文件系统，抢到锁的成为master，自动失效转移，slave数量不限</td>
+</tr>
+<tr>
+<td>基于RDB</td>
+<td>不同broker共享RDB，抢到锁的成为master，自动失效转移，slave数量不限，性能较低</td>
+</tr>
+<tr>
+<td>基于LevelDB</td>
+<td>不同broker通过zookeeper选出master，不同broker拥有各自的LevelDB实例，slave的LevelDB实例从master的LevelDB同步数据，自动失效转移，slave数量不限</td>
+</tr>
+</tbody>
+</table>
+<h1 id="网络拓扑"><a href="#网络拓扑" class="headerlink" title="网络拓扑"></a>网络拓扑</h1><p><strong>ActiveMQ可以让不同地理位置的broker组成一个集群，而Kafka正好相反，同一集群中的broker需要在同一机房内。</strong>ActiveMQ把要发送的数据先存在本地，然后再通过网络发送到远端的broker，这样能够应付网络中断的情况。这种方式被称为store and forward。</p>
+<p>本地broker发现远端broker有两种方式：</p>
+<ol>
+<li>动态——使用IP组播，仅限于发现本网段的broker</li>
+<li>静态——URL列表写入配置文件</li>
+</ol>
+
+          
+        
+      
+    </div>
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/04/18/kafka官方文档翻译/" itemprop="url">
                   kafka官方文档翻译
                 </a>
@@ -298,8 +523,9 @@
 <ol>
 <li>leader宣布数据已经提交之前，f+1个备份已经成功接收了这份数据  </li>
 <li>选举新leader时，从至少为f+1个备份中选出拥有最完整log的备份成为新leader  </li>
-<li>不超过f个备份节点失效<br>因为在任何f+1个备份中，一定存在至少一个备份包含所有已经提交的数据。这个节点上的log是最完整的，因此它会被选为新leader。这些算法还有很多细节需要处理（例如需要精确定义如何让log更加完整，确保在leader失效或服务器数量发生变化时log的一致性），但我们现在忽略这些细节。</li>
+<li>不超过f个备份节点失效  </li>
 </ol>
+<p>因为在任何f+1个备份中，一定存在至少一个备份包含所有已经提交的数据。这个节点上的log是最完整的，因此它会被选为新leader。这些算法还有很多细节需要处理（例如需要精确定义如何让log更加完整，确保在leader失效或服务器数量发生变化时log的一致性），但我们现在忽略这些细节。</p>
 <p>这种获得大多数选票获胜的算法有一个很好的特性：延迟只依赖于那些最快的服务器。也就是说，如果备份因子为3，那么延迟由最快的slave决定，而不是最慢的。</p>
 <p>这类算法有许多，包括ZooKeeper的Zab，Raft，Viewstamped Replication。我们认为和Kafka最接近的算法是微软的PacificA。</p>
 <p>Majority vote算法的缺点是它无法处理多个节点失效导致没有可以选择的候选leader这种情况。容忍1个节点失效需要3份拷贝，容忍2个节点失效需要5份拷贝。在我们的经验中，单纯的增加冗余来对应单点失效是不够的，但5倍次数的写，5倍存储空间和1/5的吞吐量在处理大数据时又是不太实际的。</p>
@@ -495,13 +721,20 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">2</span>
+              <span class="site-state-item-count">3</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
 
           
 
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
           
 
         </nav>

@@ -88,7 +88,7 @@
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
 <meta property="og:description" content="4.7 ReplicationKafka根据配置文件中的设置对topic的partition进行复制，你可以给每个topic设置不同的的复制因子（replication factor）。Replication机制能够实现自动故障转移，使得一台server宕机后消息仍然可用。
 其它的消息系统也提供了复制功能，但是，就我们的观点而言，这些都是附加的功能，没有得到广泛应用，其最大的缺点在于：从机是不活跃">
-<meta property="og:updated_time" content="2016-04-26T05:13:44.000Z">
+<meta property="og:updated_time" content="2016-04-29T05:20:43.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="kafka官方文档翻译">
 <meta name="twitter:description" content="4.7 ReplicationKafka根据配置文件中的设置对topic的partition进行复制，你可以给每个topic设置不同的的复制因子（replication factor）。Replication机制能够实现自动故障转移，使得一台server宕机后消息仍然可用。
@@ -295,8 +295,9 @@
 <ol>
 <li>leader宣布数据已经提交之前，f+1个备份已经成功接收了这份数据  </li>
 <li>选举新leader时，从至少为f+1个备份中选出拥有最完整log的备份成为新leader  </li>
-<li>不超过f个备份节点失效<br>因为在任何f+1个备份中，一定存在至少一个备份包含所有已经提交的数据。这个节点上的log是最完整的，因此它会被选为新leader。这些算法还有很多细节需要处理（例如需要精确定义如何让log更加完整，确保在leader失效或服务器数量发生变化时log的一致性），但我们现在忽略这些细节。</li>
+<li>不超过f个备份节点失效  </li>
 </ol>
+<p>因为在任何f+1个备份中，一定存在至少一个备份包含所有已经提交的数据。这个节点上的log是最完整的，因此它会被选为新leader。这些算法还有很多细节需要处理（例如需要精确定义如何让log更加完整，确保在leader失效或服务器数量发生变化时log的一致性），但我们现在忽略这些细节。</p>
 <p>这种获得大多数选票获胜的算法有一个很好的特性：延迟只依赖于那些最快的服务器。也就是说，如果备份因子为3，那么延迟由最快的slave决定，而不是最慢的。</p>
 <p>这类算法有许多，包括ZooKeeper的Zab，Raft，Viewstamped Replication。我们认为和Kafka最接近的算法是微软的PacificA。</p>
 <p>Majority vote算法的缺点是它无法处理多个节点失效导致没有可以选择的候选leader这种情况。容忍1个节点失效需要3份拷贝，容忍2个节点失效需要5份拷贝。在我们的经验中，单纯的增加冗余来对应单点失效是不够的，但5倍次数的写，5倍存储空间和1/5的吞吐量在处理大数据时又是不太实际的。</p>
@@ -359,6 +360,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/22/ActiveMQ/" rel="prev" title="ActiveMQ">
+                ActiveMQ <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -426,13 +431,20 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">2</span>
+              <span class="site-state-item-count">3</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
 
           
 
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
           
 
         </nav>

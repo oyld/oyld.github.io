@@ -1,0 +1,703 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JMS," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="feature概览
+遵从JMS规范
+支持多种连接协议
+支持多种存储方式
+支持多种安全机制
+Broker能够嵌入到JAVA应用程序中，通过class启动ActiveMQ实例，同一应用程序中的client和broker通过通过VM协议相连
+可与各种application server相结合，通过网页收发消息
+提供多种语言的客户端
+支持多种拓扑结构的集群（network of brokers）
+支持多种">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ActiveMQ">
+<meta property="og:url" content="http://yoursite.com/2016/04/22/ActiveMQ/index.html">
+<meta property="og:site_name" content="Stay hungry. Stay foolish.">
+<meta property="og:description" content="feature概览
+遵从JMS规范
+支持多种连接协议
+支持多种存储方式
+支持多种安全机制
+Broker能够嵌入到JAVA应用程序中，通过class启动ActiveMQ实例，同一应用程序中的client和broker通过通过VM协议相连
+可与各种application server相结合，通过网页收发消息
+提供多种语言的客户端
+支持多种拓扑结构的集群（network of brokers）
+支持多种">
+<meta property="og:image" content="http://yoursite.com/images/queue.png">
+<meta property="og:image" content="http://yoursite.com/images/topic.png">
+<meta property="og:updated_time" content="2016-05-07T05:18:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="ActiveMQ">
+<meta name="twitter:description" content="feature概览
+遵从JMS规范
+支持多种连接协议
+支持多种存储方式
+支持多种安全机制
+Broker能够嵌入到JAVA应用程序中，通过class启动ActiveMQ实例，同一应用程序中的client和broker通过通过VM协议相连
+可与各种application server相结合，通过网页收发消息
+提供多种语言的客户端
+支持多种拓扑结构的集群（network of brokers）
+支持多种">
+<meta name="twitter:image" content="http://yoursite.com/images/queue.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> ActiveMQ | Stay hungry. Stay foolish. </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Stay hungry. Stay foolish.</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                ActiveMQ
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-04-22T17:55:24+08:00" content="2016-04-22">
+              2016-04-22
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="feature概览"><a href="#feature概览" class="headerlink" title="feature概览"></a>feature概览</h1><ul>
+<li>遵从JMS规范</li>
+<li>支持多种连接协议</li>
+<li>支持多种存储方式</li>
+<li>支持多种安全机制</li>
+<li>Broker能够嵌入到JAVA应用程序中，通过class启动ActiveMQ实例，同一应用程序中的client和broker通过通过VM协议相连</li>
+<li>可与各种application server相结合，通过网页收发消息</li>
+<li>提供多种语言的客户端</li>
+<li>支持多种拓扑结构的集群（network of brokers）</li>
+<li>支持多种监控方法</li>
+</ul>
+<h1 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h1><p>ActiveMQ提供了一种名为connector的连接机制（connectivity mechanism），提供了client到broker的连接（称为transport connectors）和broker之间的连接（称为network connectors）。</p>
+<blockquote>
+<p>connector类似于protocol，协议是一种更通用的概念，而connector是ActiveMQ中的概念，每一种connector的底层实现都对应一种protocol。</p>
+</blockquote>
+<p>不同的broker通过URI来区分。例如client使用<em>tcp://localhost:61616</em>表示用TCP协议连接到本地61616端口的broker。</p>
+<h3 id="Transport-connectors"><a href="#Transport-connectors" class="headerlink" title="Transport connectors"></a>Transport connectors</h3><p>为应对不同场景（偏重性能或安全等），ActiveMQ提供了多种协议供client和broker之间传输数据。在源码目录的conf/activemq.xml中可以找到关于transport connectors的配置：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;transportConnectors&gt;</span><br><span class="line">	&lt;!-- DOS protection, limit concurrent connections to 1000 and frame size to 100MB --&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;openwire&quot; uri=&quot;tcp://0.0.0.0:61616?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;amqp&quot; uri=&quot;amqp://0.0.0.0:5672?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;stomp&quot; uri=&quot;stomp://0.0.0.0:61613?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;mqtt&quot; uri=&quot;mqtt://0.0.0.0:1883?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;ws&quot; uri=&quot;ws://0.0.0.0:61614?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">&lt;/transportConnectors&gt;</span><br></pre></td></tr></table></figure>
+<p>上面的配置定义了一组transport connectors，不同的协议监听在不同的端口。Client可以通过如下代码连接到指定的transport connector。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(&quot;tcp://localhost:61616&quot;);</span><br><span class="line">Connection conn = factory.createConnection();</span><br><span class="line">Session sess = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);</span><br><span class="line">conn.start();</span><br></pre></td></tr></table></figure>
+<h3 id="Network-connectors"><a href="#Network-connectors" class="headerlink" title="Network connectors"></a>Network connectors</h3><p>Network connector是broker间的通信协议。一个network connector是单向（unidirectional）的，也就是说broker间收发数据需要建立两个network connector，这种模式成为forwarding bridge。ActiveMQ还提供了全双工的duplex connector。</p>
+<table>
+<thead>
+<tr>
+<th>Protocol</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Static</td>
+<td>静态地配置一个网络，网络中的broker地址都已知</td>
+</tr>
+<tr>
+<td>Failover</td>
+<td>利用自动重连机制连接broker集群或单台broker</td>
+</tr>
+<tr>
+<td>Multicast</td>
+<td>利用IP组播动态组建broker集群</td>
+</tr>
+<tr>
+<td>Discovery</td>
+<td>利用IP组播动态寻找可用的broker并连接</td>
+</tr>
+<tr>
+<td>Peer</td>
+<td>将local broker和其它位置的local broker自动相连的方式</td>
+</tr>
+<tr>
+<td>Fanout</td>
+<td>producer同时向多台没有相互连接的broker发送相同数据</td>
+</tr>
+</tbody>
+</table>
+<p>不同的协议适用于不同的场景，有的偏重于伸缩性，有的偏重于可用性。</p>
+<h1 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h1><p>JMS规范定义了两种消息递送方式，ActiveMQ对这两种方式都支持：</p>
+<ol>
+<li>持久化——数据需要保存到持久化存储设备中</li>
+<li>非持久化——数据无需保存到持久化设备中，但要尽力递送</li>
+</ol>
+<p>存储方式上，ActiveMQ支持queue模式和topic模式的存储方式，每种存储方式又有多种实现。</p>
+<table>
+<thead>
+<tr>
+<th>存储方式</th>
+<th>特性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>queue</td>
+<td>broker作为queue存储message，一条message只能被一个consumer消费，消费完后即删除</td>
+</tr>
+<tr>
+<td>topic</td>
+<td>broker作为topic存储message，一条message可以被多个consumer订阅并消费，递送到所有相关consumer后才能删除</td>
+</tr>
+</tbody>
+</table>
+<p><img src="/images/queue.png" alt=""><br><img src="/images/topic.png" alt=""></p>
+<table>
+<thead>
+<tr>
+<th>存储实现</th>
+<th>特性</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基于内存</td>
+<td>性能高，易丢失</td>
+</tr>
+<tr>
+<td>基于文件</td>
+<td>数据文件+索引文件+内存cache，性能与可扩展性的折衷，例如KahaDB、AMQ等</td>
+</tr>
+<tr>
+<td>基于RDB</td>
+<td>可利用现有RDB，支持主流RDB</td>
+</tr>
+</tbody>
+</table>
+<h1 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h1><p>为了保证HA，ActiveMQ采用了master/slave模型。一台broker作为master，其它的broker作为slave，当master挂了之后，slave中的一个会成为新的master。</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>共享文件系统</td>
+<td>不同broker共享文件系统，抢到锁的成为master，自动失效转移，slave数量不限</td>
+</tr>
+<tr>
+<td>基于RDB</td>
+<td>不同broker共享RDB，抢到锁的成为master，自动失效转移，slave数量不限，性能较低</td>
+</tr>
+<tr>
+<td>基于LevelDB</td>
+<td>不同broker通过zookeeper选出master，不同broker拥有各自的LevelDB实例，slave的LevelDB实例从master的LevelDB同步数据，自动失效转移，slave数量不限</td>
+</tr>
+</tbody>
+</table>
+<h1 id="网络拓扑"><a href="#网络拓扑" class="headerlink" title="网络拓扑"></a>网络拓扑</h1><p><strong>ActiveMQ可以让不同地理位置的broker组成一个集群，而Kafka正好相反，同一集群中的broker需要在同一机房内。</strong>ActiveMQ把要发送的数据先存在本地，然后再通过网络发送到远端的broker，这样能够应付网络中断的情况。这种方式被称为store and forward。</p>
+<p>本地broker发现远端broker有两种方式：</p>
+<ol>
+<li>动态——使用IP组播，仅限于发现本网段的broker</li>
+<li>静态——URL列表写入配置文件</li>
+</ol>
+
+      
+    </div>
+    
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/JMS/" rel="tag">#JMS</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/18/kafka官方文档翻译/" rel="next" title="kafka官方文档翻译">
+                <i class="fa fa-chevron-left"></i> kafka官方文档翻译
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/default_avatar.jpg"
+               alt="oyld" />
+          <p class="site-author-name" itemprop="name">oyld</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">3</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#feature概览"><span class="nav-number">1.</span> <span class="nav-text">feature概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#连接"><span class="nav-number">2.</span> <span class="nav-text">连接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Transport-connectors"><span class="nav-number">2.0.1.</span> <span class="nav-text">Transport connectors</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Network-connectors"><span class="nav-number">2.0.2.</span> <span class="nav-text">Network connectors</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#存储"><span class="nav-number">3.</span> <span class="nav-text">存储</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#高可用"><span class="nav-number">4.</span> <span class="nav-text">高可用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#网络拓扑"><span class="nav-number">5.</span> <span class="nav-text">网络拓扑</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">oyld</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
