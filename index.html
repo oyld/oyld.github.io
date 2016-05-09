@@ -272,141 +272,12 @@
 
       
         
-          
-            <h1 id="feature概览"><a href="#feature概览" class="headerlink" title="feature概览"></a>feature概览</h1><ul>
-<li>遵从JMS规范</li>
-<li>支持多种连接协议</li>
-<li>支持多种存储方式</li>
-<li>支持多种安全机制</li>
-<li>Broker能够嵌入到JAVA应用程序中，通过class启动ActiveMQ实例，同一应用程序中的client和broker通过通过VM协议相连</li>
-<li>可与各种application server相结合，通过网页收发消息</li>
-<li>提供多种语言的客户端</li>
-<li>支持多种拓扑结构的集群（network of brokers）</li>
-<li>支持多种监控方法</li>
-</ul>
-<h1 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h1><p>ActiveMQ提供了一种名为connector的连接机制（connectivity mechanism），提供了client到broker的连接（称为transport connectors）和broker之间的连接（称为network connectors）。</p>
-<blockquote>
-<p>connector类似于protocol，协议是一种更通用的概念，而connector是ActiveMQ中的概念，每一种connector的底层实现都对应一种protocol。</p>
-</blockquote>
-<p>不同的broker通过URI来区分。例如client使用<em>tcp://localhost:61616</em>表示用TCP协议连接到本地61616端口的broker。</p>
-<h2 id="Transport-connectors"><a href="#Transport-connectors" class="headerlink" title="Transport connectors"></a>Transport connectors</h2><p>为应对不同场景（偏重性能或安全等），ActiveMQ提供了多种协议供client和broker之间传输数据。在源码目录的conf/activemq.xml中可以找到关于transport connectors的配置：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;transportConnectors&gt;</span><br><span class="line">	&lt;!-- DOS protection, limit concurrent connections to 1000 and frame size to 100MB --&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;openwire&quot; uri=&quot;tcp://0.0.0.0:61616?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;amqp&quot; uri=&quot;amqp://0.0.0.0:5672?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;stomp&quot; uri=&quot;stomp://0.0.0.0:61613?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;mqtt&quot; uri=&quot;mqtt://0.0.0.0:1883?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">	&lt;transportConnector name=&quot;ws&quot; uri=&quot;ws://0.0.0.0:61614?maximumConnections=1000&amp;amp;wireFormat.maxFrameSize=104857600&quot;/&gt;</span><br><span class="line">&lt;/transportConnectors&gt;</span><br></pre></td></tr></table></figure>
-<p>上面的配置定义了一组transport connectors，不同的协议监听在不同的端口。Client可以通过如下代码连接到指定的transport connector。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ActiveMQConnectionFactory factory = new ActiveMQConnectionFactory(&quot;tcp://localhost:61616&quot;);</span><br><span class="line">Connection conn = factory.createConnection();</span><br><span class="line">Session sess = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);</span><br><span class="line">conn.start();</span><br></pre></td></tr></table></figure>
-<h2 id="Network-connectors"><a href="#Network-connectors" class="headerlink" title="Network connectors"></a>Network connectors</h2><p>Network connector是broker间的通信协议。一个network connector是单向（unidirectional）的，也就是说broker间收发数据需要建立两个network connector，这种模式成为forwarding bridge。ActiveMQ还提供了全双工的duplex connector。</p>
-<table>
-<thead>
-<tr>
-<th>Protocol</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Static</td>
-<td>静态地配置一个网络，网络中的broker地址都已知</td>
-</tr>
-<tr>
-<td>Failover</td>
-<td>利用自动重连机制连接broker集群或单台broker</td>
-</tr>
-<tr>
-<td>Multicast</td>
-<td>利用IP组播动态组建broker集群</td>
-</tr>
-<tr>
-<td>Discovery</td>
-<td>利用IP组播动态寻找可用的broker并连接</td>
-</tr>
-<tr>
-<td>Peer</td>
-<td>将local broker和其它位置的local broker自动相连的方式</td>
-</tr>
-<tr>
-<td>Fanout</td>
-<td>producer同时向多台没有相互连接的broker发送相同数据</td>
-</tr>
-</tbody>
-</table>
-<p>不同的协议适用于不同的场景，有的偏重于伸缩性，有的偏重于可用性。</p>
-<h1 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h1><p>JMS规范定义了两种消息递送方式，ActiveMQ对这两种方式都支持：</p>
-<ol>
-<li>持久化——数据需要保存到持久化存储设备中</li>
-<li>非持久化——数据无需保存到持久化设备中，但要尽力递送</li>
-</ol>
-<p>存储方式上，ActiveMQ支持queue模式和topic模式的存储方式，每种存储方式又有多种实现。</p>
-<table>
-<thead>
-<tr>
-<th>存储方式</th>
-<th>特性</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>queue</td>
-<td>broker作为queue存储message，一条message只能被一个consumer消费，消费完后即删除</td>
-</tr>
-<tr>
-<td>topic</td>
-<td>broker作为topic存储message，一条message可以被多个consumer订阅并消费，递送到所有相关consumer后才能删除</td>
-</tr>
-</tbody>
-</table>
-<p><img src="/images/queue.png" alt=""><br><img src="/images/topic.png" alt=""></p>
-<table>
-<thead>
-<tr>
-<th>存储实现</th>
-<th>特性</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>基于内存</td>
-<td>性能高，易丢失</td>
-</tr>
-<tr>
-<td>基于文件</td>
-<td>数据文件+索引文件+内存cache，性能与可扩展性的折衷，例如KahaDB、AMQ等</td>
-</tr>
-<tr>
-<td>基于RDB</td>
-<td>可利用现有RDB，支持主流RDB</td>
-</tr>
-</tbody>
-</table>
-<h1 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h1><p>为了保证HA，ActiveMQ采用了master/slave模型。一台broker作为master，其它的broker作为slave，当master挂了之后，slave中的一个会成为新的master。</p>
-<table>
-<thead>
-<tr>
-<th>Type</th>
-<th>特点</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>共享文件系统</td>
-<td>不同broker共享文件系统，抢到锁的成为master，自动失效转移，slave数量不限</td>
-</tr>
-<tr>
-<td>基于RDB</td>
-<td>不同broker共享RDB，抢到锁的成为master，自动失效转移，slave数量不限，性能较低</td>
-</tr>
-<tr>
-<td>基于LevelDB</td>
-<td>不同broker通过zookeeper选出master，不同broker拥有各自的LevelDB实例，slave的LevelDB实例从master的LevelDB同步数据，自动失效转移，slave数量不限</td>
-</tr>
-</tbody>
-</table>
-<h1 id="网络拓扑"><a href="#网络拓扑" class="headerlink" title="网络拓扑"></a>网络拓扑</h1><p><strong>ActiveMQ可以让不同地理位置的broker组成一个集群，而Kafka正好相反，同一集群中的broker需要在同一机房内。</strong>ActiveMQ把要发送的数据先存在本地，然后再通过网络发送到远端的broker，这样能够应付网络中断的情况。这种方式被称为store and forward。</p>
-<p>本地broker发现远端broker有两种方式：</p>
-<ol>
-<li>动态——使用IP组播，仅限于发现本网段的broker</li>
-<li>静态——URL列表写入配置文件</li>
-</ol>
-
-          
+          <p>本篇为ActiveMQ功能概览，内容来源于ActiveMQ官方文档和<em>ActiveMQ in Action</em>。<br>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/04/22/ActiveMQ/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -455,7 +326,7 @@
               
                 
                 <a class="post-title-link" href="/2016/04/18/kafka官方文档翻译/" itemprop="url">
-                  kafka官方文档翻译
+                  Kafka官方文档翻译
                 </a>
               
             
@@ -497,76 +368,12 @@
 
       
         
-          
-            <h2 id="4-5-The-Consumer"><a href="#4-5-The-Consumer" class="headerlink" title="4.5 The Consumer"></a>4.5 The Consumer</h2><p>Consumer通过发送fetch请求来获取数据。Consumer在请求中指定log的offset，然后就能够收到从这个offset开始的数据了。Consumer对offset拥有控制权，因此可以通过操控offset来重复消费。</p>
-<h3 id="Push-vs-pull"><a href="#Push-vs-pull" class="headerlink" title="Push vs. pull"></a>Push vs. pull</h3><h2 id="4-7-Replication"><a href="#4-7-Replication" class="headerlink" title="4.7 Replication"></a>4.7 Replication</h2><p>Kafka根据配置文件中的设置对topic的partition进行复制，你可以给每个topic设置不同的的复制因子（replication factor）。Replication机制能够实现自动故障转移，使得一台server宕机后消息仍然可用。</p>
-<p>其它的消息系统也提供了复制功能，但是，就我们的观点而言，这些都是附加的功能，没有得到广泛应用，其最大的缺点在于：<strong>从机是不活跃的（inactive），吞吐量受到很大影响，需要依赖繁琐的手动配置等（例如ActiveMQ，在shared nothing存储模式下，master挂了之后，需要管理员人工介入启动新master）</strong>。Kafka对replication的默认策略是：topic在创建时replication factor为1，即不进行备份。</p>
-<p>复制是以partition作为最小单位的。在没有broker失效的情况下，每一个partition在集群中都有唯一的broker作为leader以及0个或多个broker作为follower。一个partition的备份数量（包括leader上的那份）即备份因子。<strong>客户端的读写请求均通过leader</strong>。通常，partition的数量会大于broker，leader的角色将均匀分配到集群的各个broker上。Follower上的log数据和leader上是相同的——相同的offset以及相同的message顺序，当然，在leader末尾的message还未来得及同步到follow时，两者的数据是不一致的。</p>
-<p>Follower会像一个普通的conusmer那样从leader消费数据然后保存到本地log文件。<strong>这样做有一个好处是可以利用consumer的batch特性一次拉取多条message，提高吞吐量</strong>。</p>
-<p>Kafka和大多数分布式系统一样，需要自动处理失效的情况，因此需要精确定义节点“存活“的含义。对于Kafka，节点的存活包含两个方面：</p>
-<ol>
-<li>节点必须维持和ZooKeeper的session（通过ZooKeeper的心跳机制）</li>
-<li>Follower必须及时同步leader上的新数据，不能“落后”太多</li>
-</ol>
-<p>我们把满足以上两点的节点称之为“同步节点”（in sync），以此来把它和“存活”“失效”等概念区分开来。Leader会跟踪记录所有同步节点。如果一个follower挂了或卡住了，或数据同步落后太多，那么leader会把它从同步节点列表中移除，移除条件由配置项<em>replica.lag.time.max.ms</em>来确定。</p>
-<p>在分布式系统领域，我们只关注fail/recover类型的失效，即节点突然停止工作并在一段时间后恢复正常。Kafka不会处理拜占庭式的失效，即节点有可能产生任意或恶意的response。</p>
-<p>一条message被所有的同步节点同步后（其实是对message所在partition的同步），就可以认为它已经提交了（committed）。只有提交了的message才能交付给consumer端。这意味着consumer不必担心由于leader失效可能导致的message丢失。另一方面，为了在延迟和持久化之间进行权衡，producer可以选择是否等待message提交。Producer选择哪一种策略是根据配置项<em>request.required.acks</em>来确定的。</p>
-<p>Kafka保证只要有至少一个同步节点存活，已提交的message就不会丢失。</p>
-<blockquote>
-<p>这里只是说提交成功的message不会丢失，并没有说producer发送成功的message不会丢失</p>
-</blockquote>
-<p>Kafka在短时间的失效转移时间内仍然可用，但网络分区的情况下不保证始终可用，<a href="https://aphyr.com/posts/293-jepsen-kafka" target="_blank" rel="external">Kafka选择了CA而牺牲了P，但一旦出现网络分区，还是会牺牲可用性</a>。</p>
-<blockquote>
-<p>个人认为，当发生分区时，CA会最终转换成CP或AP。例如，当出现网络分区，producer会因为发送失败返回错误，这就不是100%可用了。因此，分布式系统必须要具备分区容忍性。</p>
-</blockquote>
-<h3 id="Replicated-Logs-Quorums-ISRs-and-State-Machines"><a href="#Replicated-Logs-Quorums-ISRs-and-State-Machines" class="headerlink" title="Replicated Logs: Quorums, ISRs, and State Machines"></a>Replicated Logs: Quorums, ISRs, and State Machines</h3><p>Kafka partition的核心是复制log（replicated log）。在分布式数据系统中，log复制是最为重要的概念之一，实现方法也非常多。Log复制可以被应用于很多分布式系统中，作为复制状态机概念的一部分。</p>
-<p>一个要复制的log可以看做是一个处理模型，目的是通过协商使一个序列内的元素（log entry）顺序达成一致，即log entry按顺序0,1,2…排列。实现这一目的的方法很多，最为简单且快速的方法是：系统中有一个leader，由它来决定log entry的排列顺序。只要leader存活，所有follower只需要按照这个顺序将log entry拷贝过来就可以了，即log entry的顺序在所有节点上达成了一致。</p>
-<p>如果leader不挂，我们当然可以不需要follower。但如果leader挂了，我们需要从follower中选出一个新的leader。但follower本身可能会落后leader很多，也可能会挂，所以我们要确保选出一个最新（up-to-date）的follower。对于log复制算法，Kafka最基本的保证是：当Kafka告知client一个message已经被提交，并且leader挂了，新选出的leader必须存有这条message。这里需要进行权衡：如果leader需要等待越多的follower返回message提交成功，那么就有更多的follower有资格成为leader，但延迟会提高。</p>
-<p>如果选择一个follower的数量，这些follower和leader上log的内容相同或是leader的子集，那么这个数就叫做法定人数(<a href="https://en.wikipedia.org/wiki/Quorum_(distributed_computing" target="_blank" rel="external">Quorum</a>))。</p>
-<p>一种权衡一致性和延迟这两方面的算法是：对于确定决议和leader选举，采用大多数选票（majority vote）的方法，少数服从多数。<strong>Kafka没有这样做，但这种方法提供了一种如何进行权衡的思路</strong>。假设我们有2f+1个备份，那么当满足如下条件时，leader宕机后新选举出的leader能够保证拥有所有已经被提交的数据：</p>
-<ol>
-<li>leader宣布数据已经提交之前，f+1个备份已经成功接收了这份数据</li>
-<li>选举新leader时，从至少为f+1（和上面的f+1不是同一个集合）个备份中选出拥有最完整log的备份成为新leader</li>
-<li>不超过f个备份节点失效</li>
-</ol>
-<p>因为在不多于f个备份节点失效的情况下，任何f+1个备份节点中一定存在至少一个备份节点包含所有已经提交的数据（可以考虑极端情况下，f+1个成功接收的备份节点中有f个失效，仍然会有最有一个节点保存有完整的数据）。这个节点上的log是最完整的，因此它会被选为新leader。这些算法还有很多细节需要处理（例如需要精确定义如何让log更加完整，确保在leader失效或服务器数量发生变化时log的一致性），但我们现在忽略这些细节。</p>
-<p>这种获得大多数选票获胜的算法有一个很好的特性：延迟只依赖于那些最快的服务器。也就是说，如果备份因子为3，那么延迟由最快的slave决定，而不是最慢的。</p>
-<p>这类算法有许多，包括ZooKeeper的Zab，Raft，Viewstamped Replication。我们认为和Kafka最接近的算法是微软的PacificA。</p>
-<p>Majority vote算法的缺点是它无法处理多个节点失效导致没有可以选择的候选leader这种情况。容忍1个节点失效需要3份拷贝，容忍2个节点失效需要5份拷贝。在我们的经验中，单纯的增加冗余来对应单点失效是不够的，但5倍次数的写，5倍存储空间和1/5的吞吐量在处理大数据时又是不太实际的。</p>
-<blockquote>
-<p>这里的大概意思是：如果采用majority vote策略，增加拷贝还是不能容忍大多数节点失效这种情况；而要能容忍大多数节点失效，就需要每次write都同步复制到其它从节点，而这种同步复制的效率又是不能接受的。</p>
-</blockquote>
-<p>这可能就是为什么quorum算法常常出现在存储元数据的系统中，例如ZooKeeper，而很少出现在原始数据的存储中。例如HDFS的namenode的高可用性就是以<a href="http://blog.cloudera.com/blog/2012/10/quorum-based-journaling-in-cdh4-1/" target="_blank" rel="external">majority vote</a>作为基础，但它并没有用在datanode中。</p>
-<p>Kafka选择了采用了稍微不同的方法来选择quorum集合。不同于majority vote，Kakfa动态地维护一个叫做in-sync replicas（ISR）的集合，集合内的节点去追赶复制leader。只有这个集合中的成员才有资格选举为leader。<strong>只有所有ISR都接收了数据，才认为数据被提交成功</strong>。ISR集合保存在ZooKeeper中，动态变化，所以当需要选举leader时，ISR中的成员是有资格成为leader的。对于Kafka的使用模型来说，这是很重要的一点，Kafka的特点是有多个partition并且leader在集群中的分布是非常平衡的。通过ISR模型和f+1个备份，Kafka可以在f个节点失效的情况下不丢失已提交的数据。</p>
-<blockquote>
-<p>从上面的描述可以看出，Kafka其实也采用了quorum-based技术，只是确定quorum集合的方法和常规的majority vote有所不同，majority vote把备份的大多数作为法定人数，而ISR技术确定法定人数是根据ISR数量确定的。</p>
-</blockquote>
-<p>对于我们关注的许多场景，这样一种权衡的做法是合理的。实际上，为了容忍f个节点失效，majority vote算法和ISR策略都需要等待f+1个备份节点返回确认才算提交成功（例如，如果需要容忍1个节点失效，majority vote算法需要3个备份节点和至少1个备份节点返回确认，而ISR算法只需要2个备份节点和至少1个备份节点的返回确认）。<strong>Majority vote的优势在于提交操作不依赖于最慢的那些服务器</strong>。但是，我们认为让用户选择在提交操作时是否阻塞更加合理，并且用更小的备份因子换取更大的吞吐量和更小的磁盘空间是很划算的。</p>
-<p>Kafka另一个独有设计是，它不要求失效的节点在恢复后拥有完好无损的全量数据。这有别于一般的复制算法稳定存储（stable storage）的思想，这些复制算法不允许故障恢复后出现丢失数据或是不一致的情况。但这一思想有两个问题：  </p>
-<ol>
-<li>在持久化存储系统中，最常见的就是磁盘错误，而磁盘错误经常时数据无法保持完整无缺  </li>
-<li>即使1不是问题，我们也不想为了保证一致性而每次写操作都调用fsync，这会使性能降低2到3个数量级<br>Kafka的协议允许备份节点恢复工作后重新加入ISR，加入之前必须全部重同步所有的数据。<blockquote>
-<p>这里的意思应该是，为了效率，同步到follower的数据不会立刻刷到磁盘，而是保存在内存中，但这样就会存在宕机丢失数据的风险，Kafka通过失效重启后需要跟leader同步，恢复未刷入磁盘的数据。</p>
-</blockquote>
-</li>
-</ol>
-<h3 id="Unclean-leader-election-What-if-they-all-die"><a href="#Unclean-leader-election-What-if-they-all-die" class="headerlink" title="Unclean leader election: What if they all die?"></a>Unclean leader election: What if they all die?</h3><p>Kafka在数据持久化方面的的保证是，至少存在一个replica在ISR中。如果一个partition的所有replica都挂了，那么这样的保证也就不存在了。</p>
-<p>但是，一个实际的系统需要在所有replica都挂了之后做某些合理的事情。如果这样的事情不幸发生，考虑之后会发生什么是很重要的。具体的实现可以有两种：</p>
-<ol>
-<li>不允许unclean leader election，等待一个拥有全量数据并且属于ISR的replica恢复并将它选为leader</li>
-<li>允许unclean leader election，选择第一个恢复的replica（不一定属于ISR）作为leader</li>
-</ol>
-<p>这是一个在可用性和一致性之间的权衡。如果我们等待ISR中的replica，那么只要没有replica恢复，服务将始终不可用。如果这些replica已经损坏或数据已经丢失，那么服务将永久失效。另一方面，如果一个不属于ISR的非同步（non-in-sync）replica恢复正常，然后我们允许它成为leader，那么它的log数据将作为信息源（source of truth），即使它不保证拥有每一条已提交数据。<strong>在当前的版本中我们选择第二种策略，即当ISR的所有节点都宕机时，更倾向于数据的不一致</strong>。未来，我们会让这些策略变成可配置的，以此来适应不同的场景。</p>
-<p>这一窘境不只是在Kafka中出现，它也出现在以quorum为基础的模式中。例如majority voting模式，如果大多数服务器失效，那么数据不保证100%完整，一致性就有可能被破坏。</p>
-<h3 id="Availability-and-Durability-Guarantees"><a href="#Availability-and-Durability-Guarantees" class="headerlink" title="Availability and Durability Guarantees"></a>Availability and Durability Guarantees</h3><p>当向Kafka发数据时，producer可以选择是否等待0个、1个或所有（-1）replica的回应。注意，等待所有replica的回应只是等待IRS收到数据而不是所有的replica都收到数据。默认的，当<em>request.required.acks</em>=-1时，只要当前ISR集合收到数据，就会返回响应。例如，如果一个topic的备份因子是2，一个replica挂了（ISR内节点的数量为1），那么<em>request.required.acks</em>=-1时写操作能成功。但是，如果剩下的replica也挂了，那么发送的数据将会丢失。虽然这确保了系统的可用性，但对于更加关注持久性的用户来说，这种策略是不合适的。因此，我们提供了关于可用性和持久性两方面的topic级别的两个配置。</p>
-<ol>
-<li>禁止unclean leader election（配置项<em>unclean.leader.election.enable</em>）。如果所有的replica不可用，那么这个partition将会变得不可用，直到ISR中的成员恢复正常。这一策略更倾向于数据的持久性，而不是可用性。</li>
-<li>指定一个最小的ISR规模（配置项<em>min.insync.replicas</em>）。写入的数据只有被这个数量以上的replica接收才被认为是提交成功。这能够防止写入单个replica而可能造成的数据丢失。这一设置只有在producer配置了<em>required.acks</em>=-1时生效，它保证了一条message至少会有这么多数量的ISR成员回应ack。这一设置权衡了一致性和可用性。<em>min.insync.replicas</em>设置的越大，保证能够写入的replica越多，丢失数据的风险也越小，因此具有更好的一致性。但是，它降低了可用性。因为写入数据时，如果ISR数量小于<em>min.insync.replicas</em>，那么partition将变得不可用。</li>
-</ol>
-<h3 id="Replica-Management"><a href="#Replica-Management" class="headerlink" title="Replica Management"></a>Replica Management</h3><p>上面讨论的关于replicated log的内容只针对单个log，即一个topic的一个partition。但一个Kafka集群可能要管理成百上千的partition，我们会采用轮询（round-robin）的方式均匀分布一个集群中的partition，避免许多都partition都堆积在小部分节点上。同样，leader的分配也做到均匀，使得每个节点只成为部分partition的leader。</p>
-<p>Leader选举时会有一段时间的不可用，对这段时间的优化也是很重要的。最原始的实现是，当leader挂掉后，拥有此partition的所有节点都要开始选举过程。<strong>作为替代，我们选择一台broker作为controller。Controller负责检测broker是否失效，当检测到失效后，它会将受影响的partition（这些partition的leadership在这台失效broker上）的leadership转给其它broker。这样做的结果是，Kafka能够处理大量的leadership转移的需求，对于partition很多的情况，选举过程也能做到更轻、更快</strong>。如果Controller挂了，会选一台存活的broker作为新Controller。</p>
-
-          
+          <p>本篇为Kafka官方文档翻译，加入了自己的理解。<br>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/04/18/kafka官方文档翻译/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
         
       
     </div>

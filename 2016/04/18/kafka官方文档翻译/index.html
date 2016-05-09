@@ -80,19 +80,16 @@
 
 
 
-<meta name="description" content="4.5 The ConsumerConsumer通过发送fetch请求来获取数据。Consumer在请求中指定log的offset，然后就能够收到从这个offset开始的数据了。Consumer对offset拥有控制权，因此可以通过操控offset来重复消费。
-Push vs. pull4.7 ReplicationKafka根据配置文件中的设置对topic的partition进行复制，你可以给每">
+<meta name="description" content="本篇为Kafka官方文档翻译，加入了自己的理解。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="kafka官方文档翻译">
+<meta property="og:title" content="Kafka官方文档翻译">
 <meta property="og:url" content="http://yoursite.com/2016/04/18/kafka官方文档翻译/index.html">
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
-<meta property="og:description" content="4.5 The ConsumerConsumer通过发送fetch请求来获取数据。Consumer在请求中指定log的offset，然后就能够收到从这个offset开始的数据了。Consumer对offset拥有控制权，因此可以通过操控offset来重复消费。
-Push vs. pull4.7 ReplicationKafka根据配置文件中的设置对topic的partition进行复制，你可以给每">
-<meta property="og:updated_time" content="2016-05-08T06:58:02.000Z">
+<meta property="og:description" content="本篇为Kafka官方文档翻译，加入了自己的理解。">
+<meta property="og:updated_time" content="2016-05-09T13:05:32.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="kafka官方文档翻译">
-<meta name="twitter:description" content="4.5 The ConsumerConsumer通过发送fetch请求来获取数据。Consumer在请求中指定log的offset，然后就能够收到从这个offset开始的数据了。Consumer对offset拥有控制权，因此可以通过操控offset来重复消费。
-Push vs. pull4.7 ReplicationKafka根据配置文件中的设置对topic的partition进行复制，你可以给每">
+<meta name="twitter:title" content="Kafka官方文档翻译">
+<meta name="twitter:description" content="本篇为Kafka官方文档翻译，加入了自己的理解。">
 
 
 
@@ -110,7 +107,7 @@ Push vs. pull4.7 ReplicationKafka根据配置文件中的设置对topic的partit
   };
 </script>
 
-  <title> kafka官方文档翻译 | Stay hungry. Stay foolish. </title>
+  <title> Kafka官方文档翻译 | Stay hungry. Stay foolish. </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -230,7 +227,7 @@ Push vs. pull4.7 ReplicationKafka根据配置文件中的设置对topic的partit
             
             
               
-                kafka官方文档翻译
+                Kafka官方文档翻译
               
             
           </h1>
@@ -270,8 +267,33 @@ Push vs. pull4.7 ReplicationKafka根据配置文件中的设置对topic的partit
       
 
       
-        <h2 id="4-5-The-Consumer"><a href="#4-5-The-Consumer" class="headerlink" title="4.5 The Consumer"></a>4.5 The Consumer</h2><p>Consumer通过发送fetch请求来获取数据。Consumer在请求中指定log的offset，然后就能够收到从这个offset开始的数据了。Consumer对offset拥有控制权，因此可以通过操控offset来重复消费。</p>
-<h3 id="Push-vs-pull"><a href="#Push-vs-pull" class="headerlink" title="Push vs. pull"></a>Push vs. pull</h3><h2 id="4-7-Replication"><a href="#4-7-Replication" class="headerlink" title="4.7 Replication"></a>4.7 Replication</h2><p>Kafka根据配置文件中的设置对topic的partition进行复制，你可以给每个topic设置不同的的复制因子（replication factor）。Replication机制能够实现自动故障转移，使得一台server宕机后消息仍然可用。</p>
+        <p>本篇为Kafka官方文档翻译，加入了自己的理解。<br><a id="more"></a></p>
+<h2 id="4-5-The-Consumer"><a href="#4-5-The-Consumer" class="headerlink" title="4.5 The Consumer"></a>4.5 The Consumer</h2><p>Consumer通过发送fetch请求来获取数据。Consumer在请求中指定log的offset，然后就能够收到从这个offset开始的数据了。Consumer对offset拥有控制权，因此可以通过操控offset来重复消费。</p>
+<h3 id="Push-vs-pull"><a href="#Push-vs-pull" class="headerlink" title="Push vs. pull"></a>Push vs. pull</h3><p>我们需要考虑的一个首要问题是consumer是从broker拉（pull）数据还是broker推（push）数据到consumer。在这方面，Kafka遵从传统的设计，和大多数消息系统一样，producer push数据，consumer pull数据。但一些日志系统，例如Scribe和Apache Flume，是讲数据push到下游的。不论是push还是pull，都有各自的优缺点。对于基于push的系统，当consumer类型不同时，broker难以对不同consumer传输速率进行控制。Consumer的目标是尽可能快的消费到数据，但在基于push的系统中，当消费速率落后于生产速率时，consumer会被压垮（overwhelmed），这本质上是一种DOS攻击。相反，在基于pull的系统中，consumer能够根据自身情况调整消费速率。这种方法能够缓和退避协议（backoff protocol）带来的复杂性，退避协议通过consumer反馈是否过载来让broker控制传输速率。基于上述原因，我们选择基于pull的模型。</p>
+<p>基于pull系统的另一个优势是适合积累一定的数据后再传给consumer。在基于push的系统中，broker有两个选择：</p>
+<ol>
+<li>收到一条message就push给consumer</li>
+<li>积累一定的message后再push给consumer</li>
+</ol>
+<p>方法1能够降低延迟但浪费带宽，方法2又无法知道下游的consumer能否立即处理这些批量数据。基于pull的系统能够应付这种情况：从当前offset一次性拉取所有（或设置一个拉取上限）有效数据。因此，这是批量拉取而不会引起高延迟的最佳方法。</p>
+<p>原始的基于pull的系统有一个缺点，当broker没有数据时，consumer需要不断轮询是否有数据。为了避免这种忙等待，consumer采用了long poll机制，它会一直阻塞，直到broker积累了指定数量的数据才返回。</p>
+<p>你可以想象另一种pull模型，producer把要发送的数据写到本地，然后broker去pull这些数据，最后consumer从broker pull下来。Store-and-forward模型就是这样一种方式（这种模型被用在了ActiveMQ中）。这种模式很有趣，但我们认为它不适用于我们的使用场景，即有上千数量的producer。实验证明，当producer规模很大时，把数据暂存在本地的方法并没有让系统更加可靠，并且运维成本不可估量。实际上可以利用一个pipeline和SLA从而避免producer本地存储。</p>
+<h3 id="Consumer-Position"><a href="#Consumer-Position" class="headerlink" title="Consumer Position"></a>Consumer Position</h3><p>记录哪些数据被消费是一个影响消息系统性能的关键点（key performance points）。</p>
+<p>很多消息系统把这部分数据存储在broker上。所以，当数据发送给consumer之后，broker要么立即记录这些数据的消费情况，要么等待consumer的响应后记录这些数据的消费情况。这是很符合直觉且务实的一种方法，broker知道哪些数据被消费了，然后将这些数据删除，从而控制数据规模。</p>
+<p>但是，要让broker和consumer就哪些数据已经被消费达成一致并不是那么简单。如果broker每次下发数据后就立刻记录已消费情况，且consumer处理这条数据时发生错误（宕机或超时未收到数据等情况），那么这条message将会丢失。为了解决这个问题，许多消息系统增加了确认机制：消息发出后标记为<strong>sent</strong>，broker等待consumer的响应，收到响应后再将消息标记为<strong>consumed</strong>。这一策略修复了数据可能丢失的问题，但产生了一个新问题：</p>
+<ol>
+<li>consumer在收到数据之后，发送响应之前发生故障，那么这条message会被重复消费</li>
+<li>broker必须存储每条message的多个状态，每条message都会执行下列动作：锁定为已发送-发送-标记为已消费-删除，影响性能</li>
+</ol>
+<p>还有一些其它棘手的问题需要解决，例如message发出后未收到consumer的响应。</p>
+<p>Kafka处理这些问题的方法有所不同，我们的topic被拆分成全序的partition，每一个partition在任何时候都只能被一个consumer消费。这意味着每个partition的消费位置仅仅是一个整数，即下一个将要消费message的offset。这使得关于消费情况的状态量非常小，每个partition只是一个数字。这些状态量能够定期的作为checkpointed被存储起来。相比于通过consumer返回响应，这种方法开销更小。</p>
+<p>这种方法还有一个附带好处，consumer能够回滚offset并重复消费。这有悖于queue的传统概念，但给consumer带来了很多重要的特性。例如，consumer消费了部分数据后发现程序有bug，那么待bug修复后，consumer可以重新消费这些数据。</p>
+<h3 id="Offline-Data-Load"><a href="#Offline-Data-Load" class="headerlink" title="Offline Data Load"></a>Offline Data Load</h3><p>可伸缩的持久化（scalable persistence）允许consumer周期性地消费数据并将数据存储在离线系统中，例如Hadoop或关系型数据库。</p>
+<p>在Hadoop中，数据的加载可以并行化，加载动作被映射到不同task中，每一个task根据三元组（node，topic，partition）并行地加载数据。Hadoop负责管理task，重启失效的task而不会重复消费——它只是简单地重启task并从最初的offset开始消费。</p>
+<blockquote>
+<p>这里的意思是，partition的设计能够让Hadoop并行地从broker拉取数据；而持久化的设计能让consumer重新消费过去的数据。</p>
+</blockquote>
+<h2 id="4-7-Replication"><a href="#4-7-Replication" class="headerlink" title="4.7 Replication"></a>4.7 Replication</h2><p>Kafka根据配置文件中的设置对topic的partition进行复制，你可以给每个topic设置不同的的复制因子（replication factor）。Replication机制能够实现自动故障转移，使得一台server宕机后消息仍然可用。</p>
 <p>其它的消息系统也提供了复制功能，但是，就我们的观点而言，这些都是附加的功能，没有得到广泛应用，其最大的缺点在于：<strong>从机是不活跃的（inactive），吞吐量受到很大影响，需要依赖繁琐的手动配置等（例如ActiveMQ，在shared nothing存储模式下，master挂了之后，需要管理员人工介入启动新master）</strong>。Kafka对replication的默认策略是：topic在创建时replication factor为1，即不进行备份。</p>
 <p>复制是以partition作为最小单位的。在没有broker失效的情况下，每一个partition在集群中都有唯一的broker作为leader以及0个或多个broker作为follower。一个partition的备份数量（包括leader上的那份）即备份因子。<strong>客户端的读写请求均通过leader</strong>。通常，partition的数量会大于broker，leader的角色将均匀分配到集群的各个broker上。Follower上的log数据和leader上是相同的——相同的offset以及相同的message顺序，当然，在leader末尾的message还未来得及同步到follow时，两者的数据是不一致的。</p>
 <p>Follower会像一个普通的conusmer那样从leader消费数据然后保存到本地log文件。<strong>这样做有一个好处是可以利用consumer的batch特性一次拉取多条message，提高吞吐量</strong>。</p>
@@ -477,7 +499,7 @@ Push vs. pull4.7 ReplicationKafka根据配置文件中的设置对topic的partit
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-The-Consumer"><span class="nav-number">1.</span> <span class="nav-text">4.5 The Consumer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Push-vs-pull"><span class="nav-number">1.1.</span> <span class="nav-text">Push vs. pull</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-7-Replication"><span class="nav-number">2.</span> <span class="nav-text">4.7 Replication</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Replicated-Logs-Quorums-ISRs-and-State-Machines"><span class="nav-number">2.1.</span> <span class="nav-text">Replicated Logs: Quorums, ISRs, and State Machines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unclean-leader-election-What-if-they-all-die"><span class="nav-number">2.2.</span> <span class="nav-text">Unclean leader election: What if they all die?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Availability-and-Durability-Guarantees"><span class="nav-number">2.3.</span> <span class="nav-text">Availability and Durability Guarantees</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Replica-Management"><span class="nav-number">2.4.</span> <span class="nav-text">Replica Management</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-The-Consumer"><span class="nav-number">1.</span> <span class="nav-text">4.5 The Consumer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Push-vs-pull"><span class="nav-number">1.1.</span> <span class="nav-text">Push vs. pull</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Consumer-Position"><span class="nav-number">1.2.</span> <span class="nav-text">Consumer Position</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Offline-Data-Load"><span class="nav-number">1.3.</span> <span class="nav-text">Offline Data Load</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-7-Replication"><span class="nav-number">2.</span> <span class="nav-text">4.7 Replication</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Replicated-Logs-Quorums-ISRs-and-State-Machines"><span class="nav-number">2.1.</span> <span class="nav-text">Replicated Logs: Quorums, ISRs, and State Machines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unclean-leader-election-What-if-they-all-die"><span class="nav-number">2.2.</span> <span class="nav-text">Unclean leader election: What if they all die?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Availability-and-Durability-Guarantees"><span class="nav-number">2.3.</span> <span class="nav-text">Availability and Durability Guarantees</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Replica-Management"><span class="nav-number">2.4.</span> <span class="nav-text">Replica Management</span></a></li></ol></li></ol></div>
             
           </div>
         </section>
