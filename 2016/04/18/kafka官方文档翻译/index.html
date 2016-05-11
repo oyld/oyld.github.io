@@ -86,7 +86,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/04/18/kafka官方文档翻译/index.html">
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
 <meta property="og:description" content="本篇为Kafka官方文档翻译，加入了自己的理解。">
-<meta property="og:updated_time" content="2016-05-09T13:05:32.000Z">
+<meta property="og:updated_time" content="2016-05-11T11:22:39.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kafka官方文档翻译">
 <meta name="twitter:description" content="本篇为Kafka官方文档翻译，加入了自己的理解。">
@@ -268,8 +268,11 @@
 
       
         <p>本篇为Kafka官方文档翻译，加入了自己的理解。<br><a id="more"></a></p>
+<h2 id="4-4-The-Producer"><a href="#4-4-The-Producer" class="headerlink" title="4.4 The Producer"></a>4.4 The Producer</h2><h3 id="Load-balancing"><a href="#Load-balancing" class="headerlink" title="Load balancing"></a>Load balancing</h3><p>Producer将数据直接发送给partition对应的leader，中间没有其它层。为了帮助producer完成发送，Kafka节点能够返回元数据给producer，内容包括哪些broker存活，topic的各个partition的leader是谁，以便producer将数据发送到正确的节点上。</p>
+<p>Client端决定将数据发送到哪些partition。这可以通过随机算法或根据语义分区函数（semantic partitioning function）来定位partition。我们开放了语义分区相关的接口，让用户根据key映射partition（分区函数可以通过配置修改）。例如，key是用户ID，那么同一个用户的所有数据会打到同一个partition上，这反过来允许consumer对它们的消费做局部性假设（locality assumptions）。这样的partition分配策略允许consumer对局部敏感（locality-sensitive）的数据进行处理。</p>
+<h3 id="Asynchronous-send"><a href="#Asynchronous-send" class="headerlink" title="Asynchronous send"></a>Asynchronous send</h3><p>Batching是提升性能的关键点。Kafka producer可以把数据聚集在内存中，然后一次性在一个request中发出去。可以设置最大聚集量和最大等待时间（例如64k或10ms）。Producer积累的数据越多，broker就具有更少的I/O次数，但一次I/O传输的数据量会更多。这一配置提供了一个在增大延迟和提高吞吐量之间的权衡。</p>
 <h2 id="4-5-The-Consumer"><a href="#4-5-The-Consumer" class="headerlink" title="4.5 The Consumer"></a>4.5 The Consumer</h2><p>Consumer通过发送fetch请求来获取数据。Consumer在请求中指定log的offset，然后就能够收到从这个offset开始的数据了。Consumer对offset拥有控制权，因此可以通过操控offset来重复消费。</p>
-<h3 id="Push-vs-pull"><a href="#Push-vs-pull" class="headerlink" title="Push vs. pull"></a>Push vs. pull</h3><p>我们需要考虑的一个首要问题是consumer是从broker拉（pull）数据还是broker推（push）数据到consumer。在这方面，Kafka遵从传统的设计，和大多数消息系统一样，producer push数据，consumer pull数据。但一些日志系统，例如Scribe和Apache Flume，是讲数据push到下游的。不论是push还是pull，都有各自的优缺点。对于基于push的系统，当consumer类型不同时，broker难以对不同consumer传输速率进行控制。Consumer的目标是尽可能快的消费到数据，但在基于push的系统中，当消费速率落后于生产速率时，consumer会被压垮（overwhelmed），这本质上是一种DOS攻击。相反，在基于pull的系统中，consumer能够根据自身情况调整消费速率。这种方法能够缓和退避协议（backoff protocol）带来的复杂性，退避协议通过consumer反馈是否过载来让broker控制传输速率。基于上述原因，我们选择基于pull的模型。</p>
+<h3 id="Push-vs-pull"><a href="#Push-vs-pull" class="headerlink" title="Push vs. pull"></a>Push vs. pull</h3><p>我们需要考虑的一个首要问题是consumer是从broker拉（pull）数据还是broker推（push）数据到consumer。在这方面，Kafka遵从传统的设计，和大多数消息系统一样，producer push数据，consumer pull数据。但一些日志系统，例如Scribe和Apache Flume，是讲数据push到下游的。不论是push还是pull，都有各自的优缺点。对于基于push的系统，当consumer类型不同时，broker难以对不同consumer传输速率进行控制。Consumer的目标是尽可能快的消费到数据，但在基于push的系统中，当消费速率落后于生产速率时，consumer会被压垮（overwhelmed），这本质上是一种DOS攻击。相反，在基于pull的系统中，consumer能够根据自身情况调整消费速率。这种方法能够缓和退避协议（backoff protocol）带来的复杂性，退避协议通过consumer反馈是否过载来让broker控制传输速率。基于上述原因，我们选择pull模型。</p>
 <p>基于pull系统的另一个优势是适合积累一定的数据后再传给consumer。在基于push的系统中，broker有两个选择：</p>
 <ol>
 <li>收到一条message就push给consumer</li>
@@ -287,12 +290,40 @@
 </ol>
 <p>还有一些其它棘手的问题需要解决，例如message发出后未收到consumer的响应。</p>
 <p>Kafka处理这些问题的方法有所不同，我们的topic被拆分成全序的partition，每一个partition在任何时候都只能被一个consumer消费。这意味着每个partition的消费位置仅仅是一个整数，即下一个将要消费message的offset。这使得关于消费情况的状态量非常小，每个partition只是一个数字。这些状态量能够定期的作为checkpointed被存储起来。相比于通过consumer返回响应，这种方法开销更小。</p>
+<blockquote>
+<p>也就是说，Kafka不会出现consumer争用message的情况，修改offset不需要上锁，减少了系统开销和复杂度。</p>
+</blockquote>
 <p>这种方法还有一个附带好处，consumer能够回滚offset并重复消费。这有悖于queue的传统概念，但给consumer带来了很多重要的特性。例如，consumer消费了部分数据后发现程序有bug，那么待bug修复后，consumer可以重新消费这些数据。</p>
 <h3 id="Offline-Data-Load"><a href="#Offline-Data-Load" class="headerlink" title="Offline Data Load"></a>Offline Data Load</h3><p>可伸缩的持久化（scalable persistence）允许consumer周期性地消费数据并将数据存储在离线系统中，例如Hadoop或关系型数据库。</p>
 <p>在Hadoop中，数据的加载可以并行化，加载动作被映射到不同task中，每一个task根据三元组（node，topic，partition）并行地加载数据。Hadoop负责管理task，重启失效的task而不会重复消费——它只是简单地重启task并从最初的offset开始消费。</p>
 <blockquote>
 <p>这里的意思是，partition的设计能够让Hadoop并行地从broker拉取数据；而持久化的设计能让consumer重新消费过去的数据。</p>
 </blockquote>
+<h2 id="4-6-Message-Delivery-Semantics"><a href="#4-6-Message-Delivery-Semantics" class="headerlink" title="4.6 Message Delivery Semantics"></a>4.6 Message Delivery Semantics</h2><p>现在我们理解了一些关于producer和consumer如何工作的知识，现在我们来讨论一下Kafka在producer和consumer之间提供的语义保证（semantic guarantees）。存在多种消息传递保证（message delivery guarantees）：</p>
+<ul>
+<li>At most once——消息可能丢，但不会重复递送</li>
+<li>At least once——消息绝不会丢，但有可能会重复递送</li>
+<li>Exactly once——人们真正想要的，每条消息仅递送一次</li>
+</ul>
+<p>值得注意的是，这被分解为两个问题：</p>
+<ol>
+<li>消息发送后的持久化保证（durability guarantees）</li>
+<li>消费数据时的保证</li>
+</ol>
+<p>一些系统声称提供exactly once语义，但阅读细则后发现，这些声称都具有误导性（即他们没有考虑consumer或producer会失效的情况，或者存在多个consumer的情况，或者写到磁盘的数据可能丢失的情况）。</p>
+<p>Kafka关于这方面的语义是很直截了当的。当发送message时，message存在被提交（committed）这一概念。一旦message被提交，只要相关的broker依然存活（alive），那么它就不会丢失。存活的定义，以及需要处理哪些类型的失效等内容将在下一节描述。现在我们假设broker是完美的，没有数据丢失，然后试着去理解producer和consumer提供的消息传递保证。如果producer发送一条message时遇到网络故障，它无法确定故障是在message提交之前还是之后发生的。这类似于以autogenerated key方式向数据库插入数据时的语义。</p>
+<p>上面描述的不是最强级别的递送语义。即使我们不能确定网络故障时发生了什么，但可以通过让producer产生一个有序的主键（primary key）序列，在故障发生时重试发送request，实现幂等性（idempotent，有了key，producer重复发送同一条message，broker会根据key去重）。在一个server很有可能失效的复制系统中（replicated system），要添加幂等特性并非那么简单。<strong>拥有幂等性之后，producer可以超时重试，直到收到message成功提交的响应，如果是这样的话，发送就能够实现exactly once语义。在未来，Kafka想实现这一功能</strong>。</p>
+<p>不是所有的使用场景都需要这么强的保证。对于延迟敏感的使用场景，我们允许producer设置持久化级别。Producer可以等待message被提交再返回，也可以配置为完全异步发送，或者只等待leader保存完message就返回，不必等待同步到follower。</p>
+<p>现在我们以consumer的视角看递送语义。所有的replica拥有相同的log和offset，consumer控制消费位置。如果consumer不出故障，那么offset可以始终保存在内存里，但如果consumer失效，我们希望相关partition能够被其它consumer接管，并从正确的位置开始消费。我们假设consumer要读取一些message，那么就如何处理message和如何更新offset，有一些不同的情况：</p>
+<ol>
+<li>Consumer取到数据，在本地保存offset，然后处理数据。这种情况下，consumer有可能在保存offset之后，保存处理结果之前崩溃（注意这里有两次I/O操作），那么之后的consumer会从保存点继续消费，但这个offset之前的若干message还没有进行处理的。这种情况对应at most once语义，即consumer在崩溃时还有数据未处理，之后也不会被处理了。</li>
+<li>Consumer取到数据，处理，最后记录offset。这种情况下，consumer有可能在处理完数据之后，保存offset之前崩溃，那么之后的consumer会读取到部分已处理的数据。这种情况对应at least once语义。其实很多情况下每条message都对应一个主键，所以更新操作是幂等的（收到相同的message，覆盖之前的处理结果即可）。</li>
+<li>Exactly once语义。这里的难点不在于服务端的消息系统，而是要就各个consumer看到的offet达成一致，即要保存一个完全正确的offset值。<strong>要达成这一目的，最简单的方法就是在保存offset和保存数据处理结果之间引入两阶段提交协议<a href="https://zh.wikipedia.org/wiki/%E4%BA%8C%E9%98%B6%E6%AE%B5%E6%8F%90%E4%BA%A4" target="_blank" rel="external">two-phase commit</a></strong>。但consumer可以通过更加简单的方法来处理，把offset作为处理结果的一部分存储在相同的地方。这种方法要更好一些，因为和consumer交互的后端系统可能不支持两阶段提交协议。作为正面例子，Hadoop ETL系统将打入HDFS的数据和对应的offset都存储在HDFS中，因此保证了数据和offset要么同时保存，要么都不保存。我们和许多数据系统一样，要求这种强语义，实现在message没有主键的情况消除重复（deduplication）数据的读取。</li>
+</ol>
+<blockquote>
+<p>这里的两阶段提交的流程：prepare阶段，consumer（作为协调者）将数据丢给处理系统（作为参与者），处理完后结果返回consumer；commit阶段，consumer根据返回的结果发出commit或rollback请求后再次等待，处理系统会真正将处理完的数据写入磁盘，然后返回一个ack，consumer收到响应后根据响应内容决定是否保存offset。使用两阶段提交协议把因为机器故障而造成不一致的概率降到了较低的水平。</p>
+</blockquote>
+<p>对于producer来说，Kafka默认是at least once递送语义，用户可以禁用失败重试选项来达到at most once递送语义，consumer也可以在处理数据之前保存offset来达到at most once递送语义。实现exactly-once递送语义一般需要下游存储系统的配合，但Kafka使用的方法更加直接。</p>
 <h2 id="4-7-Replication"><a href="#4-7-Replication" class="headerlink" title="4.7 Replication"></a>4.7 Replication</h2><p>Kafka根据配置文件中的设置对topic的partition进行复制，你可以给每个topic设置不同的的复制因子（replication factor）。Replication机制能够实现自动故障转移，使得一台server宕机后消息仍然可用。</p>
 <p>其它的消息系统也提供了复制功能，但是，就我们的观点而言，这些都是附加的功能，没有得到广泛应用，其最大的缺点在于：<strong>从机是不活跃的（inactive），吞吐量受到很大影响，需要依赖繁琐的手动配置等（例如ActiveMQ，在shared nothing存储模式下，master挂了之后，需要管理员人工介入启动新master）</strong>。Kafka对replication的默认策略是：topic在创建时replication factor为1，即不进行备份。</p>
 <p>复制是以partition作为最小单位的。在没有broker失效的情况下，每一个partition在集群中都有唯一的broker作为leader以及0个或多个broker作为follower。一个partition的备份数量（包括leader上的那份）即备份因子。<strong>客户端的读写请求均通过leader</strong>。通常，partition的数量会大于broker，leader的角色将均匀分配到集群的各个broker上。Follower上的log数据和leader上是相同的——相同的offset以及相同的message顺序，当然，在leader末尾的message还未来得及同步到follow时，两者的数据是不一致的。</p>
@@ -499,7 +530,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-The-Consumer"><span class="nav-number">1.</span> <span class="nav-text">4.5 The Consumer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Push-vs-pull"><span class="nav-number">1.1.</span> <span class="nav-text">Push vs. pull</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Consumer-Position"><span class="nav-number">1.2.</span> <span class="nav-text">Consumer Position</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Offline-Data-Load"><span class="nav-number">1.3.</span> <span class="nav-text">Offline Data Load</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-7-Replication"><span class="nav-number">2.</span> <span class="nav-text">4.7 Replication</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Replicated-Logs-Quorums-ISRs-and-State-Machines"><span class="nav-number">2.1.</span> <span class="nav-text">Replicated Logs: Quorums, ISRs, and State Machines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unclean-leader-election-What-if-they-all-die"><span class="nav-number">2.2.</span> <span class="nav-text">Unclean leader election: What if they all die?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Availability-and-Durability-Guarantees"><span class="nav-number">2.3.</span> <span class="nav-text">Availability and Durability Guarantees</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Replica-Management"><span class="nav-number">2.4.</span> <span class="nav-text">Replica Management</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-4-The-Producer"><span class="nav-number">1.</span> <span class="nav-text">4.4 The Producer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Load-balancing"><span class="nav-number">1.1.</span> <span class="nav-text">Load balancing</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Asynchronous-send"><span class="nav-number">1.2.</span> <span class="nav-text">Asynchronous send</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-5-The-Consumer"><span class="nav-number">2.</span> <span class="nav-text">4.5 The Consumer</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Push-vs-pull"><span class="nav-number">2.1.</span> <span class="nav-text">Push vs. pull</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Consumer-Position"><span class="nav-number">2.2.</span> <span class="nav-text">Consumer Position</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Offline-Data-Load"><span class="nav-number">2.3.</span> <span class="nav-text">Offline Data Load</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-6-Message-Delivery-Semantics"><span class="nav-number">3.</span> <span class="nav-text">4.6 Message Delivery Semantics</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-7-Replication"><span class="nav-number">4.</span> <span class="nav-text">4.7 Replication</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Replicated-Logs-Quorums-ISRs-and-State-Machines"><span class="nav-number">4.1.</span> <span class="nav-text">Replicated Logs: Quorums, ISRs, and State Machines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unclean-leader-election-What-if-they-all-die"><span class="nav-number">4.2.</span> <span class="nav-text">Unclean leader election: What if they all die?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Availability-and-Durability-Guarantees"><span class="nav-number">4.3.</span> <span class="nav-text">Availability and Durability Guarantees</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Replica-Management"><span class="nav-number">4.4.</span> <span class="nav-text">Replica Management</span></a></li></ol></li></ol></div>
             
           </div>
         </section>
