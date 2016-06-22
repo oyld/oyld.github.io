@@ -230,7 +230,7 @@
               
                 
                 <a class="post-title-link" href="/2016/06/22/ansible/" itemprop="url">
-                  未命名
+                  Ansible批量部署
                 </a>
               
             
@@ -243,7 +243,7 @@
               <i class="fa fa-calendar-o"></i>
             </span>
             <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-06-22T20:36:53+08:00" content="2016-06-22">
+            <time itemprop="dateCreated" datetime="2016-06-22T20:44:20+08:00" content="2016-06-22">
               2016-06-22
             </time>
           </span>
@@ -272,27 +272,12 @@
 
       
         
-          
-            <h3 id="Ansible批量部署"><a href="#Ansible批量部署" class="headerlink" title="Ansible批量部署"></a>Ansible批量部署</h3><p>最近部署了几个比较大的QBus集群，由于需要部署的机器数量有点多，手动一台一台部署太麻烦，所以简单学了一下Ansible，感觉还不错，简单记录一下操作步骤。<br>首先在本机生成公钥：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
-<p>然后将公钥拷贝到远端机器：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -i ~/.ssh/id_rsa.pub hostname</span><br></pre></td></tr></table></figure>
-<p>使用<strong>ssh-copy-id</strong>比直接<strong>scp</strong>要方便许多，它能够直接将公钥文件拷贝到远端机器的<strong>~/.ssh</strong>目录下。现在登录远端机器时就不用输密码了。</p>
-<p>接下来设置Ansible的配置文件：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ansible/hosts</span><br></pre></td></tr></table></figure>
-<p>格式如下：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[group1]</span><br><span class="line">hostname1</span><br><span class="line">hostname2</span><br><span class="line">[group2]</span><br><span class="line">hostname3</span><br><span class="line">hostname4</span><br></pre></td></tr></table></figure>
-<p>中括号中设置组名，之后的批量操作就可以对某个组内的远端机器进行了。设置好远端机器的hostname并分组后，可以用如下命令测试测试：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ansible group1 <span class="_">-a</span> <span class="string">'whoami'</span></span><br><span class="line">ansible group2 <span class="_">-a</span> <span class="string">'whoami'</span> --sudo --ask-sudo-pass</span><br></pre></td></tr></table></figure>
-<p>第一条命令用普通用户身份执行，返回的结果是当前用户名；第二条命令用<strong>root</strong>身份执行，返回的结果是<strong>root</strong>。<br>用简单的命令测试成功后，需要进行正式的部署操作了，这时需要使用<strong>ansible-playbook</strong>，把需要操作的命令放入一个yml文件中，然后传给<strong>ansible-playbook</strong>，yml文件中的命令就能批量执行了。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim playbook.yml</span><br></pre></td></tr></table></figure>
-<p>yml文件格式如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">- hosts: group1</span><br><span class="line">  become: yes</span><br><span class="line">  become_user: root</span><br><span class="line">  tasks:</span><br><span class="line">    - name: download</span><br><span class="line">      shell: wget http://URL/qbus2/server/deploy/install.sh &amp;&amp; wget http://URL/qbus2/server/deploy/autorun.sh</span><br><span class="line">      register: out1</span><br><span class="line">    - name: install</span><br><span class="line">      shell: sh ./autorun.sh -c &lt;集群名&gt; -b &lt;ip&gt;:9092,&lt;ip&gt;:9092,&lt;ip&gt;:9092 <span class="_">-l</span> /data/kafka <span class="_">-d</span> /data/zookeeper</span><br><span class="line">      register: out2</span><br><span class="line"></span><br><span class="line">    - debug: msg=<span class="string">"&#123;&#123; out1.stdout &#125;&#125;"</span></span><br><span class="line">    - debug: msg=<span class="string">"&#123;&#123; out2.stdout &#125;&#125;"</span></span><br></pre></td></tr></table></figure>
-<p><strong>playbook.yml</strong>里主要有两个task，第一个task是下载部署脚本，第二个task就开始执行安装了。写好<strong>playbook.yml</strong>之后，我们就来执行它：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ansible-playbook playbook.yml --ask-sudo-pass</span><br></pre></td></tr></table></figure>
-<p>这样，group1里的所有远端机器都能以root身份执行上面两个task中的命令了，执行完之后，QBus就部署成功了。</p>
-
-          
+          <p>Ansible批量部署QBus服务。<br>
+          <div class="post-more-link text-center">
+            <a class="btn" href="/2016/06/22/ansible/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
         
       
     </div>
@@ -656,7 +641,7 @@
           
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">1</span>
+                <span class="site-state-item-count">2</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>
