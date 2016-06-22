@@ -80,15 +80,28 @@
 
 
 
-<meta name="description" content="每个认真生活的人，都值得被认真对待。">
-<meta property="og:type" content="website">
+<meta name="description" content="Ansible批量部署最近部署了几个比较大的QBus集群，由于需要部署的机器数量有点多，手动一台一台部署太麻烦，所以简单学了一下Ansible，感觉还不错，简单记录一下操作步骤。首先在本机生成公钥：
+1ssh-keygen -t rsa
+然后将公钥拷贝到远端机器：
+1ssh-copy-id -i ~/.ssh/id_rsa.pub hostname
+使用ssh-copy-id比直接scp要方便许多">
+<meta property="og:type" content="article">
 <meta property="og:title" content="Stay hungry. Stay foolish.">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta property="og:url" content="http://yoursite.com/2016/06/22/ansible/index.html">
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
-<meta property="og:description" content="每个认真生活的人，都值得被认真对待。">
+<meta property="og:description" content="Ansible批量部署最近部署了几个比较大的QBus集群，由于需要部署的机器数量有点多，手动一台一台部署太麻烦，所以简单学了一下Ansible，感觉还不错，简单记录一下操作步骤。首先在本机生成公钥：
+1ssh-keygen -t rsa
+然后将公钥拷贝到远端机器：
+1ssh-copy-id -i ~/.ssh/id_rsa.pub hostname
+使用ssh-copy-id比直接scp要方便许多">
+<meta property="og:updated_time" content="2016-06-22T12:38:05.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Stay hungry. Stay foolish.">
-<meta name="twitter:description" content="每个认真生活的人，都值得被认真对待。">
+<meta name="twitter:description" content="Ansible批量部署最近部署了几个比较大的QBus集群，由于需要部署的机器数量有点多，手动一台一台部署太麻烦，所以简单学了一下Ansible，感觉还不错，简单记录一下操作步骤。首先在本机生成公钥：
+1ssh-keygen -t rsa
+然后将公钥拷贝到远端机器：
+1ssh-copy-id -i ~/.ssh/id_rsa.pub hostname
+使用ssh-copy-id比直接scp要方便许多">
 
 
 
@@ -106,7 +119,7 @@
   };
 </script>
 
-  <title> Stay hungry. Stay foolish. </title>
+  <title>  | Stay hungry. Stay foolish. </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -127,9 +140,7 @@
     
   
 
-  <div class="container one-collumn sidebar-position-left 
-   page-home 
- ">
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -206,9 +217,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
   
@@ -229,9 +240,6 @@
             
               
                 
-                <a class="post-title-link" href="/2016/06/22/ansible/" itemprop="url">
-                  未命名
-                </a>
               
             
           </h1>
@@ -271,9 +279,7 @@
       
 
       
-        
-          
-            <h3 id="Ansible批量部署"><a href="#Ansible批量部署" class="headerlink" title="Ansible批量部署"></a>Ansible批量部署</h3><p>最近部署了几个比较大的QBus集群，由于需要部署的机器数量有点多，手动一台一台部署太麻烦，所以简单学了一下Ansible，感觉还不错，简单记录一下操作步骤。<br>首先在本机生成公钥：</p>
+        <h3 id="Ansible批量部署"><a href="#Ansible批量部署" class="headerlink" title="Ansible批量部署"></a>Ansible批量部署</h3><p>最近部署了几个比较大的QBus集群，由于需要部署的机器数量有点多，手动一台一台部署太麻烦，所以简单学了一下Ansible，感觉还不错，简单记录一下操作步骤。<br>首先在本机生成公钥：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
 <p>然后将公钥拷贝到远端机器：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -i ~/.ssh/id_rsa.pub hostname</span><br></pre></td></tr></table></figure>
@@ -292,16 +298,18 @@
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ansible-playbook playbook.yml --ask-sudo-pass</span><br></pre></td></tr></table></figure>
 <p>这样，group1里的所有远端机器都能以root身份执行上面两个task中的命令了，执行完之后，QBus就部署成功了。</p>
 
-          
-        
       
     </div>
     
     <div>
       
+        
+      
     </div>
 
     <div>
+      
+        
       
     </div>
 
@@ -309,305 +317,32 @@
       
 
       
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
+              <a href="/2016/04/22/ActiveMQ/" rel="next" title="ActiveMQ">
+                <i class="fa fa-chevron-left"></i> ActiveMQ
+              </a>
             
-              
-                
-                <a class="post-title-link" href="/2016/04/22/ActiveMQ/" itemprop="url">
-                  ActiveMQ
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-04-22T17:55:24+08:00" content="2016-04-22">
-              2016-04-22
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>本篇为ActiveMQ功能概览，内容来源于ActiveMQ官方文档和<em>ActiveMQ in Action</em>。<br>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/04/22/ActiveMQ/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
           </div>
-        
-      
-    </div>
-    
-    <div>
-      
-    </div>
 
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
+          <div class="post-nav-prev post-nav-item">
             
-            
-              
-                
-                <a class="post-title-link" href="/2016/04/18/kafka官方文档翻译/" itemprop="url">
-                  Kafka官方文档翻译
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-04-18T09:29:27+08:00" content="2016-04-18">
-              2016-04-18
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
-        </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>本篇为Kafka官方文档翻译，加入了自己的理解。<br>
-          <div class="post-more-link text-center">
-            <a class="btn" href="/2016/04/18/kafka官方文档翻译/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
           </div>
-        
-      
-    </div>
-    
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-
-
-    
-      
-
-  
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-            
-            
-              
-                
-                <a class="post-title-link" href="/2016/04/17/hello/" itemprop="url">
-                  First Blood
-                </a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            <span class="post-meta-item-icon">
-              <i class="fa fa-calendar-o"></i>
-            </span>
-            <span class="post-meta-item-text">发表于</span>
-            <time itemprop="dateCreated" datetime="2016-04-17T18:48:33+08:00" content="2016-04-17">
-              2016-04-17
-            </time>
-          </span>
-
-          
-
-          
-            
-          
-
-          
-
-          
-          
-
-          
         </div>
-      </header>
-    
-
-
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>这是我的第一篇文章，关于我的 <a href="https://oyld.github.io/" target="_blank" rel="external">blog</a>。本博客框架采用 <a href="https://hexo.io/zh-cn/" target="_blank" rel="external">Hexo</a>，主题采用 <a href="http://theme-next.iissnan.com/" target="_blank" rel="external">NexT</a>.</p>
-
-          
-        
-      
-    </div>
-    
-    <div>
-      
-    </div>
-
-    <div>
-      
-    </div>
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -615,6 +350,10 @@
 
 
           
+  <div class="comments" id="comments">
+    
+  </div>
+
 
         </div>
         
@@ -634,8 +373,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel  sidebar-panel-active ">
+      <section class="site-overview sidebar-panel ">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.jpeg"
@@ -678,6 +426,17 @@
 
       </section>
 
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Ansible批量部署"><span class="nav-number">1.</span> <span class="nav-text">Ansible批量部署</span></a></li></ol></div>
+            
+          </div>
+        </section>
       
 
     </div>
@@ -774,6 +533,10 @@
   
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
 
   
 
