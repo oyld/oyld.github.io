@@ -86,7 +86,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/06/22/ansible/index.html">
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
 <meta property="og:description" content="Ansible批量部署QBus服务。">
-<meta property="og:updated_time" content="2016-06-22T12:44:32.000Z">
+<meta property="og:updated_time" content="2016-06-29T11:08:08.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ansible批量部署">
 <meta name="twitter:description" content="Ansible批量部署QBus服务。">
@@ -268,7 +268,7 @@
 
       
         <p>Ansible批量部署QBus服务。<br><a id="more"></a></p>
-<h3 id="Ansible批量部署"><a href="#Ansible批量部署" class="headerlink" title="Ansible批量部署"></a>Ansible批量部署</h3><p>最近部署了几个比较大的QBus集群，由于需要部署的机器数量有点多，手动一台一台部署太麻烦，所以简单学了一下Ansible，感觉还不错，简单记录一下操作步骤。<br>首先在本机生成公钥：</p>
+<p>最近部署了几个比较大的QBus集群，由于需要部署的机器数量有点多，手动一台一台部署太麻烦，所以简单学了一下Ansible，感觉还不错，简单记录一下操作步骤。<br>首先在本机生成公钥：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
 <p>然后将公钥拷贝到远端机器：</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -i ~/.ssh/id_rsa.pub hostname</span><br></pre></td></tr></table></figure>
@@ -322,6 +322,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/30/Logstash源码分析/" rel="prev" title="Logstash源码分析">
+                Logstash源码分析 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -389,7 +393,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-count">5</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
@@ -399,7 +403,7 @@
           
             <div class="site-state-item site-state-tags">
               
-                <span class="site-state-item-count">2</span>
+                <span class="site-state-item-count">3</span>
                 <span class="site-state-item-name">标签</span>
               
             </div>
@@ -428,7 +432,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Ansible批量部署"><span class="nav-number">1.</span> <span class="nav-text">Ansible批量部署</span></a></li></ol></div>
+              <p class="post-toc-empty">此文章未包含目录</p>
             
           </div>
         </section>

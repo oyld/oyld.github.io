@@ -1,0 +1,624 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="源码分析," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="结合打log的方式来分析Logstash源码分析。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Logstash源码分析">
+<meta property="og:url" content="http://yoursite.com/2016/06/30/Logstash源码分析/index.html">
+<meta property="og:site_name" content="Stay hungry. Stay foolish.">
+<meta property="og:description" content="结合打log的方式来分析Logstash源码分析。">
+<meta property="og:image" content="http://yoursite.com/images/logstash/topic.png">
+<meta property="og:updated_time" content="2016-06-30T13:05:33.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Logstash源码分析">
+<meta name="twitter:description" content="结合打log的方式来分析Logstash源码分析。">
+<meta name="twitter:image" content="http://yoursite.com/images/logstash/topic.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title> Logstash源码分析 | Stay hungry. Stay foolish. </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Stay hungry. Stay foolish.</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Logstash源码分析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-06-30T21:05:00+08:00" content="2016-06-30">
+              2016-06-30
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>结合打log的方式来分析Logstash源码分析。<br><a id="more"></a></p>
+<p>源码：<a href="https://github.com/elastic/logstash" target="_blank" rel="external">GitHub</a><br>版本：2.3.1</p>
+<p>QBus2.0的日志收集部分用的是Logstash，在内部修改了部分代码，添加了如下功能：</p>
+<ol>
+<li>实现了自动化部署</li>
+<li>动态修改配置</li>
+<li>实时上传收集情况</li>
+<li>多集群发送</li>
+<li>按topic启停收集</li>
+</ol>
+<p>目前公司内部已部署了上千台台经过我们修改的Logstash，而且数量还在持续增长。</p>
+<p>使用Logstash有一段时间了，现在需要看看源码来总结一下了。Logstash使用Ruby写的，运行于JRuby之上，使用之前担心JVM太重，会影响前端收集机器的负载，但从线上运行情况来看，并没有出现类似的问题。除了堆积的日志在刚开始收集时，CPU的负载有点高之外，之后的平稳收集阶段，占用系统的资源是非常少的，Logstash本身运行的也相当稳定。</p>
+<p>进入源码根目录，启动Logstash：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/logstash -f test.conf</span><br></pre></td></tr></table></figure>
+<p>其中<code>test.conf</code>是配置文件。程序的总入口就是<code>bin/logstash</code>这个脚本了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">. &quot;$(cd `dirname $SOURCEPATH`/..; pwd)/bin/logstash.lib.sh&quot;</span><br><span class="line">setup</span><br><span class="line"></span><br><span class="line">case $1 in</span><br><span class="line">  -*)</span><br><span class="line">    ruby_exec &quot;$&#123;LOGSTASH_HOME&#125;/lib/bootstrap/environment.rb&quot; &quot;logstash/runner.rb&quot; &quot;agent&quot; &quot;$@&quot;</span><br><span class="line">    ;;</span><br><span class="line">  *)</span><br><span class="line">    ruby_exec &quot;$&#123;LOGSTASH_HOME&#125;/lib/bootstrap/environment.rb&quot; &quot;logstash/runner.rb&quot; &quot;$@&quot;</span><br><span class="line">    ;;</span><br><span class="line">esac</span><br></pre></td></tr></table></figure>
+<p><code>bin/logstash</code>首先把同目录下的<code>bin/logstash.lib.sh</code>脚本包含进来，然后执行里面的<code>setup</code>函数，这个函数设置了一些Ruby和Java的运行时环境。回到<code>bin/logstash</code>，由于我们传入的参数是<code>-f</code>，所以匹配第一个case。其实，如果我们这样启动Logstash：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/logstash</span><br></pre></td></tr></table></figure>
+<p>那么脚本会走第二个case，最终程序会print usage并退出。<code>ruby_exec</code>也是<code>bin/logstash.lib.sh</code>中的一个函数，内部最终会调用<code>exec</code>执行Ruby脚本<code>environment.rb</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vendor/jruby/bin/jruby $(jruby_opts) &quot;-J$HEAP_DUMP_PATH&quot; &quot;$&#123;LOGSTASH_HOME&#125;/lib/bootstrap/environment.rb&quot; &quot;logstash/runner.rb&quot; &quot;agent&quot; &quot;-f test.conf&quot;</span><br></pre></td></tr></table></figure>
+<p><code>$(jruby_opts)</code>和<code>&quot;-J$HEAP_DUMP_PATH&quot;</code>都是Java相关的一些启动配置。到这里，程序就从shell跳到了Ruby，<code>environment.rb</code>是它执行的第一个Ruby程序。接下来看看<code>environment.rb</code>做了什么事：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">if $0 == __FILE__</span><br><span class="line">  LogStash::Bundler.setup!(&#123;:without =&gt; [:build, :development]&#125;)  ---  设置程序相关路径，例如gem包的路径等</span><br><span class="line">  require ARGV.shift  ---  require &quot;logstash/runner.rb&quot;</span><br><span class="line">  LogStash::Runner.new.main(ARGV)  ---  LogStash::Runner.new.main([&quot;agent&quot;, &quot;-f&quot;, &quot;test.conf&quot;])</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p><code>environment.rb</code>做了一些环境相关的设置，然后调用<code>class LogStash::Runner</code>的<code>main</code>函数。由于<code>class LogStash::Runner</code>没有定义构造函数，所以直接来看<code>main</code>函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">def main(args)</span><br><span class="line">    require &quot;logstash/util&quot;</span><br><span class="line">    require &quot;logstash/util/java_version&quot;</span><br><span class="line">    require &quot;stud/trap&quot;</span><br><span class="line">    require &quot;stud/task&quot;</span><br><span class="line">    @startup_interruption_trap = Stud::trap(&quot;INT&quot;) &#123; puts &quot;Interrupted&quot;; exit 0 &#125;</span><br><span class="line"></span><br><span class="line">    LogStash::Util::set_thread_name(self.class.name)</span><br><span class="line"></span><br><span class="line">    puts RUBY_VERSION</span><br><span class="line">    if RUBY_VERSION &lt; &quot;1.9.2&quot;</span><br><span class="line">      $stderr.puts &quot;Ruby 1.9.2 or later is required. (You are running: &quot; + RUBY_VERSION + &quot;)&quot;</span><br><span class="line">      return 1</span><br><span class="line">    end</span><br><span class="line"></span><br><span class="line">    # Print a warning to STDERR for bad java versions</span><br><span class="line">    LogStash::Util::JavaVersion.warn_on_bad_java_version</span><br><span class="line"></span><br><span class="line">    Stud::untrap(&quot;INT&quot;, @startup_interruption_trap)</span><br><span class="line"></span><br><span class="line">    task = run(args)</span><br><span class="line">    exit(task.wait)</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p><code>main</code>函数设置线程名，判断Ruby版本，然后调用<code>run</code>函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">def run(args)</span><br><span class="line">	command = args.shift</span><br><span class="line">	commands = &#123;</span><br><span class="line">		...	</span><br><span class="line">		...</span><br><span class="line">		&quot;agent&quot; =&gt; lambda do</span><br><span class="line">        require &quot;logstash/agent&quot;</span><br><span class="line">        # Hack up a runner</span><br><span class="line">        agent = LogStash::Agent.new(&quot;/bin/logstash agent&quot;, $0)</span><br><span class="line">        begin</span><br><span class="line">          agent.parse(args)</span><br><span class="line">          ...</span><br><span class="line">        end</span><br><span class="line"></span><br><span class="line">        return agent.execute</span><br><span class="line">      end</span><br><span class="line">    &#125; # commands</span><br><span class="line">    </span><br><span class="line">    if commands.include?(command)</span><br><span class="line">      return Stud::Task.new &#123; commands[command].call &#125;</span><br><span class="line">    else</span><br><span class="line">      ...</span><br><span class="line">      return Stud::Task.new &#123; 1 &#125;</span><br><span class="line">    end</span><br><span class="line">  end</span><br></pre></td></tr></table></figure>
+<p><code>run</code>首先取出args的第一个元素，由于我们传入的参数是<code>[&quot;agent&quot;, &quot;-f&quot;, &quot;test.conf&quot;]</code>，因此<code>command = &quot;agent&quot;</code>，刚好匹配<code>commands</code>字典中的一项，于是走了<code>if</code>分支，把<code>agent</code>对应的block传给了<code>Stud::Task.new</code>。<strong>注意，<code>Stud::Task.new { commands[command].call }</code>这段代码没有调用block，而只是把<code>commands[command].call</code>作为一个block参数传给了<code>Stud::Task.new</code>，而这个blcok里面又是一个block，即<code>agent</code>对应的block。</strong>进入到<code>class Task</code>的构造函数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">def initialize(*args, &amp;block)</span><br><span class="line">  # A queue to receive the result of the block</span><br><span class="line">  # TODO(sissel): Don&apos;t use a queue, just store it in an instance variable.</span><br><span class="line">  @queue = Queue.new</span><br><span class="line"></span><br><span class="line">  @thread = Thread.new(@queue, *args) do |queue, *args|</span><br><span class="line">    begin</span><br><span class="line">      result = block.call(*args)</span><br><span class="line">      queue &lt;&lt; [:return, result]</span><br><span class="line">    rescue =&gt; e</span><br><span class="line">      queue &lt;&lt; [:exception, e]</span><br><span class="line">    end</span><br><span class="line">  end # thread</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p>构造函数内部开了一个子线程单独执行传入的block，然后父线程一路return，最终return到了<code>main</code>函数的<code>exit(task.wait)</code>处：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wait</span></span></span><br><span class="line">  @thread.join</span><br><span class="line">  reason, result = @queue.pop</span><br><span class="line">  ...</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>可以看出，主线程就是调用了刚才new出来的Task的wait方法，最终调用<code>@thread.join</code>等待子线程退出。这时主线程的任务已经完成，接下来的任务就交给了子线程和那个关键的block。</p>
+<p>总结一下程序的执行流：<code>environment.rb</code> =&gt; <code>runner.rb</code> =&gt; <code>task.rb</code> =&gt; <code>agent.rb</code>。</p>
+<p>刚才说到子线程调用了传入的block：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">result = block.call(*args)		<span class="comment"># args为空</span></span><br></pre></td></tr></table></figure>
+<p>那么我们就来看看block内部做了什么：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">lambda <span class="keyword">do</span></span><br><span class="line">  <span class="keyword">require</span> <span class="string">"logstash/agent"</span></span><br><span class="line">  <span class="comment"># Hack up a runner</span></span><br><span class="line">  agent = LogStash::Agent.new(<span class="string">"/bin/logstash agent"</span>, $0)</span><br><span class="line">  <span class="keyword">begin</span></span><br><span class="line">    agent.parse(args)</span><br><span class="line">    ...</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> agent.execute</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>Block内部做了三件事：</p>
+<ol>
+<li>new出了一个<code>LogStash::Agent</code>对象</li>
+<li>解析命令行参数<code>args</code>，即<code>[&quot;-f&quot;, &quot;test.conf&quot;]</code></li>
+<li>执行<code>execute</code>方法</li>
+</ol>
+<p><code>class LogStash::Agent</code>继承自<code>class Clamp::Command</code>，<a href="https://github.com/mdub/clamp" target="_blank" rel="external">Clamp</a>是一个Ruby命令行解析框架。继承<code>class Clamp::Command</code>，然后调用<code>parse</code>方法，我们的程序就能以一种非常专业的方式解析命令行参数了。解析出来的参数都存放在了<code>agent</code>对象中。<code>execute</code>函数流程如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">def execute</span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	register_pipeline(&quot;main&quot;, @pipeline_settings.merge(&#123;</span><br><span class="line">                          :config_string =&gt; config_string,</span><br><span class="line">                          :config_path =&gt; config_path,</span><br><span class="line">                          :debug_config =&gt; debug_config?,</span><br><span class="line">                          :allow_env =&gt; allow_env?</span><br><span class="line">                          &#125;))</span><br><span class="line"></span><br><span class="line">	start_pipelines</span><br><span class="line">	...</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+<p><code>execute</code>最主要的两个工作就是：</p>
+<ol>
+<li>在<code>agent</code>中注册一个名为<code>main</code>的<code>pipeline</code></li>
+<li>启动这个<code>pipeline</code></li>
+</ol>
+<p>首先来看看如何注册：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">register_pipeline</span><span class="params">(pipeline_id, settings)</span></span></span><br><span class="line">  pipeline = create_pipeline(settings.merge(<span class="symbol">:pipeline_id</span> =&gt; pipeline_id))</span><br><span class="line">  </span><br><span class="line">  ...</span><br><span class="line">  </span><br><span class="line">  @pipelines[pipeline_id] = pipeline</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>这里重点看一下<code>create_pipeline</code>函数，配置文件中的内容就是在这里被加载到程序中的。</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_pipeline</span><span class="params">(settings)</span></span></span><br><span class="line">  <span class="keyword">begin</span></span><br><span class="line">    config = fetch_config(settings)</span><br><span class="line">    ...</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">begin</span></span><br><span class="line">    LogStash::Pipeline.new(config, settings)</span><br><span class="line">    ...</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>参数<code>settings</code>中包含了我们传入的配置文件的路径，<code>fetch_config</code>就是根据这个路径读取配置文件中的内容，然后把整个内容返回给变量<code>config</code>。获得配置信息后，程序接着往下走，new出一个<code>Pipeline</code>。</p>
+<p><code>Pipeline</code>这个类的构造函数很有意思，它把传入的<code>config</code>字符串进行语法解析，生成另外一堆字符串，然后用<code>eval</code>方法将这些字符串转换为ruby的可执行代码。例如，在我的配置文件<code>test.conf</code>中，配置了一个<code>file</code>类型的<code>input plugin</code>和一个<code>stdout</code>类型的<code>output plugin</code>，那么<code>eval</code>之后会生成类似如下的代码：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@inputs = []</span><br><span class="line">@outputs = []</span><br><span class="line"></span><br><span class="line">@input_file_1 = plugin(<span class="string">"input"</span>, <span class="string">"file"</span>, LogStash::Util.hash_merge_many(&#123; <span class="string">"path"</span> =&gt; (<span class="string">"/tmp/log/*"</span>) &#125;, &#123; <span class="string">"start_position"</span> =&gt; (<span class="string">"beginning"</span>) &#125;, &#123; <span class="string">"ignore_older"</span> =&gt; <span class="number">0</span> &#125;, &#123; <span class="string">"type"</span> =&gt; (<span class="string">"log"</span>) &#125;))</span><br><span class="line">@inputs &lt;&lt; @input_file_1</span><br><span class="line"></span><br><span class="line">@output_stdout_2 = plugin(<span class="string">"output"</span>, <span class="string">"stdout"</span>)</span><br><span class="line">@outputs &lt;&lt; @output_stdout_2</span><br></pre></td></tr></table></figure>
+<p>这样就把用户需要的plugin结合到了代码中，将所有的plugin分类保存在<code>@inputs</code>和<code>@outpus</code>这样的数组中，之后启动时，会逐一对这些数组中的plugin进行操作。</p>
+<p><code>Pipeline</code>的构造函数中还进行许多其它的设置：初始化<code>mutex</code>、初始化原子变量、初始化<code>queue</code>。先忽略这些细节，回到<code>register_pipeline</code>。<code>Pipeline</code>生成后，把它存到<code>agent</code>的<code>@pipelines</code>hash中，<code>key</code>就是这个pipeline的名字：<code>main</code>。</p>
+<p>注册完了，之后来看看pipeline的启动：<code>start_pipelines</code>。这个函数很简单，就是遍历<code>@pipelines</code>中的每一个pipeline，分别调用<code>start_pipeline</code>去启动它们。代码中只有唯一的一个名为<code>main</code>的pipeline，因此只需要启动这个pipeline即可（不清楚在什么情况下会有多个pipeline）。看一看<code>start_pipeline</code>函数做了什么：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">start_pipeline</span><span class="params">(id)</span></span></span><br><span class="line">  pipeline = @pipelines[id]</span><br><span class="line">  ...    </span><br><span class="line">  Thread.new <span class="keyword">do</span></span><br><span class="line">    LogStash::Util.set_thread_name(<span class="string">"pipeline.<span class="subst">#&#123;id&#125;</span>"</span>)</span><br><span class="line">    <span class="keyword">begin</span></span><br><span class="line">      pipeline.run</span><br><span class="line">      ...</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">end</span>    </span><br><span class="line">  ...</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>内部也很简单：启动一个新线程去调用pipeline的run方法，然后主线程一路return，最终退到<code>execute</code>函数，进入一个while循环，直到程序退出，这个while循环里面做了什么，稍后讨论。现在关注pipeline的run方法：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">run</span></span></span><br><span class="line">  @thread = Thread.current</span><br><span class="line"></span><br><span class="line">  start_workers</span><br><span class="line"></span><br><span class="line">  transition_to_running</span><br><span class="line">  start_flusher <span class="comment"># Launches a non-blocking thread for flush events</span></span><br><span class="line">  wait_inputs</span><br><span class="line">  transition_to_stopped</span><br><span class="line"></span><br><span class="line">  shutdown_flusher</span><br><span class="line">  shutdown_workers</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>这里的重点是<code>start_workers</code>函数：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">start_workers</span></span></span><br><span class="line">  ...</span><br><span class="line">  <span class="keyword">begin</span></span><br><span class="line">    start_inputs</span><br><span class="line">    @outputs.each &#123;<span class="params">|o|</span> o.register &#125;</span><br><span class="line">    @filters.each &#123;<span class="params">|f|</span> f.register&#125;</span><br><span class="line"></span><br><span class="line">    pipeline_workers = safe_pipeline_worker_count</span><br><span class="line">    batch_size = @settings[<span class="symbol">:pipeline_batch_size</span>]</span><br><span class="line">    batch_delay = @settings[<span class="symbol">:pipeline_batch_delay</span>]</span><br><span class="line">    max_inflight = batch_size * pipeline_workers</span><br><span class="line">    </span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">    pipeline_workers.times <span class="keyword">do</span> <span class="params">|t|</span></span><br><span class="line">      @worker_threads &lt;&lt; Thread.new <span class="keyword">do</span></span><br><span class="line">        LogStash::Util.set_thread_name(<span class="string">"[<span class="subst">#&#123;pipeline_id&#125;</span>]&gt;worker<span class="subst">#&#123;t&#125;</span>"</span>)</span><br><span class="line">        worker_loop(batch_size, batch_delay)</span><br><span class="line">      <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">  <span class="keyword">ensure</span></span><br><span class="line">    @ready.make_true</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>开头的三行就是调用各个plugin的register方法了。output和filter都比较直观，直接调用register方法，而input稍微有一点不同。在<code>start_inputs</code>函数中，调用每一个input的register方法之后，还会调用它们的run方法，每个input一个线程单独执行，也就是说启动了input。关于input的线程数，在后面会说。执行input的run方法时，会传入pipeline对象中的一个变量<code>@input_queue</code>，这个东西很重要，它实际上是Java中的同步队列<code>java.util.concurrent.SynchronousQueue</code>，它是被所有input共用的。不同的input代码，只需要在各自的run方法实现中把数据塞入这个<code>@input_queue</code>即可，这个结构本身会保证同步。回到<code>start_workers</code>函数，所有plugin的register方法调用之后，会设置一些跟性能相关的参数：worker数（负责filter和output），一次返回数据块的大小，等待同步队列<code>@input_queue</code>时的最大等待时间等等，这些参数都是可以通过命令行参数配置的。设置完这些参数之后，pipeline会启动多个worker，一个线程对应一个worker，worker的工作在函数<code>worker_loop</code>中完成，看完这个函数，整个Logstash处理数据的流程就非常清晰了：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">worker_loop</span><span class="params">(batch_size, batch_delay)</span></span></span><br><span class="line">  running = <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> running</span><br><span class="line">    input_batch, signal = @input_queue_pop_mutex.synchronize &#123; take_batch(batch_size, batch_delay) &#125;</span><br><span class="line">    running = <span class="literal">false</span> <span class="keyword">if</span> signal == LogStash::SHUTDOWN</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    filtered_batch = filter_batch(input_batch)</span><br><span class="line"></span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    output_batch(filtered_batch)</span><br><span class="line"></span><br><span class="line">    inflight_batches_synchronize &#123; set_current_thread_inflight_batch(<span class="literal">nil</span>) &#125;</span><br><span class="line">  <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>这段代码大致的流程是这样的：</p>
+<ol>
+<li>调用<code>take_batch</code>从<code>@input_queue</code>中把数据取出来</li>
+<li>调用<code>filter_batch</code>对取出的数据进行过滤筛选</li>
+<li>调用<code>output_batch</code>把过滤后的数据发送给对应的output</li>
+</ol>
+<p>总结一下，Logstash内有一个agent，agent中有一个名为<code>main</code>的<code>pipeline</code>，可以认为event就在这个<code>pipeline</code>中流动，流向为</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">input -&gt; filter -&gt; output</span><br></pre></td></tr></table></figure>
+<p>如下图所示：</p>
+<p><img src="/images/logstash/topic.png" alt=""></p>
+<p>在pipeline内部，有多个worker线程协同工作，其中，input有自己独立的线程，每个input一个线程，从不同data source收集数据，而filter和output则有固定的线程数，这些线程同时从input收集的queue中取出数据，做过滤后，发往对应的output，最终到达data destination。</p>
+<p>这就是整个代码的框架，其中只涉及了核心部分，还有很多细节都没有提到，包括input、output代码中如何把数据读取上来，又如何发送到对应的目的地。由于Logstash集成的intput、filter、output实在是太多了，所以就不一一分析了。在QBus2.0中，input类型是file，output类型是Kafka，也就是将前端机上的日志文件发送到Kafka。</p>
+<p>经过测试，如果是要收集日志，使用file input时，将path放在同一个file块中，Logstash会用一个线程串行收集，但如果把path放到不同file块中，Logstash会用多个线程并行收集，线程数就是file块的数量。通过分析源码，发现Logstash会把同一个file块内的多个path合并，生成一个plugin放入<code>@inputs</code>这个数组中。同时，需要注意的是，如果在path中使用了正则表达式，那么在某个路径下匹配的所有文件，Logstash只会开一个线程去串行收集。</p>
+<p>综上所述，在资源较为紧张的机器上跑Logstash，并且收集的路径有很多，建议放在同一个file块中。在经过我们修改的Logstash配置文件中，一个path对应一个file块，并没有将多个path放入同一个file块中，这样是的用户能够在path级别进行设置，例如：收集path-1时，保持有序收集，5s轮询一次文件有无更新；收集path-2时，不需要有序收集，10s轮询一次文件有无更新。这样就必须把path-1和path-2分别放到不同的file块中。并且，为了实现更新配置自动化，我们的配置文件内容是由代码自动写入的，将相同配置的path合并到同一file块，这样的操作增加了代码的复杂度。</p>
+<p>注意，这只是针对input，根据<a href="https://www.elastic.co/guide/en/logstash/current/command-line-flags.html" target="_blank" rel="external">官方文档</a>的说明，output和filter的线程（worker）数量是由命令行参数<code>-w</code>设置的，默认为CPU数。</p>
+
+      
+    </div>
+    
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/源码分析/" rel="tag">#源码分析</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/22/ansible/" rel="next" title="Ansible批量部署">
+                <i class="fa fa-chevron-left"></i> Ansible批量部署
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Ouyang Liduo" />
+          <p class="site-author-name" itemprop="name">Ouyang Liduo</p>
+          <p class="site-description motion-element" itemprop="description">每个认真生活的人，都值得被认真对待。</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">5</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <p class="post-toc-empty">此文章未包含目录</p>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ouyang Liduo</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>
