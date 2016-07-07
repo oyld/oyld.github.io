@@ -87,7 +87,7 @@
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
 <meta property="og:description" content="结合打log的方式来分析Logstash源码分析。">
 <meta property="og:image" content="http://yoursite.com/images/logstash/topic.png">
-<meta property="og:updated_time" content="2016-07-02T01:33:37.000Z">
+<meta property="og:updated_time" content="2016-07-07T08:22:44.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Logstash源码分析">
 <meta name="twitter:description" content="结合打log的方式来分析Logstash源码分析。">
@@ -313,7 +313,7 @@
 <li>执行<code>execute</code>方法。</li>
 </ol>
 <p><code>execute</code>函数流程如下：</p>
-<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">execute</span></span></span><br><span class="line">	...</span><br><span class="line">	</span><br><span class="line">	register_pipeline(<span class="string">"main"</span>, @pipeline_settings.merge(&#123;</span><br><span class="line">                          <span class="symbol">:config_string</span> =&gt; config_string,</span><br><span class="line">                          <span class="symbol">:config_path</span> =&gt; config_path,</span><br><span class="line">                          <span class="symbol">:debug_config</span> =&gt; debug_config?,</span><br><span class="line">                          <span class="symbol">:allow_env</span> =&gt; allow_env?</span><br><span class="line">                          &#125;))</span><br><span class="line"></span><br><span class="line">	start_pipelines</span><br><span class="line">	...</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">execute</span></span></span><br><span class="line">  ...</span><br><span class="line"></span><br><span class="line">  register_pipeline(<span class="string">"main"</span>, @pipeline_settings.merge(&#123;</span><br><span class="line">                       <span class="symbol">:config_string</span> =&gt; config_string,</span><br><span class="line">                       <span class="symbol">:config_path</span> =&gt; config_path,</span><br><span class="line">                       <span class="symbol">:debug_config</span> =&gt; debug_config?,</span><br><span class="line">                       <span class="symbol">:allow_env</span> =&gt; allow_env?</span><br><span class="line">                       &#125;))</span><br><span class="line"></span><br><span class="line">  start_pipelines</span><br><span class="line">  ...</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
 <p><code>execute</code>函数中主要做了两件事：</p>
 <ol>
 <li>调用<code>register_pipeline</code>创建一个<code>pipeline</code></li>
@@ -360,6 +360,7 @@
 <p>经过测试，如果是要收集日志，使用file input时，将path放在同一个file块中，Logstash会用一个线程串行收集，但如果把path放到不同file块中，Logstash会用多个线程并行收集，线程数就是file块的数量。通过分析源码，发现Logstash会把同一个file块内的多个path合并，生成一个plugin放入<code>@inputs</code>这个数组中。同时，需要注意的是，如果在path中使用了正则表达式，那么在某个路径下匹配的所有文件，Logstash只会开一个线程去串行收集。</p>
 <p>综上所述，在资源较为紧张的机器上跑Logstash，并且收集的路径有很多，建议放在同一个file块中。在经过我们修改的Logstash配置文件中，一个path对应一个file块，并没有将多个path放入同一个file块中，这样是的用户能够在path级别进行设置，例如：收集path-1时，保持有序收集，5s轮询一次文件有无更新；收集path-2时，不需要有序收集，10s轮询一次文件有无更新。这样就必须把path-1和path-2分别放到不同的file块中。并且，为了实现更新配置自动化，我们的配置文件内容是由代码自动写入的，将相同配置的path合并到同一file块，这样的操作增加了代码的复杂度。</p>
 <p>注意，这只是针对input，根据<a href="https://www.elastic.co/guide/en/logstash/current/command-line-flags.html" target="_blank" rel="external">官方文档</a>的说明，output和filter的线程（worker）数量是由命令行参数<code>-w</code>设置的，默认为CPU数。</p>
+<p>分析了这么多，原来<a href="https://www.elastic.co/guide/en/logstash/current/pipeline.html" target="_blank" rel="external">官方文档</a>也有说明，和我通过源码分析的内容基本差不多，除此之外，官方文档还给出了一些调优建议。</p>
 
       
     </div>
