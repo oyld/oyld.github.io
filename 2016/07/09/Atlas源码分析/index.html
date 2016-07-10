@@ -86,7 +86,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/07/09/Atlas源码分析/index.html">
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
 <meta property="og:description" content="Atlas是360公司开源的MySQL代理。">
-<meta property="og:updated_time" content="2016-07-09T04:59:38.000Z">
+<meta property="og:updated_time" content="2016-07-10T07:07:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入解析Atlas">
 <meta name="twitter:description" content="Atlas是360公司开源的MySQL代理。">
@@ -272,10 +272,19 @@
 <h3 id="INIT"><a href="#INIT" class="headerlink" title="INIT"></a>INIT</h3><p>这一阶段对应状态机的<code>CON_STATE_INIT</code>状态。</p>
 <p>调用<code>plugin_call</code>函数从<code>network-mysqld.c</code>跳到<code>proxy-plugin.c</code>，对应的函数是<code>proxy_init</code>，这个函数很简单，调用<code>network_mysqld_con_lua_new</code>函数初始化<code>con-&gt;plugin_con_state</code>，这个结构体保存了<code>CON</code>的相关状态，然后将<code>con-&gt;state</code>设置为<code>CON_STATE_CONNECT_SERVER</code>，退出当前状态，进入下一个状态。</p>
 <h3 id="CONNECT-SERVER"><a href="#CONNECT-SERVER" class="headerlink" title="CONNECT SERVER"></a>CONNECT SERVER</h3><p>这一阶段对应状态机的<code>CON_STATE_CONNECT_SERVER</code>。</p>
-<p>首先判断触发的事件类型是否为<code>EV_TIMEOUT</code>，如果为真，那么肯定上一次连接后端时出了问题，这时认为后端已经下线，把标志<code>st-&gt;backend-&gt;state</code>设置为<code>BACKEND_STATE_DOWN</code>，并将连接断开；将<code>ostate</code>设置为<code>CON_STATE_INIT</code>，然后退出本次状态机循环，这使得状态不会退出最外层的<code>do while</code>循环，下一轮仍然进入<code>CON_STATE_CONNECT_SERVER</code>状态。这里为什么会有个超时时间<code>EV_TIMEOUT</code>待会解释。</p>
+<p>首先判断触发的事件类型是否为<code>EV_TIMEOUT</code>，如果为真，那么肯定上一次连接后端时出了问题，这时认为后端已经下线，把标志<code>st-&gt;backend-&gt;state</code>设置为<code>BACKEND_STATE_DOWN</code>，并将连接断开；将<code>ostate</code>设置为<code>CON_STATE_INIT</code>（注意不是<code>con-&gt;state</code>），然后退出本次状态机循环，这使得程序不会退出最外层的<code>do while</code>循环，下一轮仍然进入<code>CON_STATE_CONNECT_SERVER</code>状态。这里为什么会有个超时时间<code>EV_TIMEOUT</code>待会解释。</p>
 <p>假设触发的事件类型不是<code>EV_TIMEOUT</code>，调用<code>plugin_call</code>函数从<code>network-mysqld.c</code>跳到<code>proxy-plugin.c</code>，对应的函数是<code>proxy_connect_server</code>。该函数首先判断当前client的IP是否为LVS的IP，如果是LVS的IP且Atlas当前处于<code>offline</code>状态，那么就调用<code>network_mysqld_con_send_error_full</code>函数构造一个ERROR类型的响应报文，并放入了client的<code>send_queue</code>队列中，<a href="https://github.com/Qihoo360/Atlas/wiki/Atlas%E7%9A%84%E6%9E%B6%E6%9E%84" target="_blank" rel="external">wiki</a>对Atlas前端挂有LVS的情况做了说明。接下来是授权检测，检测逻辑如下：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> Atlas配置了client-ips，说明启动了IP过滤功能</span><br><span class="line">	在白名单里查找client IP</span><br><span class="line">	<span class="keyword">if</span> 没有找到 &amp;&amp; client IP不是前端LVS 的IP</span><br><span class="line">		这个IP没有权限访问后端数据库</span><br><span class="line">		调用network_mysqld_con_send_error_full函数构造ERROR类型的响应报文</span><br><span class="line">		并放入了client的send_queue队列中</span><br></pre></td></tr></table></figure>
 <p>通过了相关的IP检测之后，程序构造了一个握手初始化报文，把这个包放入了client的<code>send_queue</code>队列中。现在client的<code>send_queue</code>对了中已经放好了要返回给client的数据包了，也许是ERROR包，也许是握手初始化包，现在程序回到了<code>network-mysqld.c</code>，将<code>con-&gt;state</code>的状态设为了<code>CON_STATE_SEND_HANDSHAKE</code>，然后退出当前状态，进入下一个状态。</p>
+<p>刚才提到了<code>EV_TIMEOUT</code>这个触发事件类型，之所以会有这样一个类型，是因为上一轮状态调用了<code>WAIT_FOR_EVENT</code>这个宏，它的作用就是将某个描述符的某类事件添加到libevent中，并且可以设置一个超时时间，如果指定的事件在过期之前没有被触发，那么libevent就会产生一个<code>EV_TIMEOUT</code>类型的事件，这就是为什么程序会有对<code>EV_TIMEOUT</code>类型判断的原因。<code>CON_STATE_CONNECT_SERVER</code>这个状态的本意是要去连后端数据库，然后等待接收认证初始化报文，当与后端的连接出现异常时，就会调用<code>WAIT_FOR_EVENT</code>这个宏等待连接写就绪，如果等待超时，那么就认为后端挂了，于是就有了上面的将后端状态设置为<code>BACKEND_STATE_DOWN</code>这样的操作。但Atlas并没有这样做，而是直接充当了后端数据库的角色，直接“伪造”了一个认证初始化报文给client，那么就不可能出现和“后端”连接异常的情况，也就不会产生<code>EV_TIMEOUT</code>这类事件了，因此，<strong>程序将后端数据库置为<code>BACKEND_STATE_DOWN</code>这一逻辑是没有走到的</strong>。</p>
+<p>小结一下，这一状态主要是对client的IP进行权限检查，分几种情况：</p>
+<ol>
+<li>IP来自LVS，如果Atlas状态为<code>online</code>，构造认证初始化报文；如果Atlas状态为<code>offline</code>，构造ERROR报文</li>
+<li>IP来自实际client，如果此IP不在白名单，构造ERROR报文；如果IP在白名单中或没设置白名单，构造响应初始化报文</li>
+</ol>
+<p>需要注意的是，这一状态并没有把构造好的响应报文发送出去，而是放在了client的<code>send_queue</code>对了中，等待下阶段（即<code>CON_STATE_SEND_HANDSHAKE</code>阶段）发送出去。</p>
+<h3 id="SEND-HANDSHAKE"><a href="#SEND-HANDSHAKE" class="headerlink" title="SEND HANDSHAKE"></a>SEND HANDSHAKE</h3><p>这一状态对应<code>CON_STATE_SEND_HANDSHAKE</code>。主要任务是将上一个状态构造好的认证初始化报文发送给client。</p>
+<p>调用<code>network_mysqld_write</code>函数，该函数内部最终会调用<code>writev</code>将client <code>send_queue</code>队列中的一个完整的响应包（可能被分解为多个chunck）发送出去。为了防止只发送了部分的chunck，发送部分做的很精细，它需要检查每一个chunck是否已经完整的被发送，如果一个chunck被完整发送，那么把它从<code>send_queue</code>中删除；如果一个chunck未被完全发送，那么需要记录这个chunck发送的多少字节，然后记录这个offset，下一次发送的时候就从这个offset开始发送。如果没有将全部的chunck都发送出去，那么程序会调用<code>WAIT_FOR_EVENT</code>宏监听写就绪事件，然后直接返回；否则将<code>con-&gt;state</code>状态设置为<code>CON_STATE_READ_AUTH</code>，并结束本次状态机循环。</p>
 <h3 id="READ-AUTH"><a href="#READ-AUTH" class="headerlink" title="READ AUTH"></a>READ AUTH</h3><p>这一阶段的任务是从client读取登录认证消息。</p>
 <p>client发起连接时，可以指定一个DB，DB的名字就包含在这个报文中。因此，Atlas需要在发送query之前发送use切换数据库。</p>
 <h3 id="READ-QUERY"><a href="#READ-QUERY" class="headerlink" title="READ QUERY"></a>READ QUERY</h3><p>READ QUERY对应状态机的<code>CON_STATE_READ_QUERY</code>状态，这一状态的任务是读取客户端请求，解析后进入相应的下一状态。</p>
@@ -464,7 +473,7 @@
               
             
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#INIT"><span class="nav-number">1.</span> <span class="nav-text">INIT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CONNECT-SERVER"><span class="nav-number">2.</span> <span class="nav-text">CONNECT SERVER</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#READ-AUTH"><span class="nav-number">3.</span> <span class="nav-text">READ AUTH</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#READ-QUERY"><span class="nav-number">4.</span> <span class="nav-text">READ QUERY</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#INIT"><span class="nav-number">1.</span> <span class="nav-text">INIT</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CONNECT-SERVER"><span class="nav-number">2.</span> <span class="nav-text">CONNECT SERVER</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SEND-HANDSHAKE"><span class="nav-number">3.</span> <span class="nav-text">SEND HANDSHAKE</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#READ-AUTH"><span class="nav-number">4.</span> <span class="nav-text">READ AUTH</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#READ-QUERY"><span class="nav-number">5.</span> <span class="nav-text">READ QUERY</span></a></li></ol></div>
             
           </div>
         </section>
