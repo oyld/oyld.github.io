@@ -88,7 +88,7 @@
 <meta property="og:description" content="本篇为Kafka官方文档翻译，加入了自己的理解。">
 <meta property="og:image" content="http://yoursite.com/images/kafka/top.png">
 <meta property="og:image" content="http://yoursite.com/images/kafka/topic.png">
-<meta property="og:updated_time" content="2016-05-22T11:33:21.000Z">
+<meta property="og:updated_time" content="2016-07-20T09:00:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kafka官方文档翻译">
 <meta name="twitter:description" content="本篇为Kafka官方文档翻译，加入了自己的理解。">
@@ -457,7 +457,7 @@
 <li>选举新leader时，从至少为f+1（和上面的f+1不是同一个集合）个备份中选出拥有最完整log的备份成为新leader</li>
 <li>不超过f个备份节点失效</li>
 </ol>
-<p>因为在不多于f个备份节点失效的情况下，任何f+1个备份节点中一定存在至少一个备份节点包含所有已经提交的数据（可以考虑极端情况下，f+1个成功接收的备份节点中有f个失效，仍然会有最有一个节点保存有完整的数据）。这个节点上的log是最完整的，因此它会被选为新leader。这些算法还有很多细节需要处理（例如需要精确定义如何让log更加完整，确保在leader失效或服务器数量发生变化时log的一致性），但我们现在忽略这些细节。</p>
+<p>因为在不多于f个备份节点失效的情况下，任何f+1个备份节点中一定存在至少一个备份节点包含所有已经提交的数据（可以考虑极端情况下，f+1个成功接收的备份节点中有f个失效，仍然会有最后一个节点保存有完整的数据）。这个节点上的log是最完整的，因此它会被选为新leader。这些算法还有很多细节需要处理（例如需要精确定义如何让log更加完整，确保在leader失效或服务器数量发生变化时log的一致性），但我们现在忽略这些细节。</p>
 <p>这种获得大多数选票获胜的算法有一个很好的特性：延迟只依赖于那些最快的服务器。也就是说，如果备份因子为3，那么延迟由最快的slave决定，而不是最慢的。</p>
 <p>这类算法有许多，包括ZooKeeper的Zab，Raft，Viewstamped Replication。我们认为和Kafka最接近的算法是微软的PacificA。</p>
 <p>Majority vote算法的缺点是它无法处理多个节点失效导致没有可以选择的候选leader这种情况。容忍1个节点失效需要3份拷贝，容忍2个节点失效需要5份拷贝。在我们的经验中，单纯的增加冗余来对应单点失效是不够的，但5倍次数的写，5倍存储空间和1/5的吞吐量在处理大数据时又是不太实际的。</p>

@@ -86,7 +86,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/07/09/Atlas源码分析/index.html">
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
 <meta property="og:description" content="Atlas是360公司开源的MySQL代理。">
-<meta property="og:updated_time" content="2016-07-17T10:31:56.000Z">
+<meta property="og:updated_time" content="2016-07-25T03:31:41.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入解析Atlas">
 <meta name="twitter:description" content="Atlas是360公司开源的MySQL代理。">
@@ -290,18 +290,18 @@
 <h3 id="SEND-HANDSHAKE"><a href="#SEND-HANDSHAKE" class="headerlink" title="SEND HANDSHAKE"></a>SEND HANDSHAKE</h3><p>这一阶段对应状态机的<code>CON_STATE_SEND_HANDSHAKE</code>。主要任务是将上一个状态<code>CON_STATE_CONNECT_SERVER</code>构造好的认证初始化报文发送给client，相当于三次握手的第一阶段。</p>
 <p>调用<code>network_mysqld_write</code>函数，该函数内部最终会调用<code>writev</code>将client <code>send_queue</code>队列中的一个完整的响应包（可能被分解为多个chunk）发送出去。为了防止只发送了部分的chunk，发送部分做的很精细，它需要检查每一个chunk是否已经完整的被发送，如果一个chunk被完整发送，那么把它从<code>send_queue</code>中删除；如果一个chunk未被完全发送，那么需要记录这个chunk发送的多少字节，然后记录这个offset，下一次发送的时候就从这个offset开始发送。如果没有将全部的chunk都发送出去，那么程序会调用<code>WAIT_FOR_EVENT</code>宏监听写就绪事件，然后直接返回，等待下一次可写事件被出发，然后继续发送；否则将<code>con-&gt;state</code>状态设置为<code>CON_STATE_READ_AUTH</code>，并结束本次状态机循环。</p>
 <h3 id="READ-AUTH"><a href="#READ-AUTH" class="headerlink" title="READ AUTH"></a>READ AUTH</h3><p>这一阶段对应状态机的<code>CON_STATE_READ_AUTH</code>。这一阶段的任务是从client读取登录认证报文，相当于三次握手的第二阶段。</p>
-<p>调用<code>network_mysqld_read</code>函数从client读取请求，在这个函数内部，首先调用<code>network_socket_read</code>从socket读取packet到client的<code>recv_queue_raw</code>队列，然后调用<code>network_mysqld_con_get_packet</code>函数将<code>recv_queue_raw</code>队列里的原始数据放到client的<code>recv_queue</code>队列的尾部，数据包含头部和包体。如果读socket会发生阻塞，那么将这个socket放入libevent中监听，等到下次可读时再继续。</p>
+<p>调用<code>network_mysqld_read</code>函数从client读取请求，在这个函数内部，首先调用<code>network_socket_read</code>从socket读取字节流到client的<code>recv_queue_raw</code>队列（这里会把socket缓冲区中的所有数据都读出来），然后调用<code>network_mysqld_con_get_packet</code>函数将<code>recv_queue_raw</code>队列里的原始数据放到client的<code>recv_queue</code>队列的尾部，数据包含头部和包体（注意，这里只从<code>recv_queue_raw</code>队列里读出一个packet，不会读出所有packet）。如果读socket会发生阻塞，那么将这个socket放入libevent中监听，等到下次可读时再继续。</p>
 <blockquote>
 <ul>
 <li><code>network_mysqld_read</code>函数，有一个需要注意的地方。就是当数据还没有到来的时候，它的返回值是<code>NETWORK_SOCKET_WAIT_FOR_EVENT</code>，之后状态机内会使用<code>WAIT_FOR_EVENT</code>宏把socket可读事件添加到libevent。待数据到来，可读事件被触发，调用<code>ioctl</code>，传入<code>FIONREAD</code>参数获取接收缓冲区的可读字节数，然后将它赋给client或server的<code>to_read</code>字段。这样，下次进入<code>network_mysqld_read</code>函数时就能真正的读取到数据了。</li>
-<li><code>network_mysqld_con_get_packet</code>函数首先从<code>recv_queue_raw</code>队列中读取四字节固定长度的header，header中解析出包体长度和packet id，知道包体长度之后，再从<code>recv_queue_raw</code>队列中取出所有的数据，包括header和body。<strong>注意，在两次从<code>recv_queue_raw</code>读取的过程中，只要数据不完整，那么函数都会返回<code>NETWORK_SOCKET_WAIT_FOR_EVENT</code>。因此，<code>recv_queue</code>队列里的packet一定是一个完整包，可能是一个完整的协议包，可能是被拆分后的子包。</strong>每解析完一个packet，就把<code>con-&gt;last_packet_id</code>设置为这个packet的id。</li>
+<li><code>network_mysqld_con_get_packet</code>函数首先从<code>recv_queue_raw</code>队列中读取（不删除）四字节固定长度的header，header中解析出包体长度和packet id，知道包体长度之后，再从<code>recv_queue_raw</code>队列中取出（并删除）所有的数据，包括header和body。<strong>注意，在两次从<code>recv_queue_raw</code>读取的过程中，只要实际数据大小小于协议要求大小，那么函数都会返回<code>NETWORK_SOCKET_WAIT_FOR_EVENT</code>。因此，<code>recv_queue</code>队列里的packet一定是完整的，可能是一个完整的协议包，可能是被拆分后的子包，不会是一个不完整的packet。</strong>解析完一个packet，就把<code>con-&gt;last_packet_id</code>设置为这个packet的id。这个函数只解析一个packet。</li>
 </ul>
 </blockquote>
 <p>接下来，调用<code>plugin_call</code>函数从<code>network-mysqld.c</code>跳到<code>proxy-plugin.c</code>，对应的函数为<code>proxy_read_auth</code>。它的主要工作如下。</p>
 <p>从client的<code>recv_queue</code>队列尾部取出一个packet，然后调用<code>network_mysqld_auth_response_new</code>函数构造一个<code>network_mysqld_auth_response</code>类型的变量<code>auth</code>，调用<code>network_mysqld_proto_get_auth_response</code>把packet中的内容复制到<code>auth</code>的各个字段当中，相当于解包的过程，之后便销毁packet。</p>
 <p>把<code>auth</code>保存到<code>con-&gt;client-&gt;response</code>中；把<code>con-&gt;state</code>下一状态设置为<code>CON_STATE_SEND_AUTH_RESULT</code>。对<code>auth</code>中的字段做一些验证，密码表中找不到username对应的密码，或者挑战数不符合预期，则调用<code>network_mysqld_con_send_error_full</code>构造一个ERROR类型的响应，放入client端的<code>send_queue</code>队列中。如果验证都满足要求，那么做如下事情：</p>
 <ol>
-<li>把<code>auth-&gt;database</code>赋值给client的<code>default_db</code>，保存初始DB。Atlas在之后的转发query之前，都需要先告知后端切换DB</li>
+<li>把<code>auth-&gt;database</code>赋值给client的<code>default_db</code>，保存初始DB。Atlas在转发query之前，都需要先告知后端切换DB</li>
 <li>把配置文件中设置的字符集设置给client的<code>charset_client</code>、<code>charset_results</code>、<code>charset_connection</code>字段，如果配置文件中没有指定字符集，那么就用client发来的登录认证报文中的字段<code>auth-&gt;charset</code></li>
 <li>调用<code>network_mysqld_con_send_ok</code>构造OK类型的响应报文，并放入client的<code>send_queue</code>队列中</li>
 </ol>
@@ -355,15 +355,24 @@
 <h3 id="SEND-QUERY"><a href="#SEND-QUERY" class="headerlink" title="SEND QUERY"></a>SEND QUERY</h3><p>SEND QUERY对应状态机的<code>CON_STATE_SEND_QUERY</code>状态，这一状态的任务是将READ QUERY阶段读取到的请求转发到后端。</p>
 <p>首先判断<code>con-&gt;server-&gt;send_queue-&gt;offset</code>是否为0，不等于0表示<code>send_queue</code>中的数据之前有一部分已经被发送，剩余一部分还留在队列中（参考<code>SEND HANDSHAKE</code>状态），为0表示是一个之前未发送的新的数据包，那么会调用<code>network_mysqld_con_command_states_init</code>函数初始化<code>con-&gt;parse</code>。</p>
 <blockquote>
-<p>可以发现，<code>network_mysqld_con_command_states_init</code>这个函数是在发送query给server或client之前被调用，用来初始化<code>con-&gt;parse</code>的，这个成员内部保存了一些状态信息，例如<code>con-&gt;parse.command</code>记录了请求的类型；<code>con-&gt;parse.data</code>记录了对应请求的一些信息。</p>
-<p>TODO：这些信息哪里要用到？</p>
+<p>可以发现，<code>network_mysqld_con_command_states_init</code>这个函数是在发送query给server或client之前被调用，用来初始化<code>con-&gt;parse</code>的，这个成员内部保存了一些状态信息，例如<code>con-&gt;parse.command</code>记录了请求的类型；<code>con-&gt;parse.data</code>记录了不同类型请求的一些信息。</p>
+<p>疑问：这些信息哪里要用到？<br>更新：这些信息在函数<code>network_mysqld_proto_get_query_result</code>函数中会用到。以<code>COM_INIT_DB</code>为例，发送之前先解析第一个packet，将需要切换的DB名称存在<code>con-&gt;parse.data-&gt;db_name</code>中，之后在读取响应时，需要调用<code>network_mysqld_proto_get_query_result</code>对接收的数据做验证，将之前保存的<code>db_name</code>保存在<code>con-&gt;server-&gt;default_db</code>和<code>con-&gt;client-&gt;default_db</code>中。</p>
 </blockquote>
 <p>之后，调用<code>network_mysqld_write</code>将server端<code>send_queue</code>队列中的所有chunk发送给后端MySQL。发送完毕之后，判断<code>con-&gt;parse.command</code>，如果发送的请求类型为<code>COM_STMT_SEND_LONG_DATA</code>或者<code>COM_STMT_CLOSE</code>，那么会把<code>con-&gt;state</code>设置为<code>CON_STATE_READ_QUERY</code>，因为这两种类型的请求发送给MySQL之后并不会收到任何响应；否则将<code>con-&gt;state</code>状态设置为<code>CON_STATE_READ_QUERY_RESULT</code>，表示下一阶段将要等待后端数据库的请求结果。</p>
 <p>最后退出当前状态，进入下一个状态。</p>
 <h3 id="READ-QUERY-RESULT"><a href="#READ-QUERY-RESULT" class="headerlink" title="READ QUERY RESULT"></a>READ QUERY RESULT</h3><p>这一阶段对应状态机的<code>CON_STATE_READ_QUERY_RESULT</code>，任务是从后端MySQL读回请求的结果。</p>
-<p>调用<code>network_mysqld_read</code>函数从server端读取数据。</p>
+<p>调用<code>network_mysqld_read</code>函数从server端读取数据到<code>recv_queue</code>队列中。</p>
 <blockquote>
 <p>细节参考READ AUTH阶段。</p>
+</blockquote>
+<p>调用<code>plugin_call</code>函数从<code>network-mysqld.c</code>跳到<code>proxy-plugin.c</code>，对应的函数是<code>proxy_read_query_result</code>。</p>
+<p>首先从<code>injected.queries</code>队列头部peek出一个injection。通过<code>con-&gt;current_con_stmt_state-&gt;stmt_state</code>标志判断<code>CON</code>是否处于一个<code>COM_STMT_PREPARE</code>类型的请求中，如果是，再判断response是否是first packet。</p>
+<blockquote>
+<p>根据<a href="https://dev.mysql.com/doc/internals/en/com-stmt-prepare-response.html" target="_blank" rel="external">协议</a>，<code>COM_STMT_PREPARE</code>的response会返回多个packet，第一个packet内包含这个prepare语句的元信息。</p>
+</blockquote>
+<p>如果是first packet，那么调用<code>stmt_prepare_parameter_fetch</code>函数解析first packet。</p>
+<blockquote>
+<p><code>stmt_prepare_parameter_fetch</code>函数首先从server的<code>recv_queue</code>队列尾部（其实这里头部和尾部是一样的，因为整个队列就一个packet）peek出一个packet，把里面的元信息解析出来，保存到<code>stmt_paras_t</code>类型的结构体中，这个结构体还保存了prepare的query语句；将这个结构体插入到哈希表<code>con-&gt;stmt</code>中，key为statement id。使用哈希表是因为client有可能在一个连接里多发发出prepare语句，为了记录每一个prepare的状态，所以用了这个哈希表来分别记录。</p>
 </blockquote>
 
       
