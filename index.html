@@ -229,6 +229,255 @@
             
               
                 
+                <a class="post-title-link" href="/2016/10/20/flv/" itemprop="url">
+                  未命名
+                </a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-20T16:29:10+08:00" content="2016-10-20">
+              2016-10-20
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="The-FLV-file-format"><a href="#The-FLV-file-format" class="headerlink" title="The FLV file format"></a>The FLV file format</h1><p>从Flash Player 6开始，Flash Player能够在RTMP连接上和Adobe Flash Media Server交换音视频数据。一种给Flash Media Server和Flash Player clients提供数据的方式是使用FLV格式的文件。Flash Player 7之后，Flash播放器能够直接播放由HTTP传过来的FLV数据，MIME类型为video/x-flv。</p>
+<p>一个FLV文件同时编码音频和视频流，它们的编码方式和SWF文件是相同的。</p>
+<p>FLV文件中每一个类型的tag构成了一个单独的流。一个FLV文件中不会同时超过一个音频流和一个视频流，也就是最多一路音频流，一路视频流。</p>
+<p>一个FLV由header和body两部分组成。</p>
+<h2 id="The-FLV-header"><a href="#The-FLV-header" class="headerlink" title="The FLV header"></a>The FLV header</h2><p>所有的FLV文件在开头都有一个header，它的格式如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">field</th>
+<th style="text-align:center">type</th>
+<th style="text-align:center">comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Signature</td>
+<td style="text-align:center">1 byte</td>
+<td style="text-align:center">‘F’</td>
+</tr>
+<tr>
+<td style="text-align:center">Signature</td>
+<td style="text-align:center">1 byte</td>
+<td style="text-align:center">‘L’</td>
+</tr>
+<tr>
+<td style="text-align:center">Signature</td>
+<td style="text-align:center">1 byte</td>
+<td style="text-align:center">‘V’</td>
+</tr>
+<tr>
+<td style="text-align:center">Version</td>
+<td style="text-align:center">1 byte</td>
+<td style="text-align:center">文件版本号</td>
+</tr>
+<tr>
+<td style="text-align:center">TypeFlagsReserved</td>
+<td style="text-align:center">5 bit</td>
+<td style="text-align:center">保留字段，全0</td>
+</tr>
+<tr>
+<td style="text-align:center">TypeFlagsAudio</td>
+<td style="text-align:center">1 bit</td>
+<td style="text-align:center">是否存在音频流</td>
+</tr>
+<tr>
+<td style="text-align:center">TypeFlagsReserved</td>
+<td style="text-align:center">1 bit</td>
+<td style="text-align:center">保留字段，全0</td>
+</tr>
+<tr>
+<td style="text-align:center">TypeFlagsVideo</td>
+<td style="text-align:center">1 bit</td>
+<td style="text-align:center">是否存在视频流</td>
+</tr>
+<tr>
+<td style="text-align:center">DataOffset</td>
+<td style="text-align:center">4 byte</td>
+<td style="text-align:center">body部分字节偏移量</td>
+</tr>
+</tbody>
+</table>
+<p>对于version为1的FLV，DataOffset始终未9，即header的大小为9个字节。</p>
+<h2 id="The-FLV-file-body"><a href="#The-FLV-file-body" class="headerlink" title="The FLV file body"></a>The FLV file body</h2><p>FLV header之后就是一连串的back-pointers、tags交替排列，格式如下所示：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Field</th>
+<th style="text-align:center">type</th>
+<th style="text-align:center">comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">PreviousTagSize0</td>
+<td style="text-align:center">4 byte</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:center">Tag1</td>
+<td style="text-align:center">FLVTAG</td>
+<td style="text-align:center">第一个tag</td>
+</tr>
+<tr>
+<td style="text-align:center">PreviousTagSize1</td>
+<td style="text-align:center">4 byte</td>
+<td style="text-align:center">前一个tag的大小</td>
+</tr>
+<tr>
+<td style="text-align:center">Tag2</td>
+<td style="text-align:center">FLVTAG</td>
+<td style="text-align:center">第二个tag</td>
+</tr>
+<tr>
+<td style="text-align:center">…</td>
+<td style="text-align:center">…</td>
+<td style="text-align:center">…</td>
+</tr>
+<tr>
+<td style="text-align:center">TagN</td>
+<td style="text-align:center">FLVTAG</td>
+<td style="text-align:center">最后一个tag</td>
+</tr>
+<tr>
+<td style="text-align:center">PreviousTagSizeN</td>
+<td style="text-align:center">4 byte</td>
+<td style="text-align:center">最后一个tag的大小</td>
+</tr>
+</tbody>
+</table>
+<h2 id="FLV-tags"><a href="#FLV-tags" class="headerlink" title="FLV tags"></a>FLV tags</h2><p>FLV tags的格式如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">field</th>
+<th style="text-align:center">type</th>
+<th style="text-align:center">comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">TagType</td>
+<td style="text-align:center">1 byte</td>
+<td style="text-align:center">tag类型，8=audio，9=video，18=script data</td>
+</tr>
+<tr>
+<td style="text-align:center">DataSize</td>
+<td style="text-align:center">3 byte</td>
+<td style="text-align:center">Data字段长度</td>
+</tr>
+<tr>
+<td style="text-align:center">Timestamp</td>
+<td style="text-align:center">3 byte</td>
+<td style="text-align:center">相对第一个tag的时间毫秒数</td>
+</tr>
+<tr>
+<td style="text-align:center">TimestampExtended</td>
+<td style="text-align:center">1 byte</td>
+<td style="text-align:center">和Timestamp组成PTS</td>
+</tr>
+<tr>
+<td style="text-align:center">StreamID</td>
+<td style="text-align:center">3 byte</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:center">Data</td>
+<td style="text-align:center">AUDIODATA或VIDEODATA或SCRIPTDATAOBJECT</td>
+<td style="text-align:center">tag body</td>
+</tr>
+</tbody>
+</table>
+<p>PTS：Presentation Time Stamp，表示画面帧的播放时间戳，它的计算公式如下。<br>$$<br>PTS = (TimestampExtended &lt;&lt; 24) | Timestamp<br>$$<br><a href="http://www.cnblogs.com/qingquan/archive/2011/07/27/2118967.html" target="_blank" rel="external">这里</a>介绍了DTS、PTS等相关内容。</p>
+<p>Data字段的类型由TagType字段的值来决定。</p>
+<h3 id="Audio-tags"><a href="#Audio-tags" class="headerlink" title="Audio tags"></a>Audio tags</h3><p>TODO</p>
+<h3 id="Video-tags"><a href="#Video-tags" class="headerlink" title="Video tags"></a>Video tags</h3><p>TODO</p>
+<h3 id="script-data"><a href="#script-data" class="headerlink" title="script data"></a>script data</h3><p>TODO</p>
+
+          
+        
+      
+    </div>
+    
+    <div>
+      
+    </div>
+
+    <div>
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+
+
+    
+      
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
                 <a class="post-title-link" href="/2016/07/09/Atlas源码分析/" itemprop="url">
                   深入解析Atlas
                 </a>
@@ -823,7 +1072,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-count">7</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

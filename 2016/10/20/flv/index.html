@@ -1,0 +1,691 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"/>
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="The FLV file format从Flash Player 6开始，Flash Player能够在RTMP连接上和Adobe Flash Media Server交换音视频数据。一种给Flash Media Server和Flash Player clients提供数据的方式是使用FLV格式的文件。Flash Player 7之后，Flash播放器能够直接播放由HTTP传过来的FLV数据，M">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Stay hungry. Stay foolish.">
+<meta property="og:url" content="http://yoursite.com/2016/10/20/flv/index.html">
+<meta property="og:site_name" content="Stay hungry. Stay foolish.">
+<meta property="og:description" content="The FLV file format从Flash Player 6开始，Flash Player能够在RTMP连接上和Adobe Flash Media Server交换音视频数据。一种给Flash Media Server和Flash Player clients提供数据的方式是使用FLV格式的文件。Flash Player 7之后，Flash播放器能够直接播放由HTTP传过来的FLV数据，M">
+<meta property="og:updated_time" content="2016-10-20T08:29:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Stay hungry. Stay foolish.">
+<meta name="twitter:description" content="The FLV file format从Flash Player 6开始，Flash Player能够在RTMP连接上和Adobe Flash Media Server交换音视频数据。一种给Flash Media Server和Flash Player clients提供数据的方式是使用FLV格式的文件。Flash Player 7之后，Flash播放器能够直接播放由HTTP传过来的FLV数据，M">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+  <title>  | Stay hungry. Stay foolish. </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Stay hungry. Stay foolish.</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-home fa-fw"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-user fa-fw"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-archive fa-fw"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-10-20T16:29:10+08:00" content="2016-10-20">
+              2016-10-20
+            </time>
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="The-FLV-file-format"><a href="#The-FLV-file-format" class="headerlink" title="The FLV file format"></a>The FLV file format</h1><p>从Flash Player 6开始，Flash Player能够在RTMP连接上和Adobe Flash Media Server交换音视频数据。一种给Flash Media Server和Flash Player clients提供数据的方式是使用FLV格式的文件。Flash Player 7之后，Flash播放器能够直接播放由HTTP传过来的FLV数据，MIME类型为video/x-flv。</p>
+<p>一个FLV文件同时编码音频和视频流，它们的编码方式和SWF文件是相同的。</p>
+<p>FLV文件中每一个类型的tag构成了一个单独的流。一个FLV文件中不会同时超过一个音频流和一个视频流，也就是最多一路音频流，一路视频流。</p>
+<p>一个FLV由header和body两部分组成。</p>
+<h2 id="The-FLV-header"><a href="#The-FLV-header" class="headerlink" title="The FLV header"></a>The FLV header</h2><p>所有的FLV文件在开头都有一个header，它的格式如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">field</th>
+<th style="text-align:center">type</th>
+<th style="text-align:center">comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Signature</td>
+<td style="text-align:center">1 byte</td>
+<td style="text-align:center">‘F’</td>
+</tr>
+<tr>
+<td style="text-align:center">Signature</td>
+<td style="text-align:center">1 byte</td>
+<td style="text-align:center">‘L’</td>
+</tr>
+<tr>
+<td style="text-align:center">Signature</td>
+<td style="text-align:center">1 byte</td>
+<td style="text-align:center">‘V’</td>
+</tr>
+<tr>
+<td style="text-align:center">Version</td>
+<td style="text-align:center">1 byte</td>
+<td style="text-align:center">文件版本号</td>
+</tr>
+<tr>
+<td style="text-align:center">TypeFlagsReserved</td>
+<td style="text-align:center">5 bit</td>
+<td style="text-align:center">保留字段，全0</td>
+</tr>
+<tr>
+<td style="text-align:center">TypeFlagsAudio</td>
+<td style="text-align:center">1 bit</td>
+<td style="text-align:center">是否存在音频流</td>
+</tr>
+<tr>
+<td style="text-align:center">TypeFlagsReserved</td>
+<td style="text-align:center">1 bit</td>
+<td style="text-align:center">保留字段，全0</td>
+</tr>
+<tr>
+<td style="text-align:center">TypeFlagsVideo</td>
+<td style="text-align:center">1 bit</td>
+<td style="text-align:center">是否存在视频流</td>
+</tr>
+<tr>
+<td style="text-align:center">DataOffset</td>
+<td style="text-align:center">4 byte</td>
+<td style="text-align:center">body部分字节偏移量</td>
+</tr>
+</tbody>
+</table>
+<p>对于version为1的FLV，DataOffset始终未9，即header的大小为9个字节。</p>
+<h2 id="The-FLV-file-body"><a href="#The-FLV-file-body" class="headerlink" title="The FLV file body"></a>The FLV file body</h2><p>FLV header之后就是一连串的back-pointers、tags交替排列，格式如下所示：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Field</th>
+<th style="text-align:center">type</th>
+<th style="text-align:center">comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">PreviousTagSize0</td>
+<td style="text-align:center">4 byte</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:center">Tag1</td>
+<td style="text-align:center">FLVTAG</td>
+<td style="text-align:center">第一个tag</td>
+</tr>
+<tr>
+<td style="text-align:center">PreviousTagSize1</td>
+<td style="text-align:center">4 byte</td>
+<td style="text-align:center">前一个tag的大小</td>
+</tr>
+<tr>
+<td style="text-align:center">Tag2</td>
+<td style="text-align:center">FLVTAG</td>
+<td style="text-align:center">第二个tag</td>
+</tr>
+<tr>
+<td style="text-align:center">…</td>
+<td style="text-align:center">…</td>
+<td style="text-align:center">…</td>
+</tr>
+<tr>
+<td style="text-align:center">TagN</td>
+<td style="text-align:center">FLVTAG</td>
+<td style="text-align:center">最后一个tag</td>
+</tr>
+<tr>
+<td style="text-align:center">PreviousTagSizeN</td>
+<td style="text-align:center">4 byte</td>
+<td style="text-align:center">最后一个tag的大小</td>
+</tr>
+</tbody>
+</table>
+<h2 id="FLV-tags"><a href="#FLV-tags" class="headerlink" title="FLV tags"></a>FLV tags</h2><p>FLV tags的格式如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">field</th>
+<th style="text-align:center">type</th>
+<th style="text-align:center">comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">TagType</td>
+<td style="text-align:center">1 byte</td>
+<td style="text-align:center">tag类型，8=audio，9=video，18=script data</td>
+</tr>
+<tr>
+<td style="text-align:center">DataSize</td>
+<td style="text-align:center">3 byte</td>
+<td style="text-align:center">Data字段长度</td>
+</tr>
+<tr>
+<td style="text-align:center">Timestamp</td>
+<td style="text-align:center">3 byte</td>
+<td style="text-align:center">相对第一个tag的时间毫秒数</td>
+</tr>
+<tr>
+<td style="text-align:center">TimestampExtended</td>
+<td style="text-align:center">1 byte</td>
+<td style="text-align:center">和Timestamp组成PTS</td>
+</tr>
+<tr>
+<td style="text-align:center">StreamID</td>
+<td style="text-align:center">3 byte</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:center">Data</td>
+<td style="text-align:center">AUDIODATA或VIDEODATA或SCRIPTDATAOBJECT</td>
+<td style="text-align:center">tag body</td>
+</tr>
+</tbody>
+</table>
+<p>PTS：Presentation Time Stamp，表示画面帧的播放时间戳，它的计算公式如下。<br>$$<br>PTS = (TimestampExtended &lt;&lt; 24) | Timestamp<br>$$<br><a href="http://www.cnblogs.com/qingquan/archive/2011/07/27/2118967.html" target="_blank" rel="external">这里</a>介绍了DTS、PTS等相关内容。</p>
+<p>Data字段的类型由TagType字段的值来决定。</p>
+<h3 id="Audio-tags"><a href="#Audio-tags" class="headerlink" title="Audio tags"></a>Audio tags</h3><p>TODO</p>
+<h3 id="Video-tags"><a href="#Video-tags" class="headerlink" title="Video tags"></a>Video tags</h3><p>TODO</p>
+<h3 id="script-data"><a href="#script-data" class="headerlink" title="script data"></a>script data</h3><p>TODO</p>
+
+      
+    </div>
+    
+    <div>
+      
+        
+      
+    </div>
+
+    <div>
+      
+        
+      
+    </div>
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/07/09/Atlas源码分析/" rel="next" title="深入解析Atlas">
+                <i class="fa fa-chevron-left"></i> 深入解析Atlas
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Ouyang Liduo" />
+          <p class="site-author-name" itemprop="name">Ouyang Liduo</p>
+          <p class="site-description motion-element" itemprop="description">每个认真生活的人，都值得被认真对待。</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">7</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#The-FLV-file-format"><span class="nav-number">1.</span> <span class="nav-text">The FLV file format</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#The-FLV-header"><span class="nav-number">1.1.</span> <span class="nav-text">The FLV header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-FLV-file-body"><span class="nav-number">1.2.</span> <span class="nav-text">The FLV file body</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FLV-tags"><span class="nav-number">1.3.</span> <span class="nav-text">FLV tags</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Audio-tags"><span class="nav-number">1.3.1.</span> <span class="nav-text">Audio tags</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Video-tags"><span class="nav-number">1.3.2.</span> <span class="nav-text">Video tags</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#script-data"><span class="nav-number">1.3.3.</span> <span class="nav-text">script data</span></a></li></ol></li></ol></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ouyang Liduo</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+  
+  
+  
+
+  
+
+  
+
+</body>
+</html>

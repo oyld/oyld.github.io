@@ -88,7 +88,7 @@
 <meta property="og:description" content="本篇为Kafka官方文档翻译，加入了自己的理解。">
 <meta property="og:image" content="http://yoursite.com/images/kafka/top.png">
 <meta property="og:image" content="http://yoursite.com/images/kafka/topic.png">
-<meta property="og:updated_time" content="2016-07-20T09:00:36.000Z">
+<meta property="og:updated_time" content="2016-07-27T01:00:08.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Kafka官方文档翻译">
 <meta name="twitter:description" content="本篇为Kafka官方文档翻译，加入了自己的理解。">
@@ -427,6 +427,9 @@
 <p>这里的两阶段提交的流程：prepare阶段，consumer（作为协调者）将数据丢给处理系统（作为参与者），处理完后结果返回consumer；commit阶段，consumer根据返回的结果发出commit或rollback请求后再次等待，处理系统会真正将处理完的数据写入磁盘，然后返回一个ack，consumer收到响应后根据响应内容决定是否保存offset。使用两阶段提交协议把因为机器故障而造成不一致的概率降到了较低的水平。</p>
 </blockquote>
 <p>对于producer来说，Kafka默认是at least once递送语义，用户可以禁用失败重试选项来达到at most once递送语义，consumer也可以在处理数据之前保存offset来达到at most once递送语义。实现exactly-once递送语义一般需要下游存储系统的配合，但Kafka使用的方法更加直接。</p>
+<blockquote>
+<p>在一个进程和网络都不可靠的系统中，要保证exactly-once语义是不可能的，参考<a href="https://aphyr.com/posts/315-jepsen-rabbitmq" target="_blank" rel="external">这里</a>。</p>
+</blockquote>
 <h2 id="Replication"><a href="#Replication" class="headerlink" title="Replication"></a>Replication</h2><p>Kafka根据配置文件中的设置对topic的partition进行复制，你可以给每个topic设置不同的的复制因子（replication factor）。Replication机制能够实现自动故障转移，使得一台server宕机后消息仍然可用。</p>
 <p>其它的消息系统也提供了复制功能，但是，就我们的观点而言，这些都是附加的功能，没有得到广泛应用，其最大的缺点在于：<strong>从机是不活跃的（inactive），吞吐量受到很大影响，需要依赖繁琐的手动配置等（例如ActiveMQ，在shared nothing存储模式下，master挂了之后，需要管理员人工介入启动新master）</strong>。Kafka对replication的默认策略是：topic在创建时replication factor为1，即不进行备份。</p>
 <p>复制是以partition作为最小单位的。在没有broker失效的情况下，每一个partition在集群中都有唯一的broker作为leader以及0个或多个broker作为follower。一个partition的备份数量（包括leader上的那份）即备份因子。<strong>客户端的读写请求均通过leader</strong>。通常，partition的数量会大于broker，leader的角色将均匀分配到集群的各个broker上。Follower上的log数据和leader上是相同的——相同的offset以及相同的message顺序，当然，在leader末尾的message还未来得及同步到follow时，两者的数据是不一致的。</p>
@@ -641,7 +644,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-count">7</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>

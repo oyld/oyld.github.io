@@ -86,7 +86,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/07/09/Atlas源码分析/index.html">
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
 <meta property="og:description" content="Atlas是360公司开源的MySQL代理。">
-<meta property="og:updated_time" content="2016-07-25T03:31:41.000Z">
+<meta property="og:updated_time" content="2016-07-30T10:32:57.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="深入解析Atlas">
 <meta name="twitter:description" content="Atlas是360公司开源的MySQL代理。">
@@ -372,8 +372,11 @@
 </blockquote>
 <p>如果是first packet，那么调用<code>stmt_prepare_parameter_fetch</code>函数解析first packet。</p>
 <blockquote>
-<p><code>stmt_prepare_parameter_fetch</code>函数首先从server的<code>recv_queue</code>队列尾部（其实这里头部和尾部是一样的，因为整个队列就一个packet）peek出一个packet，把里面的元信息解析出来，保存到<code>stmt_paras_t</code>类型的结构体中，这个结构体还保存了prepare的query语句；将这个结构体插入到哈希表<code>con-&gt;stmt</code>中，key为statement id。使用哈希表是因为client有可能在一个连接里多发发出prepare语句，为了记录每一个prepare的状态，所以用了这个哈希表来分别记录。</p>
+<p><code>stmt_prepare_parameter_fetch</code>函数首先从server的<code>recv_queue</code>队列尾部（其实这里头部和尾部是一样的，因为整个队列就一个packet）peek出一个packet，把里面的元信息解析出来，保存到<code>stmt_paras_t</code>类型的结构体中，这个结构体还保存了prepare的query语句；将这个结构体插入到哈希表<code>con-&gt;stmt</code>中，key为statement id。使用哈希表是因为client有可能在一个连接里多次发出prepare语句，为了记录每一个prepare的状态，所以用了这个哈希表来分别记录。</p>
 </blockquote>
+<p>从<code>recv_queue</code>尾部peek出一个packet，调用<code>network_mysqld_proto_get_query_result</code>对这个packet进行验证，判断是否为response的最后一个packet，并对<code>con-&gt;resultset_is_finished</code>赋值。</p>
+<p>判断<code>con-&gt;resultset_is_needed</code>为<code>false</code>，调用<code>network_mysqld_queue_append_raw</code>，从server的<code>recv_queue</code>尾部pop出那个packet，放入client的<code>send_queue</code>中。</p>
+<p>如果<code>is_finished</code>为<code>true</code>，表示当前的packet为最后一个包，</p>
 
       
     </div>
@@ -410,6 +413,10 @@
           </div>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/20/flv/" rel="prev" title="">
+                 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -477,7 +484,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">6</span>
+              <span class="site-state-item-count">7</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
