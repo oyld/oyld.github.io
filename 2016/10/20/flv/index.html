@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/10/20/flv/index.html">
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
 <meta property="og:description" content="工作中需要熟悉视频流方面的知识，其中就包括FLV的格式，以下是对学习内容的一些记录。">
-<meta property="og:updated_time" content="2016-11-09T12:45:17.000Z">
+<meta property="og:updated_time" content="2016-11-18T13:07:02.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="FLV file format">
 <meta name="twitter:description" content="工作中需要熟悉视频流方面的知识，其中就包括FLV的格式，以下是对学习内容的一些记录。">
@@ -462,7 +462,7 @@
 <p>PTS：Presentation Time Stamp，表示画面帧的播放时间戳，它的计算公式如下。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PTS = (TimestampExtended &lt;&lt; 24) | Timestamp</span><br></pre></td></tr></table></figure>
 <p><a href="http://www.cnblogs.com/qingquan/archive/2011/07/27/2118967.html" target="_blank" rel="external">这里</a>介绍了DTS、PTS等相关内容。</p>
-<h3 id="Audio-tags"><a href="#Audio-tags" class="headerlink" title="Audio tags"></a>Audio tags</h3><table>
+<h3 id="Audio-tag"><a href="#Audio-tag" class="headerlink" title="Audio tag"></a>Audio tag</h3><table>
 <thead>
 <tr>
 <th style="text-align:center">Field</th>
@@ -521,7 +521,7 @@
 </tbody>
 </table>
 <p>AAC sequence header即AudioSpecificConfig，包含了更详细的音频信息。一般FLV文件的第一个audio tag的类型为AAC sequence header。</p>
-<h3 id="Video-tags"><a href="#Video-tags" class="headerlink" title="Video tags"></a>Video tags</h3><h4 id="VIDEODATA"><a href="#VIDEODATA" class="headerlink" title="VIDEODATA"></a>VIDEODATA</h4><table>
+<h3 id="Video-tag"><a href="#Video-tag" class="headerlink" title="Video tag"></a>Video tag</h3><h4 id="VIDEODATA"><a href="#VIDEODATA" class="headerlink" title="VIDEODATA"></a>VIDEODATA</h4><table>
 <thead>
 <tr>
 <th style="text-align:center">Field</th>
@@ -617,7 +617,114 @@
 <li>当AVCPacketType = 1，Data = One or more NALUs (can be individual slices per FLV packets; that is, full frames are not strictly required)</li>
 <li>当AVCPacketType = 2，Data为空</li>
 </ul>
-<h3 id="script-data"><a href="#script-data" class="headerlink" title="script data"></a>script data</h3><p>TODO</p>
+<h3 id="script-tag"><a href="#script-tag" class="headerlink" title="script tag"></a>script tag</h3><p>Script tag又被称为Metadata tag，包含了一些视频或音频数据的元信息。<strong>通常该类型Tag会跟在File Header后面作为第一个Tag出现，而且只有一个</strong>。Script tag中包含两个<a href="https://en.wikipedia.org/wiki/Action_Message_Format" target="_blank" rel="external">AMF包</a>。两个AMF的排列如下。</p>
+<h4 id="AMF1"><a href="#AMF1" class="headerlink" title="AMF1"></a>AMF1</h4><table>
+<thead>
+<tr>
+<th>value</th>
+<th>Type</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x02</td>
+<td>1 byte</td>
+<td>0x02表示字符串</td>
+</tr>
+<tr>
+<td>0x000A</td>
+<td>2 byte</td>
+<td>一般总是字符串“onMetaData”的长度</td>
+</tr>
+<tr>
+<td>onMetaData</td>
+<td>string</td>
+<td>6F,6E,4D,65,74,61,44,61,74,61</td>
+</tr>
+</tbody>
+</table>
+<h4 id="AMF2"><a href="#AMF2" class="headerlink" title="AMF2"></a>AMF2</h4><table>
+<thead>
+<tr>
+<th>value</th>
+<th>Type</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x08</td>
+<td>1 byte</td>
+<td>0x08表示数组</td>
+</tr>
+<tr>
+<td>array size</td>
+<td>4 byte</td>
+<td>数组元素个数</td>
+</tr>
+<tr>
+<td>[duration:xxx, width:xxx, height:xxx, …]</td>
+<td>array</td>
+<td>音视频数据元信息</td>
+</tr>
+</tbody>
+</table>
+<p>AMF2的数组中包含一些KV对，常见类型有如下几种。</p>
+<table>
+<thead>
+<tr>
+<th>key</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>duration</td>
+<td>时长</td>
+</tr>
+<tr>
+<td>width</td>
+<td>视频宽度</td>
+</tr>
+<tr>
+<td>height</td>
+<td>视频高度</td>
+</tr>
+<tr>
+<td>videodatarate</td>
+<td>视频码率</td>
+</tr>
+<tr>
+<td>framerate</td>
+<td>视频帧率</td>
+</tr>
+<tr>
+<td>videocodecid</td>
+<td>视频编码方式</td>
+</tr>
+<tr>
+<td>audiosamplerate</td>
+<td>音频采样率</td>
+</tr>
+<tr>
+<td>audiosamplesize</td>
+<td>音频采样精度</td>
+</tr>
+<tr>
+<td>stereo</td>
+<td>是否为立体声</td>
+</tr>
+<tr>
+<td>audiocodecid</td>
+<td>音频编码方式</td>
+</tr>
+<tr>
+<td>filesize</td>
+<td>文件大小</td>
+</tr>
+</tbody>
+</table>
 
       
     </div>
@@ -765,7 +872,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#The-FLV-file-format"><span class="nav-number">1.</span> <span class="nav-text">The FLV file format</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#The-FLV-header"><span class="nav-number">1.1.</span> <span class="nav-text">The FLV header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-FLV-file-body"><span class="nav-number">1.2.</span> <span class="nav-text">The FLV file body</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FLV-tags"><span class="nav-number">1.3.</span> <span class="nav-text">FLV tags</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Audio-tags"><span class="nav-number">1.3.1.</span> <span class="nav-text">Audio tags</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AACAUDIODATA"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">AACAUDIODATA</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Video-tags"><span class="nav-number">1.3.2.</span> <span class="nav-text">Video tags</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#VIDEODATA"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">VIDEODATA</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AVCVIDEOPACKET"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">AVCVIDEOPACKET</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#script-data"><span class="nav-number">1.3.3.</span> <span class="nav-text">script data</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#The-FLV-file-format"><span class="nav-number">1.</span> <span class="nav-text">The FLV file format</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#The-FLV-header"><span class="nav-number">1.1.</span> <span class="nav-text">The FLV header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-FLV-file-body"><span class="nav-number">1.2.</span> <span class="nav-text">The FLV file body</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FLV-tags"><span class="nav-number">1.3.</span> <span class="nav-text">FLV tags</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Audio-tag"><span class="nav-number">1.3.1.</span> <span class="nav-text">Audio tag</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AACAUDIODATA"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">AACAUDIODATA</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Video-tag"><span class="nav-number">1.3.2.</span> <span class="nav-text">Video tag</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#VIDEODATA"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">VIDEODATA</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AVCVIDEOPACKET"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">AVCVIDEOPACKET</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#script-tag"><span class="nav-number">1.3.3.</span> <span class="nav-text">script tag</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AMF1"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">AMF1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AMF2"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">AMF2</span></a></li></ol></li></ol></li></ol></li></ol></div>
             
 
           </div>
