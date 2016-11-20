@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/10/20/flv/index.html">
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
 <meta property="og:description" content="工作中需要熟悉视频流方面的知识，其中就包括FLV的格式，以下是对学习内容的一些记录。">
-<meta property="og:updated_time" content="2016-11-18T13:07:02.000Z">
+<meta property="og:updated_time" content="2016-11-20T03:59:53.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="FLV file format">
 <meta name="twitter:description" content="工作中需要熟悉视频流方面的知识，其中就包括FLV的格式，以下是对学习内容的一些记录。">
@@ -306,244 +306,246 @@
 <p>一个FLV文件同时编码音频和视频流，它们的编码方式和SWF文件是相同的。</p>
 <p>FLV文件中每一个类型的tag构成了一个单独的流。一个FLV文件中不会同时超过一个音频流和一个视频流，也就是最多一路音频流，一路视频流。</p>
 <p>一个FLV由header和body两部分组成。</p>
-<h2 id="The-FLV-header"><a href="#The-FLV-header" class="headerlink" title="The FLV header"></a>The FLV header</h2><p>所有的FLV文件在开头都有一个header，它的格式如下：</p>
+<h1 id="The-FLV-header"><a href="#The-FLV-header" class="headerlink" title="The FLV header"></a>The FLV header</h1><p>所有的FLV文件在开头都有一个header，它的格式如下：</p>
 <table>
 <thead>
 <tr>
-<th style="text-align:center">field</th>
-<th style="text-align:center">type</th>
-<th style="text-align:center">comment</th>
+<th>field</th>
+<th>type</th>
+<th>comment</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">Signature</td>
-<td style="text-align:center">1 byte</td>
-<td style="text-align:center">‘F’</td>
+<td>Signature</td>
+<td>1 byte</td>
+<td>‘F’</td>
 </tr>
 <tr>
-<td style="text-align:center">Signature</td>
-<td style="text-align:center">1 byte</td>
-<td style="text-align:center">‘L’</td>
+<td>Signature</td>
+<td>1 byte</td>
+<td>‘L’</td>
 </tr>
 <tr>
-<td style="text-align:center">Signature</td>
-<td style="text-align:center">1 byte</td>
-<td style="text-align:center">‘V’</td>
+<td>Signature</td>
+<td>1 byte</td>
+<td>‘V’</td>
 </tr>
 <tr>
-<td style="text-align:center">Version</td>
-<td style="text-align:center">1 byte</td>
-<td style="text-align:center">文件版本号</td>
+<td>Version</td>
+<td>1 byte</td>
+<td>文件版本号</td>
 </tr>
 <tr>
-<td style="text-align:center">TypeFlagsReserved</td>
-<td style="text-align:center">5 bit</td>
-<td style="text-align:center">保留字段，全0</td>
+<td>TypeFlagsReserved</td>
+<td>5 bit</td>
+<td>保留字段，全0</td>
 </tr>
 <tr>
-<td style="text-align:center">TypeFlagsAudio</td>
-<td style="text-align:center">1 bit</td>
-<td style="text-align:center">是否存在音频流</td>
+<td>TypeFlagsAudio</td>
+<td>1 bit</td>
+<td>是否存在音频流</td>
 </tr>
 <tr>
-<td style="text-align:center">TypeFlagsReserved</td>
-<td style="text-align:center">1 bit</td>
-<td style="text-align:center">保留字段，全0</td>
+<td>TypeFlagsReserved</td>
+<td>1 bit</td>
+<td>保留字段，全0</td>
 </tr>
 <tr>
-<td style="text-align:center">TypeFlagsVideo</td>
-<td style="text-align:center">1 bit</td>
-<td style="text-align:center">是否存在视频流</td>
+<td>TypeFlagsVideo</td>
+<td>1 bit</td>
+<td>是否存在视频流</td>
 </tr>
 <tr>
-<td style="text-align:center">DataOffset</td>
-<td style="text-align:center">4 byte</td>
-<td style="text-align:center">body部分字节偏移量</td>
+<td>DataOffset</td>
+<td>4 byte</td>
+<td>body部分字节偏移量</td>
 </tr>
 </tbody>
 </table>
 <p>对于version为1的FLV，DataOffset始终未9，即header的大小为9个字节。</p>
-<h2 id="The-FLV-file-body"><a href="#The-FLV-file-body" class="headerlink" title="The FLV file body"></a>The FLV file body</h2><p>FLV header之后就是一连串的back-pointers、tags交替排列，格式如下所示：</p>
+<h1 id="The-FLV-file-body"><a href="#The-FLV-file-body" class="headerlink" title="The FLV file body"></a>The FLV file body</h1><p>FLV header之后就是一连串的back-pointers、tags交替排列，格式如下所示：</p>
 <table>
 <thead>
 <tr>
-<th style="text-align:center">Field</th>
-<th style="text-align:center">type</th>
-<th style="text-align:center">comment</th>
+<th>Field</th>
+<th>type</th>
+<th>comment</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">PreviousTagSize0</td>
-<td style="text-align:center">4 byte</td>
-<td style="text-align:center">0</td>
+<td>PreviousTagSize0</td>
+<td>4 byte</td>
+<td>0</td>
 </tr>
 <tr>
-<td style="text-align:center">Tag1</td>
-<td style="text-align:center">FLVTAG</td>
-<td style="text-align:center">第一个tag</td>
+<td>Tag1</td>
+<td>FLVTAG</td>
+<td>第一个tag</td>
 </tr>
 <tr>
-<td style="text-align:center">PreviousTagSize1</td>
-<td style="text-align:center">4 byte</td>
-<td style="text-align:center">前一个tag的大小</td>
+<td>PreviousTagSize1</td>
+<td>4 byte</td>
+<td>前一个tag的大小</td>
 </tr>
 <tr>
-<td style="text-align:center">Tag2</td>
-<td style="text-align:center">FLVTAG</td>
-<td style="text-align:center">第二个tag</td>
+<td>Tag2</td>
+<td>FLVTAG</td>
+<td>第二个tag</td>
 </tr>
 <tr>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
-<td style="text-align:center">…</td>
+<td>…</td>
+<td>…</td>
+<td>…</td>
 </tr>
 <tr>
-<td style="text-align:center">TagN</td>
-<td style="text-align:center">FLVTAG</td>
-<td style="text-align:center">最后一个tag</td>
+<td>TagN</td>
+<td>FLVTAG</td>
+<td>最后一个tag</td>
 </tr>
 <tr>
-<td style="text-align:center">PreviousTagSizeN</td>
-<td style="text-align:center">4 byte</td>
-<td style="text-align:center">最后一个tag的大小</td>
+<td>PreviousTagSizeN</td>
+<td>4 byte</td>
+<td>最后一个tag的大小</td>
 </tr>
 </tbody>
 </table>
-<h2 id="FLV-tags"><a href="#FLV-tags" class="headerlink" title="FLV tags"></a>FLV tags</h2><p>FLV tags的格式如下：</p>
+<h1 id="FLV-tags"><a href="#FLV-tags" class="headerlink" title="FLV tags"></a>FLV tags</h1><p>FLV tags的格式如下：</p>
 <table>
 <thead>
 <tr>
-<th style="text-align:center">field</th>
-<th style="text-align:center">type</th>
-<th style="text-align:center">comment</th>
+<th>field</th>
+<th>type</th>
+<th>comment</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">TagType</td>
-<td style="text-align:center">1 byte</td>
-<td style="text-align:center">tag类型，8=audio，9=video，18=script data</td>
+<td>TagType</td>
+<td>1 byte</td>
+<td>tag类型，8=audio，9=video，18=script data</td>
 </tr>
 <tr>
-<td style="text-align:center">DataSize</td>
-<td style="text-align:center">3 byte</td>
-<td style="text-align:center">Data字段长度</td>
+<td>DataSize</td>
+<td>3 byte</td>
+<td>Data字段长度</td>
 </tr>
 <tr>
-<td style="text-align:center">Timestamp</td>
-<td style="text-align:center">3 byte</td>
-<td style="text-align:center">相对第一个tag的时间毫秒数</td>
+<td>Timestamp</td>
+<td>3 byte</td>
+<td>相对第一个tag的时间毫秒数</td>
 </tr>
 <tr>
-<td style="text-align:center">TimestampExtended</td>
-<td style="text-align:center">1 byte</td>
-<td style="text-align:center">和Timestamp组成PTS</td>
+<td>TimestampExtended</td>
+<td>1 byte</td>
+<td>和Timestamp组成PTS</td>
 </tr>
 <tr>
-<td style="text-align:center">StreamID</td>
-<td style="text-align:center">3 byte</td>
-<td style="text-align:center">0</td>
+<td>StreamID</td>
+<td>3 byte</td>
+<td>0</td>
 </tr>
 <tr>
-<td style="text-align:center">Data</td>
-<td style="text-align:center">见下方解释</td>
-<td style="text-align:center">tag body</td>
+<td>Data</td>
+<td>见下方解释</td>
+<td>tag body</td>
 </tr>
 </tbody>
 </table>
 <p>Data字段的类型由TagType字段的值来决定：</p>
 <ul>
-<li>TagType = 8时，Data = AUDIODATA</li>
-<li>TagType = 9时，Data = VIDEODATA</li>
-<li>TagType = 18时，Data = SCRIPTDATAOBJECT</li>
+<li>TagType = 8时，Data = audio tag</li>
+<li>TagType = 9时，Data = video tag</li>
+<li>TagType = 18时，Data = script tag</li>
 </ul>
 <p>PTS：Presentation Time Stamp，表示画面帧的播放时间戳，它的计算公式如下。</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PTS = (TimestampExtended &lt;&lt; 24) | Timestamp</span><br></pre></td></tr></table></figure>
 <p><a href="http://www.cnblogs.com/qingquan/archive/2011/07/27/2118967.html" target="_blank" rel="external">这里</a>介绍了DTS、PTS等相关内容。</p>
-<h3 id="Audio-tag"><a href="#Audio-tag" class="headerlink" title="Audio tag"></a>Audio tag</h3><table>
+<h2 id="Audio-Tag"><a href="#Audio-Tag" class="headerlink" title="Audio Tag"></a>Audio Tag</h2><p>Audio Tag格式如下。</p>
+<table>
 <thead>
 <tr>
-<th style="text-align:center">Field</th>
-<th style="text-align:center">Type</th>
-<th style="text-align:center">Comment</th>
+<th>Field</th>
+<th>Type</th>
+<th>Comment</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">SoundFormat</td>
-<td style="text-align:center">4 bit</td>
-<td style="text-align:center">音频编码类型</td>
+<td>SoundFormat</td>
+<td>4 bit</td>
+<td>音频编码类型</td>
 </tr>
 <tr>
-<td style="text-align:center">SoundRate</td>
-<td style="text-align:center">2 bit</td>
-<td style="text-align:center">采样率</td>
+<td>SoundRate</td>
+<td>2 bit</td>
+<td>采样率</td>
 </tr>
 <tr>
-<td style="text-align:center">SoundSize</td>
-<td style="text-align:center">1 bit</td>
-<td style="text-align:center">采样精度</td>
+<td>SoundSize</td>
+<td>1 bit</td>
+<td>采样精度</td>
 </tr>
 <tr>
-<td style="text-align:center">SoundType</td>
-<td style="text-align:center">1 bit</td>
-<td style="text-align:center">音频类型</td>
+<td>SoundType</td>
+<td>1 bit</td>
+<td>音频类型</td>
 </tr>
 <tr>
-<td style="text-align:center">SoundData</td>
-<td style="text-align:center">payload</td>
-<td style="text-align:center">音频数据</td>
+<td>SoundData</td>
+<td>payload</td>
+<td>音频数据</td>
 </tr>
 </tbody>
 </table>
-<p>Audio tags的前一个字节为音频相关参数，后面接着真正的音频数据。重点看当SoundFormat=10时，SoundData为AACAUDIODATA类型数据。</p>
-<h4 id="AACAUDIODATA"><a href="#AACAUDIODATA" class="headerlink" title="AACAUDIODATA"></a>AACAUDIODATA</h4><table>
+<p>Audio tags的前一个字节为音频相关参数，后面接着真正的音频数据。重点看当SoundFormat=10时，SoundData为AAC类型数据。</p>
+<h3 id="AAC"><a href="#AAC" class="headerlink" title="AAC"></a>AAC</h3><table>
 <thead>
 <tr>
-<th style="text-align:center">Field</th>
-<th style="text-align:center">Type</th>
-<th style="text-align:center">Comment</th>
+<th>Field</th>
+<th>Type</th>
+<th>Comment</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">AACPacketType</td>
-<td style="text-align:center">1 byte</td>
-<td style="text-align:center">0: AAC sequence header；1: AAC raw</td>
+<td>AACPacketType</td>
+<td>1 byte</td>
+<td>0: AAC sequence header；1: AAC raw</td>
 </tr>
 <tr>
-<td style="text-align:center">Data</td>
-<td style="text-align:center">byte[]</td>
-<td style="text-align:center">有效载荷，当AACPacketType=0时，Data为AudioSpecificConfig；当AACPacketType=1时，Data为原始AAC帧</td>
+<td>Data</td>
+<td>byte[]</td>
+<td>见下方解释</td>
 </tr>
 </tbody>
 </table>
-<p>AAC sequence header即AudioSpecificConfig，包含了更详细的音频信息。一般FLV文件的第一个audio tag的类型为AAC sequence header。</p>
-<h3 id="Video-tag"><a href="#Video-tag" class="headerlink" title="Video tag"></a>Video tag</h3><h4 id="VIDEODATA"><a href="#VIDEODATA" class="headerlink" title="VIDEODATA"></a>VIDEODATA</h4><table>
+<p>Data字段：有效载荷，当AACPacketType=0时，Data为AudioSpecificConfig；当AACPacketType=1时，Data为原始AAC帧。AAC sequence header即AudioSpecificConfig，包含了更详细的音频信息。一般FLV文件的第一个audio tag的类型为AAC sequence header。</p>
+<h2 id="Video-Tag"><a href="#Video-Tag" class="headerlink" title="Video Tag"></a>Video Tag</h2><p>Video Tag格式如下。</p>
+<table>
 <thead>
 <tr>
-<th style="text-align:center">Field</th>
-<th style="text-align:center">Type</th>
-<th style="text-align:center">Comment</th>
+<th>Field</th>
+<th>Type</th>
+<th>Comment</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:center">FrameType</td>
-<td style="text-align:center">4 bit</td>
-<td style="text-align:center">帧类型</td>
+<td>FrameType</td>
+<td>4 bit</td>
+<td>帧类型</td>
 </tr>
 <tr>
-<td style="text-align:center">CodecID</td>
-<td style="text-align:center">4 bit</td>
-<td style="text-align:center">编码类型</td>
+<td>CodecID</td>
+<td>4 bit</td>
+<td>编码类型</td>
 </tr>
 <tr>
-<td style="text-align:center">VideoData</td>
-<td style="text-align:center">payload</td>
-<td style="text-align:center">视频帧载荷或1 byte</td>
+<td>VideoData</td>
+<td>payload</td>
+<td>视频帧载荷或1 byte</td>
 </tr>
 </tbody>
 </table>
@@ -579,7 +581,7 @@
 <li>0：客户端寻找帧序列的起始位置</li>
 <li>1：客户端寻找帧序列的结束为止</li>
 </ul>
-<h4 id="AVCVIDEOPACKET"><a href="#AVCVIDEOPACKET" class="headerlink" title="AVCVIDEOPACKET"></a>AVCVIDEOPACKET</h4><p>这种类型的packet携带AVC编码类型的数据帧，格式如下：</p>
+<h3 id="AVCVIDEOPACKET"><a href="#AVCVIDEOPACKET" class="headerlink" title="AVCVIDEOPACKET"></a>AVCVIDEOPACKET</h3><p>这种类型的packet携带AVC编码类型的数据帧，格式如下：</p>
 <table>
 <thead>
 <tr>
@@ -613,12 +615,16 @@
 </ul>
 <p>Data：</p>
 <ul>
-<li>当AVCPacketType = 0，Data = AVCDecoderConfigurationRecord</li>
+<li>当AVCPacketType = 0，Data = AVCDecoderConfigurationRecord。AVCDecoderConfigurationRecord包含着是H.264解码相关较重要的sps和pps信息（sps和pps放在了同一个tag中），再给AVC解码器送数据流之前一定要把sps和pps信息送出，否则的话解码器不能正常解码。而且在解码器stop之后再次start之前，如seek、快进快退状态切换等，都需要重新送一遍sps和pps的信息。AVCDecoderConfigurationRecord在FLV文件中一般情况也是出现一次，也就是第一个video tag。</li>
 <li>当AVCPacketType = 1，Data = One or more NALUs (can be individual slices per FLV packets; that is, full frames are not strictly required)</li>
 <li>当AVCPacketType = 2，Data为空</li>
 </ul>
-<h3 id="script-tag"><a href="#script-tag" class="headerlink" title="script tag"></a>script tag</h3><p>Script tag又被称为Metadata tag，包含了一些视频或音频数据的元信息。<strong>通常该类型Tag会跟在File Header后面作为第一个Tag出现，而且只有一个</strong>。Script tag中包含两个<a href="https://en.wikipedia.org/wiki/Action_Message_Format" target="_blank" rel="external">AMF包</a>。两个AMF的排列如下。</p>
-<h4 id="AMF1"><a href="#AMF1" class="headerlink" title="AMF1"></a>AMF1</h4><table>
+<blockquote>
+<p>为了防止SPS,PPS数据丢失，有些编码器会在每个IDR帧之前重复发SPS,PPS。这些SPS其实是一样的。但也不排除有些变态的编码器前后的SPS会不同，毕竟标准容许这样做。这样就需要首先遍历一边h264码流，将其中不同的SPS、PPS提起出来，先记录下来，然后再统一写到FLV。</p>
+</blockquote>
+<p><a href="https://my.oschina.net/u/213072/blog/52053" target="_blank" rel="external">参考1</a><br><a href="http://blog.csdn.net/huibailingyu/article/details/42879573" target="_blank" rel="external">参考2</a></p>
+<h2 id="Script-Tag"><a href="#Script-Tag" class="headerlink" title="Script Tag"></a>Script Tag</h2><p>Script tag又被称为Metadata tag，包含了一些视频或音频数据的元信息。<strong>通常该类型Tag会跟在File Header后面作为第一个Tag出现，而且只有一个</strong>。Script tag中包含两个<a href="https://en.wikipedia.org/wiki/Action_Message_Format" target="_blank" rel="external">AMF包</a>。两个AMF的排列如下。</p>
+<h3 id="AMF1"><a href="#AMF1" class="headerlink" title="AMF1"></a>AMF1</h3><table>
 <thead>
 <tr>
 <th>value</th>
@@ -644,7 +650,7 @@
 </tr>
 </tbody>
 </table>
-<h4 id="AMF2"><a href="#AMF2" class="headerlink" title="AMF2"></a>AMF2</h4><table>
+<h3 id="AMF2"><a href="#AMF2" class="headerlink" title="AMF2"></a>AMF2</h3><table>
 <thead>
 <tr>
 <th>value</th>
@@ -876,7 +882,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#The-FLV-file-format"><span class="nav-number">1.</span> <span class="nav-text">The FLV file format</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#The-FLV-header"><span class="nav-number">1.1.</span> <span class="nav-text">The FLV header</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-FLV-file-body"><span class="nav-number">1.2.</span> <span class="nav-text">The FLV file body</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FLV-tags"><span class="nav-number">1.3.</span> <span class="nav-text">FLV tags</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Audio-tag"><span class="nav-number">1.3.1.</span> <span class="nav-text">Audio tag</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AACAUDIODATA"><span class="nav-number">1.3.1.1.</span> <span class="nav-text">AACAUDIODATA</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Video-tag"><span class="nav-number">1.3.2.</span> <span class="nav-text">Video tag</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#VIDEODATA"><span class="nav-number">1.3.2.1.</span> <span class="nav-text">VIDEODATA</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AVCVIDEOPACKET"><span class="nav-number">1.3.2.2.</span> <span class="nav-text">AVCVIDEOPACKET</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#script-tag"><span class="nav-number">1.3.3.</span> <span class="nav-text">script tag</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#AMF1"><span class="nav-number">1.3.3.1.</span> <span class="nav-text">AMF1</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#AMF2"><span class="nav-number">1.3.3.2.</span> <span class="nav-text">AMF2</span></a></li></ol></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#The-FLV-file-format"><span class="nav-number">1.</span> <span class="nav-text">The FLV file format</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-FLV-header"><span class="nav-number">2.</span> <span class="nav-text">The FLV header</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#The-FLV-file-body"><span class="nav-number">3.</span> <span class="nav-text">The FLV file body</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FLV-tags"><span class="nav-number">4.</span> <span class="nav-text">FLV tags</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Audio-Tag"><span class="nav-number">4.1.</span> <span class="nav-text">Audio Tag</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AAC"><span class="nav-number">4.1.1.</span> <span class="nav-text">AAC</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Video-Tag"><span class="nav-number">4.2.</span> <span class="nav-text">Video Tag</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AVCVIDEOPACKET"><span class="nav-number">4.2.1.</span> <span class="nav-text">AVCVIDEOPACKET</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Script-Tag"><span class="nav-number">4.3.</span> <span class="nav-text">Script Tag</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AMF1"><span class="nav-number">4.3.1.</span> <span class="nav-text">AMF1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AMF2"><span class="nav-number">4.3.2.</span> <span class="nav-text">AMF2</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
