@@ -1,0 +1,658 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="作为服务端开发者，精通TCP是必须的。毕业找工作时看的东西都快忘光了，现在利用业余时间重新复习一下，顺便做个记录。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TCP">
+<meta property="og:url" content="http://yoursite.com/2016/12/04/TCP/index.html">
+<meta property="og:site_name" content="Stay hungry. Stay foolish.">
+<meta property="og:description" content="作为服务端开发者，精通TCP是必须的。毕业找工作时看的东西都快忘光了，现在利用业余时间重新复习一下，顺便做个记录。">
+<meta property="og:image" content="http://yoursite.com/images/TCP/18-3.png">
+<meta property="og:image" content="http://yoursite.com/images/TCP/status.png">
+<meta property="og:image" content="http://yoursite.com/images/TCP/19-3.png">
+<meta property="og:image" content="http://yoursite.com/images/TCP/19-4.png">
+<meta property="og:image" content="http://yoursite.com/images/TCP/20-4.png">
+<meta property="og:updated_time" content="2016-12-04T02:50:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TCP">
+<meta name="twitter:description" content="作为服务端开发者，精通TCP是必须的。毕业找工作时看的东西都快忘光了，现在利用业余时间重新复习一下，顺便做个记录。">
+<meta name="twitter:image" content="http://yoursite.com/images/TCP/18-3.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: "",
+      labels: ""
+    }
+  };
+</script>
+
+
+
+
+
+
+
+  <title> TCP | Stay hungry. Stay foolish. </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Stay hungry. Stay foolish.</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/04/TCP/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Ouyang Liduo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Stay hungry. Stay foolish.">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="Stay hungry. Stay foolish." src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                TCP
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>作为服务端开发者，精通TCP是必须的。毕业找工作时看的东西都快忘光了，现在利用业余时间重新复习一下，顺便做个记录。<br><a id="more"></a></p>
+<h1 id="TCP概览"><a href="#TCP概览" class="headerlink" title="TCP概览"></a>TCP概览</h1><p>TCP通过下列方式来提供可靠性：</p>
+<ul>
+<li>应用数据被分割成TCP认为最适合发送的数据块。</li>
+<li>当TCP发出一个段后，它启动一个定时器，等待目的端确认收到这个报文段。如果不能及时收到一个确认，将重发这个报文段。</li>
+<li>当TCP收到发自TCP连接另一端的数据，它将发送一个确认。通常推迟几分之一秒发送。</li>
+<li>TCP将保持它首部和数据的检验和。校验有差错，则丢弃并不返回ack。</li>
+<li>IP数据报可能失序，如果必要，TCP将对收到的数据进行重新排序，将收到的数据以正确的顺序交给应用层。</li>
+<li>IP数据包可能重复，TCP需要去重。</li>
+<li>TCP还能提供流量控制。</li>
+</ul>
+<p>两个应用程序通过TCP连接交换8bit字节构成的字节流。TCP不在字节流中插入记录标识符。我们将这称为字节流服务。如果一方的应用程序先传10字节，又传20字节，再传50字节，连接的另一方将无法了解发送方每次发了多少字节。接收方可以分4次接收这80个字节，每次接收20字节。一端将字节流放到TCP连接上，同样的字节流将出现在TCP连接的另一端。</p>
+<h1 id="连接建立与终止"><a href="#连接建立与终止" class="headerlink" title="连接建立与终止"></a>连接建立与终止</h1><h2 id="时序图"><a href="#时序图" class="headerlink" title="时序图"></a>时序图</h2><p><img src="/images/TCP/18-3.png" alt=""></p>
+<p>从这幅图可以看出很多的信息。其中，报文段4通常（但不一定） 由应用程序的close触发，到达服务器后向应用层交付EOF。SYN的全称叫做Synchronize Sequence Numbers，可以看出此类报文段的主要目的就是确认一个ISN，来防止因网络传输造成的乱序问题。</p>
+<p>连接建立的过程中，client和server都有可能挂掉（当然不止这种情况，例如服务端故意sleep不去accept也是一样的效果），这时TCP会有相应的超时重传策略，这又可能带来SYN flood攻击（TODO：概念，解决方法）。Linux的超时重传策略为分别在1，3，7，15，31，63秒发起重传（指数退避 ），最后一次失败则返回错误。</p>
+<h2 id="MSS"><a href="#MSS" class="headerlink" title="MSS"></a>MSS</h2><p>MSS表示TCP传往另一端的最大块数据的长度，由对端告知。对于链路层是以太网的网络，TCP的MSS=1500-20-20=1460字节，默认值通常为536字节。MSS为什么能够避免数据分段？</p>
+<h2 id="TCP状态图"><a href="#TCP状态图" class="headerlink" title="TCP状态图"></a>TCP状态图</h2><p><img src="/images/TCP/status.png" alt=""></p>
+<p>FIN_WAIT_2状态有定时器，防止被动关闭方一直不发送FIN。</p>
+<p>半打开连接<br>一方已经关闭或异常终止连接而另一方还不知道。要区分客户端关闭和服务端关闭。客户端异常关闭，服务端不知道，下次客户端又建立一个新连接，导致半打开连接越来越多，这可以通过keepalive功能检测；服务端异常关闭，重启后接收来自旧连接的请求，会返回一个RST。</p>
+<p>RST vs. FIN<br>发送RST包关闭连接时，不必等缓冲区的包都发出去，直接就丢弃缓存区的包发送RST包。而接收端收到RST包后，也不必发送ACK包来确认。</p>
+<h2 id="RST出现的场景"><a href="#RST出现的场景" class="headerlink" title="RST出现的场景"></a><a href="http://www.360doc.com/content/13/0702/10/1073512_297069771.shtml" target="_blank" rel="external">RST出现的场景</a></h2><ol>
+<li>连接未打开的端口</li>
+<li>继续向已终止的进程write</li>
+<li>向一个老的socket发送数据，对端已崩溃重启</li>
+</ol>
+<p>注意，发送RST都要求OS还在，内核自动发送RST，如果OS都挂了，那么就不会响应任何东西了。</p>
+<h2 id="TIME-WAIT"><a href="#TIME-WAIT" class="headerlink" title="TIME_WAIT"></a><a href="http://huoding.com/2013/12/31/316" target="_blank" rel="external">TIME_WAIT</a></h2><p>主动终止方发送完最后的一个ack后出现。</p>
+<h3 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h3><ol>
+<li>主动关闭方最后一个ack可能丢失，导致被动关闭方重发FIN</li>
+<li>防止止新连接不会被之前连接的包干扰，2MSL能让老连接的包彻底在网络中消失</li>
+</ol>
+<h3 id="TIME-WAIT过多的解决方法"><a href="#TIME-WAIT过多的解决方法" class="headerlink" title="TIME_WAIT过多的解决方法"></a>TIME_WAIT过多的解决方法</h3><ol>
+<li>修改系统参数（/etc/sysctl.conf）：tcp_max_tw_buckets调大；tcp_tw_recycle开启（危险）；tcp_tw_reuse开启（危险）</li>
+<li>修改应用程序：改短连接为长连接（HTTP KeepAlive）；设置SO_LINGER，close时直接丢弃发送缓冲区中的数据并发送一个RST，避开四次握手，libmemcached就用了这种做法，但有两个问题：1.可能丢数据；2.旧包可能发到新连接上。<br>注意，两端同时主动关闭，最终都会进入TIME_WAIT状态。</li>
+</ol>
+<h2 id="listen队列"><a href="#listen队列" class="headerlink" title="listen队列"></a>listen队列</h2><p>队列满，新的SYN请求会被丢弃，client会重发SYN。<br>Linux的服务端从listen的端口建立的连接要经过两个队列的过渡，分别是未完成连接队列和已完成连接队列。服务端接受到SYN请求后，把这个请求存在未完成连接队列，等到三次握手完成后，再存放到已完成连接队列，然后再由accept系统调用，从已完成连接队列内拿出，交给用户使用。未完成队列和已完成队列都是有长度限制的，这个长度限制与以下三个参数有关</p>
+<ol>
+<li>调用listen接口，传递给backlog参数。在Linux 2.2之后，该参数设置已完成队列长度，在其它实现中则不一定。</li>
+<li>内核参数somaxconn：与已完成队列相关，内核会用系统的somaxconn参数去截断传递给listen的back_log参数，取两者中大的一个。查看：cat /proc/sys/net/core/somaxconn。修改：/etc/sysctl.conf中的net.core.somaxconn。</li>
+<li>内核参数tcp_max_syn_backlog：与未完成队列相关。查看：cat /proc/sys/net/ipv4/tcp_max_syn_backlog。修改：/etc/sysctl.conf中的net.ipv4.tcp_max_syn_backlog。</li>
+</ol>
+<p>注意，套接字选项TCP_DEFER_ACCEPT可以改变上述行为。</p>
+<h1 id="交互数据流"><a href="#交互数据流" class="headerlink" title="交互数据流"></a>交互数据流</h1><h2 id="经受时延的确认"><a href="#经受时延的确认" class="headerlink" title="经受时延的确认"></a>经受时延的确认</h2><p><img src="/images/TCP/19-3.png" alt=""></p>
+<p>svr4.login没有看到delay ack，因为它在等待发送ack时，已经有回显数据可以发送了，因此不会等到定时器溢出。RFC规定经受时延的ack，定时器最大等待时间为500ms，默认为40ms。</p>
+<p>delay ack只能捎带数据吗？<br>不是，接收端有数据时捎带数据，例如上面的rlogin协议；没有数据时，可以捎带另一个ack。</p>
+<p>delay ack可以累计多少个ack？<br>当收到的是<a href="https://tools.ietf.org/html/rfc2581" target="_blank" rel="external">full-sized incoming segments</a>时，最多每两个segment就返回一个ack，不能再继续等待x。但是收到的不是full-sized segments时，可以累计多个ack再一次性发出去。</p>
+<p><a href="https://en.wikipedia.org/wiki/TCP_delayed_acknowledgment" target="_blank" rel="external">参考</a></p>
+<h2 id="Nagle算法"><a href="#Nagle算法" class="headerlink" title="Nagle算法"></a>Nagle算法</h2><p>防止过多的TCP小包向网络中发送，造成网络拥塞。该算法要求一个TCP连接上最多只能有一个未被确认的未完成的小分组，在该分组的确认到达之前不能发送其他的小分组。相反，TCP收集这些少量的分组，并在确认到来时以一个分组的方式发出去。</p>
+<h3 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> there is new data to send</span><br><span class="line">  <span class="keyword">if</span> the window size &gt;= MSS and available data is &gt;= MSS</span><br><span class="line">    send complete MSS segment now</span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    <span class="keyword">if</span> there is unconfirmed data still in the pipe</span><br><span class="line">      enqueue data in the buffer until an acknowledge is received</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">      send data immediately</span><br><span class="line">    end <span class="keyword">if</span></span><br><span class="line">  end <span class="keyword">if</span></span><br><span class="line">end <span class="keyword">if</span></span><br></pre></td></tr></table></figure>
+<p>注意，nagle算法只是针对的小分组，即小于一个MSS的分组，那些大于MSS的分组还是可以立即发送的，从代码中也能够看出这一点。</p>
+<h3 id="时序图-1"><a href="#时序图-1" class="headerlink" title="时序图"></a>时序图</h3><p><img src="/images/TCP/19-4.png" alt=""></p>
+<p>这个数据流中有几个比较有意思的地方。第一，客户端连续发送了两个数据包14、15，其实这没有违反Nagle算法，因为在此之前客户端收到了12、13两个ack；第二，报文段12是一个经受延迟的确认，因为这个报文没有包含任何数据，是一个单独的ack包。</p>
+<h3 id="Write-Write-Read"><a href="#Write-Write-Read" class="headerlink" title="Write-Write-Read"></a>Write-Write-Read</h3><p>Nagle’s Algorithm + TCP delayed acknowledgment 会造成延迟，TCP delayed acknowledgment会合并多个ack，解决办法：</p>
+<ol>
+<li>writev</li>
+<li>应用层做缓存，一次write</li>
+<li>TCP_NODELAY，禁用Nagle算法</li>
+</ol>
+<p>参考：UNP 172</p>
+<h1 id="成块数据流"><a href="#成块数据流" class="headerlink" title="成块数据流"></a>成块数据流</h1><p>TFTP使用了停止等待协议。数据发送方在发送下一个数据块之前需要等待对已发送数据的确认。本章我们将介绍TCP所使用的被称为滑动窗口协议的另一种形式的流量控制方法。该协议允许发送方在停止并等待确认前可以连续发送多个分组。由于发送方不必每发一个分组就停下来等待确认，因此该协议可以加速数据的传输。</p>
+<h2 id="滑动窗口协议"><a href="#滑动窗口协议" class="headerlink" title="滑动窗口协议"></a>滑动窗口协议</h2><p>发送方感知接收方的接受速率，接收方控制发送方，主要是接收方告知的窗口大小。滑动窗口协议是发送方与接收方共同作用的一个协议。</p>
+<blockquote>
+<p>当发送速度快，接收速度慢会有什么结果？<br>接收缓冲区塞满，offered window为0，发送方停止发送。</p>
+</blockquote>
+<h3 id="窗口示意图"><a href="#窗口示意图" class="headerlink" title="窗口示意图"></a>窗口示意图</h3><p><img src="/images/TCP/20-4.png" alt=""></p>
+<p>上图的整个移动过程是针对发送方而言的，但其中的offered window是接收方的接收buffer大小来确定的。收到的ack序号决定左边沿是否向右移动；offered window决定右边沿是否向右移动。例如，接收方回复的信息为ack=4，win=6，那么对应的滑动窗口就有可能如上图所示。</p>
+<h3 id="Zero-Window"><a href="#Zero-Window" class="headerlink" title="Zero Window"></a>Zero Window</h3><p>接收方通告的窗口大小为0，发送方不能发送任何数据。这是由于快的发送方发送数据到慢的接收方，塞满了receive buffer引起的。</p>
+<h3 id="糊涂窗口综合症"><a href="#糊涂窗口综合症" class="headerlink" title="糊涂窗口综合症"></a>糊涂窗口综合症</h3><p>接收方buffer有少量空间，于是告知发送方，导致发送方发送小包数据，浪费带宽。<br>解决方法：在接收端，告知发送端自己的buffer为0，关闭通告窗口，等到buffer大于某个阈值，再告诉发送方可以发送数据了；在发送端，使用Nagle算法。</p>
+<p>参考：<br><a href="https://en.wikipedia.org/wiki/TCP_congestion_control" target="_blank" rel="external">维基百科TCP词条</a>和CoolShell上的两篇文章（<a href="http://coolshell.cn/articles/11564.html" target="_blank" rel="external">1</a>，<a href="http://coolshell.cn/articles/11609.html" target="_blank" rel="external">2</a>）非常不错，本文的很多内容都来自于这些网站。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/19/CMake/" rel="next" title="CMake">
+                <i class="fa fa-chevron-left"></i> CMake
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Ouyang Liduo" />
+          <p class="site-author-name" itemprop="name">Ouyang Liduo</p>
+          <p class="site-description motion-element" itemprop="description">每个认真生活的人，都值得被认真对待。</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP概览"><span class="nav-number">1.</span> <span class="nav-text">TCP概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#连接建立与终止"><span class="nav-number">2.</span> <span class="nav-text">连接建立与终止</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#时序图"><span class="nav-number">2.1.</span> <span class="nav-text">时序图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MSS"><span class="nav-number">2.2.</span> <span class="nav-text">MSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP状态图"><span class="nav-number">2.3.</span> <span class="nav-text">TCP状态图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RST出现的场景"><span class="nav-number">2.4.</span> <span class="nav-text">RST出现的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TIME-WAIT"><span class="nav-number">2.5.</span> <span class="nav-text">TIME_WAIT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#作用"><span class="nav-number">2.5.1.</span> <span class="nav-text">作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TIME-WAIT过多的解决方法"><span class="nav-number">2.5.2.</span> <span class="nav-text">TIME_WAIT过多的解决方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#listen队列"><span class="nav-number">2.6.</span> <span class="nav-text">listen队列</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#交互数据流"><span class="nav-number">3.</span> <span class="nav-text">交互数据流</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#经受时延的确认"><span class="nav-number">3.1.</span> <span class="nav-text">经受时延的确认</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nagle算法"><span class="nav-number">3.2.</span> <span class="nav-text">Nagle算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#算法"><span class="nav-number">3.2.1.</span> <span class="nav-text">算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时序图-1"><span class="nav-number">3.2.2.</span> <span class="nav-text">时序图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Write-Write-Read"><span class="nav-number">3.2.3.</span> <span class="nav-text">Write-Write-Read</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#成块数据流"><span class="nav-number">4.</span> <span class="nav-text">成块数据流</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#滑动窗口协议"><span class="nav-number">4.1.</span> <span class="nav-text">滑动窗口协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#窗口示意图"><span class="nav-number">4.1.1.</span> <span class="nav-text">窗口示意图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zero-Window"><span class="nav-number">4.1.2.</span> <span class="nav-text">Zero Window</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#糊涂窗口综合症"><span class="nav-number">4.1.3.</span> <span class="nav-text">糊涂窗口综合症</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ouyang Liduo</span>
+</div>
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
