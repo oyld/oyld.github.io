@@ -95,7 +95,11 @@
 <meta property="og:image" content="http://yoursite.com/images/TCP/19-3.png">
 <meta property="og:image" content="http://yoursite.com/images/TCP/19-4.png">
 <meta property="og:image" content="http://yoursite.com/images/TCP/20-4.png">
-<meta property="og:updated_time" content="2016-12-04T02:50:11.000Z">
+<meta property="og:image" content="http://yoursite.com/images/TCP/21-7.png">
+<meta property="og:image" content="http://yoursite.com/images/TCP/21-8.png">
+<meta property="og:image" content="http://yoursite.com/images/TCP/sack.png">
+<meta property="og:image" content="http://yoursite.com/images/TCP/21-10.png">
+<meta property="og:updated_time" content="2016-12-06T13:00:40.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TCP">
 <meta name="twitter:description" content="作为服务端开发者，精通TCP是必须的。毕业找工作时看的东西都快忘光了，现在利用业余时间重新复习一下，顺便做个记录。">
@@ -374,7 +378,59 @@
 <h3 id="窗口示意图"><a href="#窗口示意图" class="headerlink" title="窗口示意图"></a>窗口示意图</h3><p><img src="/images/TCP/20-4.png" alt=""></p>
 <p>上图的整个移动过程是针对发送方而言的，但其中的offered window是接收方的接收buffer大小来确定的。收到的ack序号决定左边沿是否向右移动；offered window决定右边沿是否向右移动。例如，接收方回复的信息为ack=4，win=6，那么对应的滑动窗口就有可能如上图所示。</p>
 <h3 id="Zero-Window"><a href="#Zero-Window" class="headerlink" title="Zero Window"></a>Zero Window</h3><p>接收方通告的窗口大小为0，发送方不能发送任何数据。这是由于快的发送方发送数据到慢的接收方，塞满了receive buffer引起的。</p>
-<h3 id="糊涂窗口综合症"><a href="#糊涂窗口综合症" class="headerlink" title="糊涂窗口综合症"></a>糊涂窗口综合症</h3><p>接收方buffer有少量空间，于是告知发送方，导致发送方发送小包数据，浪费带宽。<br>解决方法：在接收端，告知发送端自己的buffer为0，关闭通告窗口，等到buffer大于某个阈值，再告诉发送方可以发送数据了；在发送端，使用Nagle算法。</p>
+<h3 id="糊涂窗口综合症"><a href="#糊涂窗口综合症" class="headerlink" title="糊涂窗口综合症"></a>糊涂窗口综合症</h3><p>接收方buffer有少量空间，于是告知发送方，导致发送方发送小包数据，浪费带宽。<br>解决方法：不通告小窗口。告知发送端自己的buffer为0，关闭通告窗口，等到buffer大于某个阈值，再告诉发送方可以发送数据了；在发送端，使用Nagle算法。</p>
+<h1 id="拥塞控制算法"><a href="#拥塞控制算法" class="headerlink" title="拥塞控制算法"></a>拥塞控制算法</h1><p>TCP提供可靠的运输层。它使用的方法之一就是确认从另一端收到的数据。但数据和确认都有可能会丢失。TCP通过在发送时设置一个定时器来解决这种问题。如果当定时器溢出时还没有收到确认，它就重传该数据。对任何实现而言，关键之处就在于超时和重传的策略，即怎样决定超时间隔和如何确定重传的频率。</p>
+<p>超时重传的核心是RTO的确定，为了重传更加更加高效，RTO应该计算的更加精确。该值和RTT相关，而RTT又是随着网络情况动态变化的，导致情况有点复杂。为了确定RTT，出现了一些算法，例如：Jacobson算法，Karn算法等，具体算法在此不表。</p>
+<p><strong>个人觉得拥塞控制算法只整个TCP协议中非常复杂的一个部分了，也是精华所在。</strong></p>
+<h2 id="拥塞举例"><a href="#拥塞举例" class="headerlink" title="拥塞举例"></a>拥塞举例</h2><p><img src="/images/TCP/21-7.png" alt=""></p>
+<p>上图中的几个重点：</p>
+<ol>
+<li>发送方收到第三个重复的ack便开始重传，无需等待超时定时器溢出。</li>
+<li>发送方只重传丢失的那个报文，并在重传后继续发送新的报文（67、69、71），不用等到收到重传报文的ack后再发送新数据。</li>
+<li>接收方会缓存丢失报文之后的报文，但不会返回给应用层；接收方收到重传的报文，按序返回给应用层。</li>
+<li>接收方在返回数据给应用层之前，通告窗口大小为5888 = 8192 - 2304。</li>
+<li>发送方只重传了丢失的那个报文段，但它并不知道后续的报文段有没有丢失，如果丢失，那么只发送一个会降低效率，后面的sack会解决此问题。</li>
+</ol>
+<h2 id="慢启动算法（cwnd-lt-ssthresh）"><a href="#慢启动算法（cwnd-lt-ssthresh）" class="headerlink" title="慢启动算法（cwnd &lt; ssthresh）"></a>慢启动算法（cwnd &lt; ssthresh）</h2><p>发送方一开始便向网络发送多个报文段，直至达到接收方通告的窗口大小为止。当发送方与接收方处于同一局域网时，这种方式是可以的。但是如果在发送方和接收方之间存在多个路由器和速率较慢的链路时，就有可能出现一些问题。一些中间路由器必须缓存分组，并有可能耗尽存储器的空间。因此慢启动是有必要的。通过观察到新分组进入网络的速率应该与另一端返回确认的速率相同而进行工作。每收到一个ACK，cwnd++，呈指数增加。</p>
+<h2 id="拥塞避免算法（cwnd-gt-ssthresh）"><a href="#拥塞避免算法（cwnd-gt-ssthresh）" class="headerlink" title="拥塞避免算法（cwnd &gt; ssthresh）"></a>拥塞避免算法（cwnd &gt; ssthresh）</h2><p>每过一个RTT，cwnd++，呈线性增加。</p>
+<p><img src="/images/TCP/21-8.png" alt=""></p>
+<h2 id="快速重传算法"><a href="#快速重传算法" class="headerlink" title="快速重传算法"></a>快速重传算法</h2><p>相对于超时重传。发送方连续收到3个重复ACK，那么就有理由相信发生了丢包，于是不用等到RTO，直接重传。</p>
+<h3 id="SACK"><a href="#SACK" class="headerlink" title="SACK"></a>SACK</h3><p>快速重传有一个问题，发送者不知道应该重传重复ack对应的报文，还是应该重传重复ack和之后所有的报文，也就是说，发送者不知道之后的报文有没有被接收者接收。为了解决这个问题，TCP实现了一种sack（Selective Acknowledgment）方法，它与ack是共存的。</p>
+<p><img src="/images/TCP/sack.png" alt=""></p>
+<p>由接收方告知自己收到了哪些片段，发送方就能够知道自己应该重传哪个片段了，避免重复发送。Linux 2.4之后默认开启了此功能。</p>
+<h3 id="Duplicate-SACK"><a href="#Duplicate-SACK" class="headerlink" title="Duplicate SACK"></a>Duplicate SACK</h3><p>这东西能够使发送方感知接收方收到了重复的数据。举个例子，假设有一个时序图。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">发送端        网络        接收端</span><br><span class="line">1000-1499        </span><br><span class="line">                        ack=1500</span><br><span class="line">            ack丢失</span><br><span class="line">1500-1999</span><br><span class="line">                        ack=2000</span><br><span class="line">            ack丢失</span><br><span class="line">重传1000-1499</span><br><span class="line">                        ack=2000，sack=1000-1500（D-SACK）</span><br></pre></td></tr></table></figure>
+<p>当发送端收到ack和sack之后，发现ack超出了sack的范围，就知道接收端收到了重复的数据1000-1499，并且知道是由于ack丢失引起的。同样，网络延迟导致慢包到达后被认为是重复包，接收端收到sack后，知道是由于网络延迟造成了重复发送。这些例子都能够让发送方很好的感知网络状况，从而为流量控制提供依据。</p>
+<h2 id="快速恢复算法（Reno版本）"><a href="#快速恢复算法（Reno版本）" class="headerlink" title="快速恢复算法（Reno版本）"></a>快速恢复算法（Reno版本）</h2><p>跳过慢启动算法，在进入拥塞避免算法之前的一个过渡过程，也就是说cwnd不用降为1，意味着发送方发现丢包后还可以连续发送多个包并继续增加cwnd值。</p>
+<p>分组丢失，意味着网络存在拥塞，有两种表现</p>
+<ol>
+<li>RTO超时重传，反应为：sshthresh = cwnd / 2；cwnd = 1；进入慢启动过程</li>
+<li>收到3个重复的ACK，进行快速重传，而Tahoe和Reno进行快速重传的策略又不一样<ul>
+<li>Tahoe：和RTO一样，进入慢启动过程，没有实现快速恢复算法。</li>
+<li>Reno：跳过了慢启动阶段，进入快速恢复算法。</li>
+</ul>
+</li>
+</ol>
+<p><img src="/images/TCP/21-10.png" alt=""></p>
+<p>下方的圆圈说明发送方只会重复发送丢失的那个报文，也就是图21-7描述的过程。快速恢复算法步骤：</p>
+<ol>
+<li>发送方收到重复的ack时，cwnd保持不变，对应上图中较为平坦的一段。发送方没有发送数据。</li>
+<li>当重复ack数达到3时，ssthresh=cwnd/2（取整到MSS的整数倍），cwnd=ssthresh+3<em>MSS，即1024+3</em>256=1792，和下表中的数据完全吻合。</li>
+<li>之后每收到一个重复的ack，cwnd都增加一个MSS，对应上图中陡升的一段。发送方仍然没有发送数据。</li>
+<li>最后一个新的ack（报文段72）到达时，cwnd被置为ssthresh并进入正常的拥塞避免过程，对应上图中陡降的一段。</li>
+</ol>
+<p>注意上图中的cwnd，在收到重复ack时，cwnd在不停的变化，但发送方并没有跟着发送数据，因为新发送的数据（报文段59）未得到确认，cwnd&lt;未被确认的数据大小（2304），也就是说cwnd的大小限制了发送方继续发送，因此在cwnd增长到2560之前，发送方都没有继续发送数据。这和慢启动的情况相同的，发送方不可能无限制的往外发包，cwnd的大小和已确认包的数量限制了它的发送。</p>
+<blockquote>
+<p>问题：快速恢复为什么能够在丢包时仍然增加cwnd？<br>因为每收到一个重复的ack，表示有一个报文段被接收方成功接收了，这意味着网络中的数据是在正常流动的，减少cwnd或者保持cwnd显得过于保守了。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>拥塞窗口是发送方使用的流量控制；通告窗口是接收方使用的流量控制。</li>
+<li>发送方的发送速度由以上两个窗口共同决定，发送方选择两者中较小的那个窗口大小作为发送上限。</li>
+<li>假定不会发送拥塞，则最终拥塞窗口将超过接收方的通告窗口，意味着通告窗口将对数据流进行限制。</li>
+<li>发送方在慢启动过程中的cwnd不会无限增加，要么达到sshthresh后进入拥塞避免，要么达到通告窗口后停止发送。</li>
+<li>拥塞避免是发送方使用的流量控制，而通告窗口则是接收方进行的流量控制。前者是发送方感受到的网络拥塞的估计，而后者则与接收方在该连接上的可用缓存大小有关。</li>
+</ul>
+<hr>
 <p>参考：<br><a href="https://en.wikipedia.org/wiki/TCP_congestion_control" target="_blank" rel="external">维基百科TCP词条</a>和CoolShell上的两篇文章（<a href="http://coolshell.cn/articles/11564.html" target="_blank" rel="external">1</a>，<a href="http://coolshell.cn/articles/11609.html" target="_blank" rel="external">2</a>）非常不错，本文的很多内容都来自于这些网站。</p>
 
       
@@ -523,7 +579,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP概览"><span class="nav-number">1.</span> <span class="nav-text">TCP概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#连接建立与终止"><span class="nav-number">2.</span> <span class="nav-text">连接建立与终止</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#时序图"><span class="nav-number">2.1.</span> <span class="nav-text">时序图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MSS"><span class="nav-number">2.2.</span> <span class="nav-text">MSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP状态图"><span class="nav-number">2.3.</span> <span class="nav-text">TCP状态图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RST出现的场景"><span class="nav-number">2.4.</span> <span class="nav-text">RST出现的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TIME-WAIT"><span class="nav-number">2.5.</span> <span class="nav-text">TIME_WAIT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#作用"><span class="nav-number">2.5.1.</span> <span class="nav-text">作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TIME-WAIT过多的解决方法"><span class="nav-number">2.5.2.</span> <span class="nav-text">TIME_WAIT过多的解决方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#listen队列"><span class="nav-number">2.6.</span> <span class="nav-text">listen队列</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#交互数据流"><span class="nav-number">3.</span> <span class="nav-text">交互数据流</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#经受时延的确认"><span class="nav-number">3.1.</span> <span class="nav-text">经受时延的确认</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nagle算法"><span class="nav-number">3.2.</span> <span class="nav-text">Nagle算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#算法"><span class="nav-number">3.2.1.</span> <span class="nav-text">算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时序图-1"><span class="nav-number">3.2.2.</span> <span class="nav-text">时序图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Write-Write-Read"><span class="nav-number">3.2.3.</span> <span class="nav-text">Write-Write-Read</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#成块数据流"><span class="nav-number">4.</span> <span class="nav-text">成块数据流</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#滑动窗口协议"><span class="nav-number">4.1.</span> <span class="nav-text">滑动窗口协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#窗口示意图"><span class="nav-number">4.1.1.</span> <span class="nav-text">窗口示意图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zero-Window"><span class="nav-number">4.1.2.</span> <span class="nav-text">Zero Window</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#糊涂窗口综合症"><span class="nav-number">4.1.3.</span> <span class="nav-text">糊涂窗口综合症</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#TCP概览"><span class="nav-number">1.</span> <span class="nav-text">TCP概览</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#连接建立与终止"><span class="nav-number">2.</span> <span class="nav-text">连接建立与终止</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#时序图"><span class="nav-number">2.1.</span> <span class="nav-text">时序图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MSS"><span class="nav-number">2.2.</span> <span class="nav-text">MSS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP状态图"><span class="nav-number">2.3.</span> <span class="nav-text">TCP状态图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RST出现的场景"><span class="nav-number">2.4.</span> <span class="nav-text">RST出现的场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TIME-WAIT"><span class="nav-number">2.5.</span> <span class="nav-text">TIME_WAIT</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#作用"><span class="nav-number">2.5.1.</span> <span class="nav-text">作用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TIME-WAIT过多的解决方法"><span class="nav-number">2.5.2.</span> <span class="nav-text">TIME_WAIT过多的解决方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#listen队列"><span class="nav-number">2.6.</span> <span class="nav-text">listen队列</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#交互数据流"><span class="nav-number">3.</span> <span class="nav-text">交互数据流</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#经受时延的确认"><span class="nav-number">3.1.</span> <span class="nav-text">经受时延的确认</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nagle算法"><span class="nav-number">3.2.</span> <span class="nav-text">Nagle算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#算法"><span class="nav-number">3.2.1.</span> <span class="nav-text">算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时序图-1"><span class="nav-number">3.2.2.</span> <span class="nav-text">时序图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Write-Write-Read"><span class="nav-number">3.2.3.</span> <span class="nav-text">Write-Write-Read</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#成块数据流"><span class="nav-number">4.</span> <span class="nav-text">成块数据流</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#滑动窗口协议"><span class="nav-number">4.1.</span> <span class="nav-text">滑动窗口协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#窗口示意图"><span class="nav-number">4.1.1.</span> <span class="nav-text">窗口示意图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zero-Window"><span class="nav-number">4.1.2.</span> <span class="nav-text">Zero Window</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#糊涂窗口综合症"><span class="nav-number">4.1.3.</span> <span class="nav-text">糊涂窗口综合症</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#拥塞控制算法"><span class="nav-number">5.</span> <span class="nav-text">拥塞控制算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#拥塞举例"><span class="nav-number">5.1.</span> <span class="nav-text">拥塞举例</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#慢启动算法（cwnd-lt-ssthresh）"><span class="nav-number">5.2.</span> <span class="nav-text">慢启动算法（cwnd < ssthresh）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拥塞避免算法（cwnd-gt-ssthresh）"><span class="nav-number">5.3.</span> <span class="nav-text">拥塞避免算法（cwnd > ssthresh）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快速重传算法"><span class="nav-number">5.4.</span> <span class="nav-text">快速重传算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SACK"><span class="nav-number">5.4.1.</span> <span class="nav-text">SACK</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Duplicate-SACK"><span class="nav-number">5.4.2.</span> <span class="nav-text">Duplicate SACK</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快速恢复算法（Reno版本）"><span class="nav-number">5.5.</span> <span class="nav-text">快速恢复算法（Reno版本）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.6.</span> <span class="nav-text">总结</span></a></li></ol></li></ol></div>
             
 
           </div>
