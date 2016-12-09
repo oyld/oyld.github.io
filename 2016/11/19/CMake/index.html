@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/11/19/CMake/index.html">
 <meta property="og:site_name" content="Stay hungry. Stay foolish.">
 <meta property="og:description" content="公司的一些项目使用了CMake构建的，所以学习了一下CMake的使用，记录一下关键语法。">
-<meta property="og:updated_time" content="2016-11-19T05:21:14.000Z">
+<meta property="og:updated_time" content="2016-12-08T06:30:23.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CMake">
 <meta name="twitter:description" content="公司的一些项目使用了CMake构建的，所以学习了一下CMake的使用，记录一下关键语法。">
@@ -307,7 +307,8 @@
 <p><code>add_executable(Demo main.cc)</code>编译成可执行文件。</p>
 <p><code>aux_source_directory(&lt;dir&gt; &lt;variable&gt;)</code>查找指定目录下的所有源文件，然后将结果存进指定变量名。</p>
 <p><code>add_subdirectory</code>添加子目录。</p>
-<p><code>target_link_libraries</code>指定需要的链接库。</p>
+<p><code>target_link_libraries</code>指定需要的链接库。例如下面的例子表示可执行程序<code>a.out</code>需要链接pthread库。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">target_link_libraries(a.out pthread)</span><br></pre></td></tr></table></figure>
 <p><code>add_library (XXX main.cpp)</code>生成库，静态库名为libXXX.a，动态库名为libXXX.so，可通过<code>set_target_properties</code>命令修改库名。</p>
 <p><code>include_directories</code>指定头文件搜索路径，相当于-I。</p>
 <p><code>link_directories</code>指定链接库搜索路径，相当于-L。</p>
@@ -429,7 +430,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">9</span>
+              <span class="site-state-item-count">10</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
