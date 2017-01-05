@@ -1,0 +1,623 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="本文介绍无锁编程中几个常用的概念，包括Wait-freedom，Lock-freedom，Obstruction-freedom等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Non-blocking algorithm">
+<meta property="og:url" content="http://yoursite.com/2017/01/04/无锁编程/index.html">
+<meta property="og:site_name" content="Liduoouyang's blog">
+<meta property="og:description" content="本文介绍无锁编程中几个常用的概念，包括Wait-freedom，Lock-freedom，Obstruction-freedom等。">
+<meta property="og:image" content="http://yoursite.com/images/non-blocking/lock-free.png">
+<meta property="og:updated_time" content="2017-01-05T01:58:19.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Non-blocking algorithm">
+<meta name="twitter:description" content="本文介绍无锁编程中几个常用的概念，包括Wait-freedom，Lock-freedom，Obstruction-freedom等。">
+<meta name="twitter:image" content="http://yoursite.com/images/non-blocking/lock-free.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: "",
+      labels: ""
+    }
+  };
+</script>
+
+
+
+
+
+
+
+  <title> Non-blocking algorithm | Liduoouyang's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Liduoouyang's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/01/04/无锁编程/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Ouyang Liduo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Liduoouyang's blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="Liduoouyang's blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Non-blocking algorithm
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文介绍无锁编程中几个常用的概念，包括Wait-freedom，Lock-freedom，Obstruction-freedom等。<br><a id="more"></a></p>
+<p>最近在写一个日志库，刚开始参考了Muduo中的异步日志库，使用了<a href="https://en.wikipedia.org/wiki/Multiple_buffering" target="_blank" rel="external">Multiple buffering</a>技术。由于多个线程把日志打到一个共享的buffer中，因此append log到buffer中时需要上锁，感觉当线程数较多时，效率上会有较大折扣（这里未进行实际验证）。于是更换策略，给每一个线程分配一个独立的queue，采用无锁的方式执行append log，尽可能的降低应用程序的在打日志操作上的响应时间。</p>
+<p>刚开始只是大概知道lock-free queue，随着学习的深入，并发编程中的一些技术都统统被挖了出来，所以有必要做一个总结。</p>
+<p>传统的多线程程序使用了mutex、semaphores等原语来保证线程间同步和数据的一致性，但这样的锁会带来几个问题：</p>
+<ol>
+<li>一个线程持有锁会阻塞其它线程，不利于实时性任务。</li>
+<li>设计不当容易造成死锁、活锁、优先级反转等问题，例如持有锁的线程挂了（RAII对象封装锁能解决此问题），或者交叉上锁都会造成死锁。</li>
+</ol>
+<p>正因为基于锁的编程有这些问题，无锁式的非阻塞并发编程越来越受到人们的关注。根据<a href="https://en.wikipedia.org/wiki/Non-blocking_algorithm" target="_blank" rel="external">维基百科</a>中的描述，并发程度可以分为三个级别：1）Wait-freedom；2）Lock-freedom；3）Obstruction-freedom。</p>
+<h1 id="Wait-freedom"><a href="#Wait-freedom" class="headerlink" title="Wait-freedom"></a>Wait-freedom</h1><p>维基百科对它的定义：</p>
+<blockquote>
+<p>An algorithm is wait-free if every operation has a bound on the number of steps the algorithm will take before the operation completes.</p>
+</blockquote>
+<p>任何操作都可以在有限步操作之内完成，线程间不会产生竞争或干扰，也就是说一个线程不会阻塞另一个线程，这是并发程度最高的级别。<a href="http://www.1024cores.net/home/lock-free-algorithms/introduction" target="_blank" rel="external">举个栗子</a>，对一个原子变量的自增和自减操作就是一种wait-free：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">increment_reference_counter</span><span class="params">(rc_base* obj)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    atomic_increment(obj-&gt;rc);	<span class="comment">// 系统原语</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">decrement_reference_counter</span><span class="params">(rc_base* obj)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="number">0</span> == atomic_decrement(obj-&gt;rc))	<span class="comment">// 系统原语</span></span><br><span class="line">        <span class="keyword">delete</span> obj;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>借助系统提供的原子操作相关原语，每一个线程都能在有限的时间内执行完这些函数，不会受到其它线程的干扰。</p>
+<p>再举个栗子，single producer、single consumer的ring buffer就可以实现为wait-freedom。Producer执行push操作时，由于没有其它线程同时对同一个ring buffer执行写操作，因此可以在O(1)时间复杂度内完成写操作。并且这样的queue是线程独立的，每个线程都有一个自己的queue，线程间互不干扰。</p>
+<p>Boost库中的<a href="http://www.boost.org/doc/libs/1_62_0/doc/html/boost/lockfree/spsc_queue.html" target="_blank" rel="external">lockfree::spsc_queue</a>就是这样一种数据结构。</p>
+<h1 id="Lock-freedom"><a href="#Lock-freedom" class="headerlink" title="Lock-freedom"></a>Lock-freedom</h1><p>维基百科对它的定义：</p>
+<blockquote>
+<p>An algorithm is lock-free if it satisfies that when the program threads are run sufficiently long at least one of the threads makes progress (for some sensible definition of progress). All wait-free algorithms are lock-free.</p>
+</blockquote>
+<p>一个线程的挂起不会阻塞其它线程。可能在某段时间内，有一些线程会因为饥饿而阻塞在某处，但从程序整体上来看，必定会有其它线程能够顺利往下执行，因此系统整体上是没有发生阻塞的。</p>
+<p>本质上来说，lock-free是描述一段代码的性质，而不是说明这段代码是如何实现的。由此看来，lock-free和是否使用锁似乎没有太大的关系。这里贴一幅图，说明什么是lock-free。</p>
+<div align="center"><br><img src="/images/non-blocking/lock-free.png" alt=""><br></div>
+
+<p><a href="http://www.1024cores.net/home/lock-free-algorithms/introduction" target="_blank" rel="external">举个栗子</a>，下面的操作就是一种lock-free：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">stack_push</span><span class="params">(<span class="built_in">stack</span>* s, node* n)</span></span><br><span class="line"></span>&#123;</span><br><span class="line">    node* head;</span><br><span class="line">    <span class="keyword">do</span></span><br><span class="line">    &#123;</span><br><span class="line">        head = s-&gt;head;</span><br><span class="line">        n-&gt;next = head;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> (!atomic_compare_exchange(s-&gt;head, head, n));    <span class="comment">// CAS原语</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果有多个线程同时执行<code>stack_push</code>函数，在任何一次<code>do-while</code>循环中，必定会有一个线程能够成功返回，即使其它线程会再次进入<code>do-while</code>循环。并且，一个线程的阻塞或中途退出并不会阻塞其它线程。相比于wait-free的<strong>线程间无任何干扰</strong>，lock-free产生的干扰可能就是一些线程会让另外一些线程多执行几次<code>do-while</code>循环，但绝不会相互阻塞。</p>
+<p>Boost库中的<a href="http://www.boost.org/doc/libs/1_62_0/doc/html/boost/lockfree/queue.html" target="_blank" rel="external">lockfree::queue</a>和<a href="http://www.boost.org/doc/libs/1_62_0/doc/html/boost/lockfree/stack.html" target="_blank" rel="external">lockfree::stack</a>就是这样一种数据结构。</p>
+<h1 id="Obstruction-freedom"><a href="#Obstruction-freedom" class="headerlink" title="Obstruction-freedom"></a>Obstruction-freedom</h1><p>维基百科对它的定义：</p>
+<blockquote>
+<p>An algorithm is obstruction-free if at any point, a single thread executed in isolation (i.e., with all obstructing threads suspended) for a bounded number of steps will complete its operation. All lock-free algorithms are obstruction-free.</p>
+</blockquote>
+<p>一个线程能够在没有竞争条件的前提下，在有限时间内完成某个操作。可以看出，这是一种较弱的并发等级。<strong>Obstruction-freedom最明显的特征就是多个线程同时执行一段代码可能造成活锁</strong>。例如下面这段代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (X == <span class="number">0</span>)</span><br><span class="line">&#123;</span><br><span class="line">    X = <span class="number">1</span> - X;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>单线程执行这段代码时，程序只会进入一次<code>while</code>循环，但当两个线程同时执行时，可能造成活锁，全部线程都卡在<code>while</code>循环中。</p>
+<p>相关阅读：<br><a href="http://preshing.com/20120612/an-introduction-to-lock-free-programming/" target="_blank" rel="external">An Introduction to Lock-Free Programming</a>（<a href="http://www.cnblogs.com/gaochundong/p/lock_free_programming.html" target="_blank" rel="external">中文翻译</a>）<br><a href="http://www.isnowfy.com/understand-to-lock-free/" target="_blank" rel="external">lock free的理解</a><br><a href="http://www.cnblogs.com/jiayy/p/3246167.html" target="_blank" rel="external">并行编程——并发级别</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/08/vagrant/" rel="next" title="Vagrant">
+                <i class="fa fa-chevron-left"></i> Vagrant
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Ouyang Liduo" />
+          <p class="site-author-name" itemprop="name">Ouyang Liduo</p>
+          <p class="site-description motion-element" itemprop="description">每个认真生活的人，都值得被认真对待。</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Wait-freedom"><span class="nav-number">1.</span> <span class="nav-text">Wait-freedom</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Lock-freedom"><span class="nav-number">2.</span> <span class="nav-text">Lock-freedom</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Obstruction-freedom"><span class="nav-number">3.</span> <span class="nav-text">Obstruction-freedom</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ouyang Liduo</span>
+</div>
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
