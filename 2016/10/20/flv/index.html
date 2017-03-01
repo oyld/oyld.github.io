@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/10/20/flv/index.html">
 <meta property="og:site_name" content="Liduoouyang's blog">
 <meta property="og:description" content="工作中需要熟悉视频流方面的知识，其中就包括FLV的格式，以下是对学习内容的一些记录。">
-<meta property="og:updated_time" content="2016-11-22T08:27:00.000Z">
+<meta property="og:updated_time" content="2017-03-01T13:31:36.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="FLV file format">
 <meta name="twitter:description" content="工作中需要熟悉视频流方面的知识，其中就包括FLV的格式，以下是对学习内容的一些记录。">
@@ -363,7 +363,7 @@
 </tr>
 </tbody>
 </table>
-<p>对于version为1的FLV，DataOffset始终未9，即header的大小为9个字节。</p>
+<p>对于version为1的FLV，DataOffset始终为9，即header的大小为9个字节。</p>
 <h1 id="The-FLV-file-body"><a href="#The-FLV-file-body" class="headerlink" title="The FLV file body"></a>The FLV file body</h1><p>FLV header之后就是一连串的back-pointers、tags交替排列，格式如下所示：</p>
 <table>
 <thead>
@@ -377,7 +377,7 @@
 <tr>
 <td>PreviousTagSize0</td>
 <td>4 byte</td>
-<td>0</td>
+<td>0，因为前一个tag不存在</td>
 </tr>
 <tr>
 <td>Tag1</td>
@@ -453,7 +453,7 @@
 </tr>
 </tbody>
 </table>
-<p>Data字段的类型由TagType字段的值来决定：</p>
+<p>TagType ~ StreamID构成一个tag header。Data字段的类型由TagType字段的值来决定：</p>
 <ul>
 <li>TagType = 8时，Data = audio tag</li>
 <li>TagType = 9时，Data = video tag</li>
@@ -733,7 +733,7 @@
 </tr>
 </tbody>
 </table>
-<h1 id="关于GOP"><a href="#关于GOP" class="headerlink" title="关于GOP"></a>关于GOP</h1><p><a href="https://zh.wikipedia.org/wiki/%E5%9C%96%E5%83%8F%E7%BE%A4%E7%B5%84" target="_blank" rel="external">GOP</a>是一个图像组，在FLV格式中没有GOP这个概念，它是认为建立出来的一个概念，将两个I帧之间的所有帧都认为是一个GOP。由于一个单独的GOP有独立播放的能力，因此在直播中常常将它作为一个传输单元进行发送，并且丢弃一个GOP也不会影响正常播放。</p>
+<h1 id="关于GOP"><a href="#关于GOP" class="headerlink" title="关于GOP"></a>关于GOP</h1><p><a href="https://zh.wikipedia.org/wiki/%E5%9C%96%E5%83%8F%E7%BE%A4%E7%B5%84" target="_blank" rel="external">GOP</a>是一个图像组，在FLV格式中没有GOP这个概念，它是人为建立出来的一个概念，将两个I帧之间的所有帧都认为是一个GOP。由于一个单独的GOP有独立播放的能力，因此在直播中常常将它作为一个传输单元进行发送，并且丢弃一个GOP也不会影响正常播放。</p>
 <blockquote>
 <p>通常一个GOP中既包含video tag，也包含audio tag，但这没关系，只要认为两个I帧tag之间的数据，都认为是一个GOP即可。</p>
 </blockquote>
