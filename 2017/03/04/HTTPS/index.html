@@ -1,0 +1,649 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="本文是我在学习HTTPS的过程中记录的一些笔记，主要介绍HTTPS的一些核心概念。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTPS简介">
+<meta property="og:url" content="http://yoursite.com/2017/03/04/HTTPS/index.html">
+<meta property="og:site_name" content="Liduoouyang's blog">
+<meta property="og:description" content="本文是我在学习HTTPS的过程中记录的一些笔记，主要介绍HTTPS的一些核心概念。">
+<meta property="og:image" content="http://yoursite.com/images/HTTPS/1.png">
+<meta property="og:image" content="http://yoursite.com/images/HTTPS/2.png">
+<meta property="og:image" content="http://yoursite.com/images/HTTPS/3.png">
+<meta property="og:image" content="http://yoursite.com/images/HTTPS/4.png">
+<meta property="og:image" content="http://yoursite.com/images/HTTPS/5.png">
+<meta property="og:image" content="http://yoursite.com/images/HTTPS/6.png">
+<meta property="og:image" content="http://yoursite.com/images/HTTPS/7.png">
+<meta property="og:updated_time" content="2017-03-04T13:28:01.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTPS简介">
+<meta name="twitter:description" content="本文是我在学习HTTPS的过程中记录的一些笔记，主要介绍HTTPS的一些核心概念。">
+<meta name="twitter:image" content="http://yoursite.com/images/HTTPS/1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: "",
+      labels: ""
+    }
+  };
+</script>
+
+
+
+
+
+
+
+  <title> HTTPS简介 | Liduoouyang's blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">Liduoouyang's blog</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/03/04/HTTPS/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Ouyang Liduo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/images/avatar.jpeg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="Liduoouyang's blog">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="Liduoouyang's blog" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                HTTPS简介
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文是我在学习HTTPS的过程中记录的一些笔记，主要介绍HTTPS的一些核心概念。<br><a id="more"></a></p>
+<h2 id="认证"><a href="#认证" class="headerlink" title="认证"></a>认证</h2><p>服务器需要通过某种方式来了解用户身份。一旦服务器知道了用户身份，就可以判定用户可以访问的事务和资源了。认证就意味着要证明你是谁。通常是通过提供用户名和密码来进行认证的。</p>
+<h3 id="基本认证"><a href="#基本认证" class="headerlink" title="基本认证"></a>基本认证</h3><p>基本认证简单便捷，但并不安全。只能用它来防止非恶意用户无意间进行的访问。</p>
+<p><img src="/images/HTTPS/1.png" alt=""></p>
+<p>问题：基本认证的缺陷是什么？</p>
+<h3 id="摘要认证"><a href="#摘要认证" class="headerlink" title="摘要认证"></a>摘要认证</h3><p>摘要认证遵循的箴言是“绝不通过网络发送密码”。客户端不会发送密码，而是会发送一个“指纹”或密码的“摘要”，这是密码的不可逆扰码。</p>
+<p><img src="/images/HTTPS/2.png" alt=""></p>
+<p>问题：摘要认证的缺陷是什么？</p>
+<p>认证技术是一种轻量级的安全保护，在需要安全级别更加高的应用场景中，网络购物，银行业务等，则需要依赖更加安全的技术，如HTTPS。</p>
+<h2 id="HTTPS"><a href="#HTTPS" class="headerlink" title="HTTPS"></a>HTTPS</h2><p>HTTPS几个关键的问题：解决了哪些问题？分别使用什么技术实现的？弄清HTTPS的本质很重要。</p>
+<p>HTTPS能够提供下列功能：</p>
+<ul>
+<li>服务器认证(客户端知道它们是在与真正的而不是伪造的服务器通话)。</li>
+<li>客户端认证(服务器知道它们是在与真正的而不是伪造的客户端通话)。</li>
+<li>完整性(客户端和服务器的数据不会被修改)。</li>
+<li>加密(客户端和服务器的对话是私密的，无需担心被窃听)。</li>
+<li>效率(一个运行的足够快的算法，以便低端的客户端和服务器使用)。</li>
+<li>普适性(基本上所有的客户端和服务器都支持这些协议)。</li>
+<li>管理的可扩展性(在任何地方的任何人都可以立即进行安全通信)。</li>
+<li>适应性(能够支持当前最知名的安全方法)。</li>
+<li>在社会上的可行性(满足社会的政治文化需要)。</li>
+</ul>
+<h3 id="数字加密——对报文内容进行编解码"><a href="#数字加密——对报文内容进行编解码" class="headerlink" title="数字加密——对报文内容进行编解码"></a>数字加密——对报文内容进行编解码</h3><p>密码：对文本进行编码，使偷窥者无法识别的算法。一套编码方案——一种特殊的报文编码方式和一种稍后使用的相应解码方式的结合体。<br>密钥：改变密码行为的数字化参数。密码密钥会让一个密码机看起来好像是多个虚拟密码机一样，每个密码机都有不同的密钥值，因此其行为都会有所不同。</p>
+<p>对称密钥加密系统：编 / 解码使用相同密钥的算法。代表算法：DES。</p>
+<p><img src="/images/HTTPS/3.png" alt=""></p>
+<p>问题：对称加密的缺陷是什么？</p>
+<p>不对称密钥加密系统：编 / 解码使用不同密钥的算法。代表算法：RSA。</p>
+<p><img src="/images/HTTPS/4.png" alt=""></p>
+<p>问题：非对称加密的缺陷是什么？</p>
+<h3 id="数字签名——说明是谁编写的报文，同时证明报文未被篡改过"><a href="#数字签名——说明是谁编写的报文，同时证明报文未被篡改过" class="headerlink" title="数字签名——说明是谁编写的报文，同时证明报文未被篡改过"></a>数字签名——说明是谁编写的报文，同时证明报文未被篡改过</h3><p><img src="/images/HTTPS/5.png" alt=""></p>
+<p>如果拆包后的摘要与节点 B 自己的摘要版本不匹配，要么就是报文在传输过程中被篡改了，要么就是发送端没有节点 A 的私有密钥(也就是说它不是节点 A)。</p>
+<h3 id="数字证书——证明服务器没有被伪造"><a href="#数字证书——证明服务器没有被伪造" class="headerlink" title="数字证书——证明服务器没有被伪造"></a>数字证书——证明服务器没有被伪造</h3><p>在数字签名中，如果客户端中的服务器公钥被人修改（劫持者拿不到服务器私钥，但可以修改客户端公钥），并且客户端到服务器之间有一个劫持者，那么劫持者就可以假装成原始服务器和客户端进行通信，即冒充风险（劫持者私自更换了密钥和私钥）。为了防止这种情况的发生，服务器可以找证书中心（CA）对服务器的公钥进行认证。客户端请求时，服务器会返回经过认证的证书，客户端用CA的公钥进行解密，拿到服务器的公钥，接下来就可以和服务器安全通信了。<br>通过 HTTPS 建立了一个安全 Web 事务之后，现代的浏览器都会自动获取所连接服务器的数字证书。如果服务器没有证书，安全连接就会失败。<br>由于任何人都能随意生成公钥、私钥对，可能有人会利用这个来进行非法操作。因此数字证书的根本目的就是证明公钥、私钥对的合法性。</p>
+<p><a href="http://www.ruanyifeng.com/blog/2011/08/what_is_a_digital_signature.html" target="_blank" rel="external">参考</a></p>
+<h3 id="HTTPS细节"><a href="#HTTPS细节" class="headerlink" title="HTTPS细节"></a>HTTPS细节</h3><p>不使用SSL/TLS的HTTP通信，就是不加密的通信。所有信息明文传播，带来了三大风险。</p>
+<ul>
+<li>窃听风险（eavesdropping）：第三方可以获知通信内容。</li>
+<li>篡改风险（tampering）：第三方可以修改通信内容。</li>
+<li>冒充风险（pretending）：第三方可以冒充他人身份参与通信。</li>
+</ul>
+<p>SSL/TLS协议是为了解决这三大风险而设计的，希望达到：</p>
+<ul>
+<li>所有信息都是加密传播，第三方无法窃听——对应数字加密技术。</li>
+<li>具有校验机制，一旦被篡改，通信双方会立刻发现——对应数字签名技术。</li>
+<li>配备身份证书，防止身份被冒充——对应数字证书技术。</li>
+</ul>
+<p><img src="/images/HTTPS/6.png" alt=""></p>
+<p>其中，安全层的作用是加密HTTP层的数据和解密TCP层的数据。在TCP连接建立之后，需要在安全层进行握手，对加密参数进行沟通，对各自的SSL/TLS层进行初始化。</p>
+<p>整个HTTPS的流程是这样子的：</p>
+<ul>
+<li>客户端向服务器端索要并验证公钥。</li>
+<li>双方协商生成”对话密钥”。</li>
+<li>双方采用”对话密钥”进行加密通信。</li>
+</ul>
+<p>步骤1和步骤2就是SSL/TLS握手过程了。实际上，在SSL/TLS握手完毕之后，客户端和服务端之间会采用对称加密技术对传输的数据进行加解密，而采用的密钥就是对话密钥。因此，对话密钥的保密工作很重要，不能被他人窃取，因此，对话密钥的生成过程就需要依赖非对称加密技术，所以在步骤1中，客户端向服务端索要的公钥，就是为了保护对话秘钥而存在的。这便是混合加密技术的应用。</p>
+<p>混合加密系统和会话密钥：任何人只要知道了其公开密钥，就可以向一台公共服务器发送安全报文，所以非对称的公开密钥加密系统是很好用的。两个节点无须为了进行安全的通信而先交换私有密钥。 但公开密钥加密算法的计算可能会很慢。实际上它混合使用了对称和非对称策略。 比如，比较常见的做法是在两节点间通过便捷的公开密钥加密技术建立起安全通信， 然后再用那条安全的通道产生并发送临时的随机对称密钥，通过更快的对称加密技术对其余的数据进行加密。</p>
+<p>具体的SSL/TLS的握手过程是这样的。会话秘钥就是在第三步生成的。</p>
+<p><img src="/images/HTTPS/7.png" alt=""></p>
+<p><a href="http://www.ruanyifeng.com/blog/2014/09/illustration-ssl.html" target="_blank" rel="external">参考1</a><br><a href="http://www.ruanyifeng.com/blog/2014/02/ssl_tls.html" target="_blank" rel="external">参考2</a><br>参考3：《HTTP权威指南》</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/04/无锁编程/" rel="next" title="Non-blocking algorithm">
+                <i class="fa fa-chevron-left"></i> Non-blocking algorithm
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.jpeg"
+               alt="Ouyang Liduo" />
+          <p class="site-author-name" itemprop="name">Ouyang Liduo</p>
+          <p class="site-description motion-element" itemprop="description">每个认真生活的人，都值得被认真对待。</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">12</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">标签</span>
+              
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#认证"><span class="nav-number">1.</span> <span class="nav-text">认证</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本认证"><span class="nav-number">1.1.</span> <span class="nav-text">基本认证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#摘要认证"><span class="nav-number">1.2.</span> <span class="nav-text">摘要认证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTPS"><span class="nav-number">2.</span> <span class="nav-text">HTTPS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数字加密——对报文内容进行编解码"><span class="nav-number">2.1.</span> <span class="nav-text">数字加密——对报文内容进行编解码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数字签名——说明是谁编写的报文，同时证明报文未被篡改过"><span class="nav-number">2.2.</span> <span class="nav-text">数字签名——说明是谁编写的报文，同时证明报文未被篡改过</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数字证书——证明服务器没有被伪造"><span class="nav-number">2.3.</span> <span class="nav-text">数字证书——证明服务器没有被伪造</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTPS细节"><span class="nav-number">2.4.</span> <span class="nav-text">HTTPS细节</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ouyang Liduo</span>
+</div>
+
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://yoursite.com/2016/10/20/flv/index.html">
 <meta property="og:site_name" content="Liduoouyang's blog">
 <meta property="og:description" content="工作中需要熟悉视频流方面的知识，其中就包括FLV的格式，以下是对学习内容的一些记录。">
-<meta property="og:updated_time" content="2017-03-01T13:31:36.000Z">
+<meta property="og:updated_time" content="2017-03-01T13:51:14.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="FLV file format">
 <meta name="twitter:description" content="工作中需要熟悉视频流方面的知识，其中就包括FLV的格式，以下是对学习内容的一些记录。">
@@ -618,7 +618,7 @@
 <p>Data：</p>
 <ul>
 <li>当AVCPacketType = 0，Data = AVCDecoderConfigurationRecord。AVCDecoderConfigurationRecord包含着是H.264解码相关较重要的sps和pps信息（sps和pps放在了同一个tag中），再给AVC解码器送数据流之前一定要把sps和pps信息送出，否则的话解码器不能正常解码。而且在解码器stop之后再次start之前，如seek、快进快退状态切换等，都需要重新送一遍sps和pps的信息。AVCDecoderConfigurationRecord在FLV文件中一般情况也是出现一次，也就是第一个video tag。</li>
-<li>当AVCPacketType = 1，Data = One or more NALUs (can be individual slices per FLV packets; that is, full frames are not strictly required)</li>
+<li>当AVCPacketType = 1，Data = One or more NALUs (can be individual slices per FLV packets; that is, full frames are not strictly required)，NALU（network abstract layer unit）简单理解就是一帧视频数据。</li>
 <li>当AVCPacketType = 2，Data为空</li>
 </ul>
 <blockquote>
@@ -843,7 +843,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">11</span>
+              <span class="site-state-item-count">12</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
