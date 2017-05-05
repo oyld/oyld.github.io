@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="经济学原理," />
 
 
 
@@ -84,16 +84,16 @@
 
 
 
-<meta name="description" content="由于公司的Linux开发机各种端口限制，想在上面写点程序推到GitHub上实在是搞不定。自己的Mac环境在C++开发方面和Linux系统还是有不小的差别，于是决定在Mac上装Linux虚拟机，以下是Mac上安装Vagrant的过程。">
+<meta name="description" content="经济学十大原理。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Vagrant">
-<meta property="og:url" content="http://yoursite.com/2016/12/08/vagrant/index.html">
+<meta property="og:title" content="经济学原理：经济学十大原理">
+<meta property="og:url" content="http://yoursite.com/2017/05/05/economics/index.html">
 <meta property="og:site_name" content="Liduoouyang's blog">
-<meta property="og:description" content="由于公司的Linux开发机各种端口限制，想在上面写点程序推到GitHub上实在是搞不定。自己的Mac环境在C++开发方面和Linux系统还是有不小的差别，于是决定在Mac上装Linux虚拟机，以下是Mac上安装Vagrant的过程。">
-<meta property="og:updated_time" content="2016-12-11T05:45:14.000Z">
+<meta property="og:description" content="经济学十大原理。">
+<meta property="og:updated_time" content="2017-05-05T13:10:35.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Vagrant">
-<meta name="twitter:description" content="由于公司的Linux开发机各种端口限制，想在上面写点程序推到GitHub上实在是搞不定。自己的Mac环境在C++开发方面和Linux系统还是有不小的差别，于是决定在Mac上装Linux虚拟机，以下是Mac上安装Vagrant的过程。">
+<meta name="twitter:title" content="经济学原理：经济学十大原理">
+<meta name="twitter:description" content="经济学十大原理。">
 
 
 
@@ -125,7 +125,7 @@
 
 
 
-  <title> Vagrant | Liduoouyang's blog </title>
+  <title> 经济学原理：经济学十大原理 | Liduoouyang's blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -236,7 +236,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/08/vagrant/">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/05/economics/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Ouyang Liduo">
@@ -260,7 +260,7 @@
             
             
               
-                Vagrant
+                经济学原理：经济学十大原理
               
             
           </h1>
@@ -301,31 +301,17 @@
       
 
       
-        <p>由于公司的Linux开发机各种端口限制，想在上面写点程序推到GitHub上实在是搞不定。自己的Mac环境在C++开发方面和Linux系统还是有不小的差别，于是决定在Mac上装Linux虚拟机，以下是Mac上安装Vagrant的过程。<br><a id="more"></a></p>
-<h1 id="安装VirtualBox"><a href="#安装VirtualBox" class="headerlink" title="安装VirtualBox"></a>安装VirtualBox</h1><p>Vagrant是建立在传统的虚拟机软件基础之上的，因此我们要选择一个虚拟机。这里我选择的是VirtualBox，因为它免费且轻量级。安装VirutualBox没什么好说的，直接在<a href="https://www.virtualbox.org/wiki/Downloads?replytocom=98578" target="_blank" rel="external">官网</a>下载，双击安装就可以了。</p>
-<h1 id="安装Vagrant"><a href="#安装Vagrant" class="headerlink" title="安装Vagrant"></a>安装Vagrant</h1><p>安装好VirtualBox后，接着安装Vagrant，同样的步骤，在<a href="https://www.vagrantup.com/" target="_blank" rel="external">官网</a>下载然后安装。</p>
-<h1 id="安装Linux虚拟环境"><a href="#安装Linux虚拟环境" class="headerlink" title="安装Linux虚拟环境"></a>安装Linux虚拟环境</h1><p>基础环境安装好了，现在需要一个系统镜像，可以在<a href="http://www.vagrantbox.es/" target="_blank" rel="external">这里</a>选择自己想要安装的系统，直接下载下来。这里把操作系统环境抽象成了一个个box，包含系统镜像和相关配置文件。我选的box是<code>trusty-server-cloudimg-amd64-vagrant-disk1.box</code>。下载完成后添加box到Vagrant。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /home/oyld/vagrant</span><br><span class="line">vagrant box add [name] trusty-server-cloudimg-amd64-vagrant-disk1.box</span><br></pre></td></tr></table></figure>
-<p>这里的<code>name</code>是这个环境的名称，表示新建一个名为<code>name</code>的虚拟环境。默认名字为<code>base</code>。<br>添加box之后，接着进行初始化。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant init [name]</span><br></pre></td></tr></table></figure>
-<p>初始化后会在当前目录下生成一个配置文件<code>Vagrantfile</code>，这个配置文件不需要修改就能使用了。</p>
-<h1 id="相关操作"><a href="#相关操作" class="headerlink" title="相关操作"></a>相关操作</h1><p>Linux环境建立好之后，就可以启动虚拟机了：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant up</span><br></pre></td></tr></table></figure>
-<p>等系统完全启动后，直接<code>ssh</code>登录，像登录远程开发机一样：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant ssh</span><br></pre></td></tr></table></figure>
-<p>重启：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant reload</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>修改配置文件后需要进行重启。</p>
-</blockquote>
-<p>关机：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant halt</span><br></pre></td></tr></table></figure>
-<p>挂起：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant <span class="built_in">suspend</span></span><br></pre></td></tr></table></figure>
-<p>恢复：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant resume</span><br></pre></td></tr></table></figure>
-<p>更多命令可以参考<a href="https://www.vagrantup.com/docs/cli/" target="_blank" rel="external">官方文档</a>。</p>
-<p>初次使用Vagrant，感觉真的非常的方便，系统启动、关闭都非常的快。并且在虚拟机内部，目录<code>/vagrant</code>是和宿主机共享的，这点真的超赞。相比于之前使用VMware把文件拖来拖去，不知道方便到哪里去了。</p>
+        <p>经济学十大原理。<br><a id="more"></a></p>
+<h1 id="原理一：人们面临权衡取舍"><a href="#原理一：人们面临权衡取舍" class="headerlink" title="原理一：人们面临权衡取舍"></a>原理一：人们面临权衡取舍</h1><p>得到一件东西，就要失去另外一件东西。<br>社会在效率与平等间面临权衡取舍。<br>效率：社会能从其稀缺资源中得到最大利益的特性，经济蛋糕的大小。<br>平等：经济成果在社会成员中平均分配的特性，如何分割这块蛋糕。</p>
+<p>例子：一些福利制度或失业保险救济穷人，税收让富人交更多税，这让社会更加平等，但减少了对辛勤工作的奖励，打击了富人的积极性，导致人们工作少了，生产的物品和服务变少，为了平分经济蛋糕是的蛋糕本身变小了。</p>
+<h1 id="原理二：某种东西的成本是为了得到它，所放弃的东西"><a href="#原理二：某种东西的成本是为了得到它，所放弃的东西" class="headerlink" title="原理二：某种东西的成本是为了得到它，所放弃的东西"></a>原理二：某种东西的成本是为了得到它，所放弃的东西</h1><h1 id="原理三：理性人考虑边际量"><a href="#原理三：理性人考虑边际量" class="headerlink" title="原理三：理性人考虑边际量"></a>原理三：理性人考虑边际量</h1><p>边际行动：对现有行动计划的微小增量调整。理性人通常通过比较边际收益和边际成本来做决策。<br>经典问题：为什么水这么便宜，而钻石这么贵？原因是，一个人对任何一种物品的支付意愿都基于其增加一单位该物品所获得的边际收益，而边际收益又取决于一个人已经拥有多少这种物品。因此，人们认为钻石的边际收益很大，支付意愿更强，价格自然也就比水要贵了。</p>
+<h1 id="原理四：人们会对激励作出反应"><a href="#原理四：人们会对激励作出反应" class="headerlink" title="原理四：人们会对激励作出反应"></a>原理四：人们会对激励作出反应</h1><p>在经济学研究中，激励起着中心作用。如果政策改变了激励，那就会使人们改变自己的行为。<br>例子：强制要求汽车安装安全带，死机更快速、更不谨慎的开车，死机死亡率降低，行人死亡率升高。</p>
+<h1 id="原理五：贸易可以使每个人的状况都变得更好"><a href="#原理五：贸易可以使每个人的状况都变得更好" class="headerlink" title="原理五：贸易可以使每个人的状况都变得更好"></a>原理五：贸易可以使每个人的状况都变得更好</h1><p>贸易使每个人都可以专门从事自己最擅长的活动，通过与其他人贸易，人们可以以较低的成本获得各种各样的物品与服务。</p>
+<h1 id="原理六：市场通常是组织经济活动的一种好方法"><a href="#原理六：市场通常是组织经济活动的一种好方法" class="headerlink" title="原理六：市场通常是组织经济活动的一种好方法"></a>原理六：市场通常是组织经济活动的一种好方法</h1><p>看不见的手。</p>
+<h1 id="原理七：政府有时可以改善市场结果"><a href="#原理七：政府有时可以改善市场结果" class="headerlink" title="原理七：政府有时可以改善市场结果"></a>原理七：政府有时可以改善市场结果</h1><p>需要政府的原因之一：只有在政府实施规则并维持对市场经济至关重要的制度时，看不见的手才能施展其魔力。最重要的是，市场经济需要实施产权的制度，以便个人可以拥有和控制稀缺资源。<br>需要政府的原因之二：看不见的手不是无所不能，政府干预的原因包括促进效率（市场失灵使得市场不能有效配置资源）和促进平等（市场并不能保证每个人都有充足的食物、体面的衣服和充分的医疗保健，这种不平等要求政府进行干预）。<br>政府制定的政策有时可以改善市场结果，但并不总是这样，即政府也有好坏之分。</p>
+<h1 id="原理八：一国的生活水平取决于它生产物品与服务的能力"><a href="#原理八：一国的生活水平取决于它生产物品与服务的能力" class="headerlink" title="原理八：一国的生活水平取决于它生产物品与服务的能力"></a>原理八：一国的生活水平取决于它生产物品与服务的能力</h1><p>几乎所有生活水平的差别都可以归因于各国生产率的差别——每一单位劳动投入所产生的物品与服务数量的差别。为了提高生活水平，决策者需要通过让工人受到良好的教育、拥有生产物品与服务需要的工具以及获取最好的技术来提高生产率。</p>
+<h1 id="原理九：当政府发行了过多货币时，物价上升"><a href="#原理九：当政府发行了过多货币时，物价上升" class="headerlink" title="原理九：当政府发行了过多货币时，物价上升"></a>原理九：当政府发行了过多货币时，物价上升</h1><p>通货膨胀罪魁祸首是货币量的增长。</p>
+<h1 id="原理十：社会面临通货膨胀与失业之间的短期权衡取舍"><a href="#原理十：社会面临通货膨胀与失业之间的短期权衡取舍" class="headerlink" title="原理十：社会面临通货膨胀与失业之间的短期权衡取舍"></a>原理十：社会面临通货膨胀与失业之间的短期权衡取舍</h1><p>货币注入的短期效应：货币量增加刺激了社会整体支出水平，增加了对物品与服务的需求 — 需求增加引起物价上涨 — 企业雇佣更多工人，生产更多物品与服务 — 失业率下降。</p>
 
       
     </div>
@@ -347,13 +333,19 @@
 
     <footer class="post-footer">
       
+        <div class="post-tags">
+          
+            <a href="/tags/经济学原理/" rel="tag"># 经济学原理</a>
+          
+        </div>
+      
 
       
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/12/04/TCP/" rel="next" title="TCP">
-                <i class="fa fa-chevron-left"></i> TCP
+              <a href="/2017/03/04/HTTPS/" rel="next" title="HTTPS简介">
+                <i class="fa fa-chevron-left"></i> HTTPS简介
               </a>
             
           </div>
@@ -361,10 +353,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/01/04/无锁编程/" rel="prev" title="Non-blocking algorithm">
-                Non-blocking algorithm <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -477,7 +465,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#安装VirtualBox"><span class="nav-number">1.</span> <span class="nav-text">安装VirtualBox</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装Vagrant"><span class="nav-number">2.</span> <span class="nav-text">安装Vagrant</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装Linux虚拟环境"><span class="nav-number">3.</span> <span class="nav-text">安装Linux虚拟环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#相关操作"><span class="nav-number">4.</span> <span class="nav-text">相关操作</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#原理一：人们面临权衡取舍"><span class="nav-number">1.</span> <span class="nav-text">原理一：人们面临权衡取舍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理二：某种东西的成本是为了得到它，所放弃的东西"><span class="nav-number">2.</span> <span class="nav-text">原理二：某种东西的成本是为了得到它，所放弃的东西</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理三：理性人考虑边际量"><span class="nav-number">3.</span> <span class="nav-text">原理三：理性人考虑边际量</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理四：人们会对激励作出反应"><span class="nav-number">4.</span> <span class="nav-text">原理四：人们会对激励作出反应</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理五：贸易可以使每个人的状况都变得更好"><span class="nav-number">5.</span> <span class="nav-text">原理五：贸易可以使每个人的状况都变得更好</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理六：市场通常是组织经济活动的一种好方法"><span class="nav-number">6.</span> <span class="nav-text">原理六：市场通常是组织经济活动的一种好方法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理七：政府有时可以改善市场结果"><span class="nav-number">7.</span> <span class="nav-text">原理七：政府有时可以改善市场结果</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理八：一国的生活水平取决于它生产物品与服务的能力"><span class="nav-number">8.</span> <span class="nav-text">原理八：一国的生活水平取决于它生产物品与服务的能力</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理九：当政府发行了过多货币时，物价上升"><span class="nav-number">9.</span> <span class="nav-text">原理九：当政府发行了过多货币时，物价上升</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理十：社会面临通货膨胀与失业之间的短期权衡取舍"><span class="nav-number">10.</span> <span class="nav-text">原理十：社会面临通货膨胀与失业之间的短期权衡取舍</span></a></li></ol></div>
             
 
           </div>
