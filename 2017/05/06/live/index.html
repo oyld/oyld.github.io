@@ -84,16 +84,16 @@
 
 
 
-<meta name="description" content="由于公司的Linux开发机各种端口限制，想在上面写点程序推到GitHub上实在是搞不定。自己的Mac环境在C++开发方面和Linux系统还是有不小的差别，于是决定在Mac上装Linux虚拟机，以下是Mac上安装Vagrant的过程。">
+<meta name="description" content="国内直播常用协议分析对比。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Vagrant">
-<meta property="og:url" content="http://yoursite.com/2016/12/08/vagrant/index.html">
+<meta property="og:title" content="直播相关协议对比">
+<meta property="og:url" content="http://yoursite.com/2017/05/06/live/index.html">
 <meta property="og:site_name" content="Liduoouyang's blog">
-<meta property="og:description" content="由于公司的Linux开发机各种端口限制，想在上面写点程序推到GitHub上实在是搞不定。自己的Mac环境在C++开发方面和Linux系统还是有不小的差别，于是决定在Mac上装Linux虚拟机，以下是Mac上安装Vagrant的过程。">
-<meta property="og:updated_time" content="2016-12-11T05:45:14.000Z">
+<meta property="og:description" content="国内直播常用协议分析对比。">
+<meta property="og:updated_time" content="2017-05-06T12:03:38.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Vagrant">
-<meta name="twitter:description" content="由于公司的Linux开发机各种端口限制，想在上面写点程序推到GitHub上实在是搞不定。自己的Mac环境在C++开发方面和Linux系统还是有不小的差别，于是决定在Mac上装Linux虚拟机，以下是Mac上安装Vagrant的过程。">
+<meta name="twitter:title" content="直播相关协议对比">
+<meta name="twitter:description" content="国内直播常用协议分析对比。">
 
 
 
@@ -125,7 +125,7 @@
 
 
 
-  <title> Vagrant | Liduoouyang's blog </title>
+  <title> 直播相关协议对比 | Liduoouyang's blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -236,7 +236,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/08/vagrant/">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/05/06/live/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Ouyang Liduo">
@@ -260,7 +260,7 @@
             
             
               
-                Vagrant
+                直播相关协议对比
               
             
           </h1>
@@ -301,31 +301,49 @@
       
 
       
-        <p>由于公司的Linux开发机各种端口限制，想在上面写点程序推到GitHub上实在是搞不定。自己的Mac环境在C++开发方面和Linux系统还是有不小的差别，于是决定在Mac上装Linux虚拟机，以下是Mac上安装Vagrant的过程。<br><a id="more"></a></p>
-<h1 id="安装VirtualBox"><a href="#安装VirtualBox" class="headerlink" title="安装VirtualBox"></a>安装VirtualBox</h1><p>Vagrant是建立在传统的虚拟机软件基础之上的，因此我们要选择一个虚拟机。这里我选择的是VirtualBox，因为它免费且轻量级。安装VirutualBox没什么好说的，直接在<a href="https://www.virtualbox.org/wiki/Downloads?replytocom=98578" target="_blank" rel="external">官网</a>下载，双击安装就可以了。</p>
-<h1 id="安装Vagrant"><a href="#安装Vagrant" class="headerlink" title="安装Vagrant"></a>安装Vagrant</h1><p>安装好VirtualBox后，接着安装Vagrant，同样的步骤，在<a href="https://www.vagrantup.com/" target="_blank" rel="external">官网</a>下载然后安装。</p>
-<h1 id="安装Linux虚拟环境"><a href="#安装Linux虚拟环境" class="headerlink" title="安装Linux虚拟环境"></a>安装Linux虚拟环境</h1><p>基础环境安装好了，现在需要一个系统镜像，可以在<a href="http://www.vagrantbox.es/" target="_blank" rel="external">这里</a>选择自己想要安装的系统，直接下载下来。这里把操作系统环境抽象成了一个个box，包含系统镜像和相关配置文件。我选的box是<code>trusty-server-cloudimg-amd64-vagrant-disk1.box</code>。下载完成后添加box到Vagrant。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /home/oyld/vagrant</span><br><span class="line">vagrant box add [name] trusty-server-cloudimg-amd64-vagrant-disk1.box</span><br></pre></td></tr></table></figure>
-<p>这里的<code>name</code>是这个环境的名称，表示新建一个名为<code>name</code>的虚拟环境。默认名字为<code>base</code>。<br>添加box之后，接着进行初始化。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant init [name]</span><br></pre></td></tr></table></figure>
-<p>初始化后会在当前目录下生成一个配置文件<code>Vagrantfile</code>，这个配置文件不需要修改就能使用了。</p>
-<h1 id="相关操作"><a href="#相关操作" class="headerlink" title="相关操作"></a>相关操作</h1><p>Linux环境建立好之后，就可以启动虚拟机了：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant up</span><br></pre></td></tr></table></figure>
-<p>等系统完全启动后，直接<code>ssh</code>登录，像登录远程开发机一样：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant ssh</span><br></pre></td></tr></table></figure>
-<p>重启：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant reload</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>修改配置文件后需要进行重启。</p>
-</blockquote>
-<p>关机：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant halt</span><br></pre></td></tr></table></figure>
-<p>挂起：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant <span class="built_in">suspend</span></span><br></pre></td></tr></table></figure>
-<p>恢复：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant resume</span><br></pre></td></tr></table></figure>
-<p>更多命令可以参考<a href="https://www.vagrantup.com/docs/cli/" target="_blank" rel="external">官方文档</a>。</p>
-<p>初次使用Vagrant，感觉真的非常的方便，系统启动、关闭都非常的快。并且在虚拟机内部，目录<code>/vagrant</code>是和宿主机共享的，这点真的超赞。相比于之前使用VMware把文件拖来拖去，不知道方便到哪里去了。</p>
+        <p>国内直播常用协议分析对比。<br><a id="more"></a></p>
+<p>接触直播领域也有一段时间了，这次来总结一下和直播相关的一些通信协议，对它们做一个比较。就国内而言，比较常用的协议包括RTMP（Real Time Messaging Protocol），HTTP-FLV，HLS（Http Live Streaming）。</p>
+<h1 id="RTMP"><a href="#RTMP" class="headerlink" title="RTMP"></a>RTMP</h1><p>这个协议是一个应用层协议，建立在TCP层之上，协议内容非常多，流程也比较复杂，光是应用层的握手就有点绕了。国内直播网站，如斗鱼，主播上行基本都是使用OBS进行推流，走的就是RTMP协议。服务端下行也有现成的开源软件，如nginx-rtmp来传输FLV格式的视频流，不过用起来还是有坑的，这点需要注意。总体来说，RTMP协议还是以上行推流使用居多，下行一般使用HTTP传输FLV或HLS。</p>
+<p>优点：</p>
+<ol>
+<li>延延时。</li>
+<li>RTMP使用场景更加广泛，包括视频会议等，它包含了控制播放器行为的一些命令。</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>1935端口，视频流对于某些防火墙可能无法通过。</li>
+<li>协议复杂。</li>
+</ol>
+<h1 id="HTTP-FLV"><a href="#HTTP-FLV" class="headerlink" title="HTTP-FLV"></a>HTTP-FLV</h1><p>HTTP-FLV一般用来传输FLV格式的视频流，这是应用最为广泛的一种协议。</p>
+<p>优点：</p>
+<ol>
+<li>基于HTTP，在CDN中的支持较好，开发、调试成本要小一些。</li>
+<li>低延时，延迟与RTMP相当。</li>
+<li>80端口，不会被防火墙阻拦。</li>
+<li>302重定向，方便CDN配合调度系统的使用。</li>
+</ol>
+<h1 id="HLS"><a href="#HLS" class="headerlink" title="HLS"></a>HLS</h1><p>苹果公司搞的一套基于HTTP的协议。不同于RTMP和HTTP-FLV，HLS主要是传输一个个小的ts视频文件，每个ts文件都可以单独播放。除了ts文件，还有一种m3u8索引文件，是对ts文件的索引，格式类似于下面这种。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#EXTM3U</span><br><span class="line">#EXT-X-VERSION:3</span><br><span class="line">#EXT-X-ALLOW-CACHE:NO</span><br><span class="line">#EXT-X-MEDIA-SEQUENCE:1494066817</span><br><span class="line">#EXT-X-TARGETDURATION:5</span><br><span class="line">#EXTINF:4.65,</span><br><span class="line">1.ts</span><br><span class="line">#EXTINF:4.65,</span><br><span class="line">2.ts</span><br><span class="line">#EXTINF:4.65,</span><br><span class="line">3.ts</span><br><span class="line">#EXTINF:4.65,</span><br><span class="line">4.ts</span><br><span class="line">#EXTINF:4.65,</span><br><span class="line">5.ts</span><br></pre></td></tr></table></figure>
+<p>HLS协议的例程如下：</p>
+<ol>
+<li>播放器请求一个m3u8索引文件，然后服务器返回一个m3u8文件，里面就包含了连续的ts文件的名称。</li>
+<li>播放器根据索引文件的内容，请求里面的第一个ts文件，第二个ts文件，第三个ts文件。</li>
+<li>等播放器收到几个连续的ts后（一般会缓存多个，防止网络抖动发生卡顿），就开始播放。</li>
+<li>播放器请求几个ts后，再请求新的m3u8文件。</li>
+<li>这是更新了的新的m3u8内的ts序号又会增加，播放器便可以去请求新的ts文件了。</li>
+</ol>
+<p>播放器定期获取m3u8文件，就能获得新的ts列表，一个个连续的ts文件就源源不断的从服务器传到了播放器，使得画面能够连续流畅。</p>
+<p>优点：</p>
+<ol>
+<li>HTML5可以直接播放，不需要独立的APP。</li>
+<li>基于HTTP，无需考虑防火墙或者代理问题。</li>
+<li>通过动态修改m3u8内容，可以实现平滑切换码率。</li>
+</ol>
+<p>缺点：</p>
+<ol>
+<li>由于先要缓存数个ts文件才能播放，所以可能造成延迟过高。</li>
+<li>有可能使用短连接，每请求一个ts文件都要新建一条连接，造成额外开销。</li>
+</ol>
 
       
     </div>
@@ -352,8 +370,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/12/04/TCP/" rel="next" title="TCP">
-                <i class="fa fa-chevron-left"></i> TCP
+              <a href="/2017/05/05/economics/" rel="next" title="经济学原理：经济学十大原理">
+                <i class="fa fa-chevron-left"></i> 经济学原理：经济学十大原理
               </a>
             
           </div>
@@ -361,10 +379,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/01/04/无锁编程/" rel="prev" title="Non-blocking algorithm">
-                Non-blocking algorithm <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -477,7 +491,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#安装VirtualBox"><span class="nav-number">1.</span> <span class="nav-text">安装VirtualBox</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装Vagrant"><span class="nav-number">2.</span> <span class="nav-text">安装Vagrant</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装Linux虚拟环境"><span class="nav-number">3.</span> <span class="nav-text">安装Linux虚拟环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#相关操作"><span class="nav-number">4.</span> <span class="nav-text">相关操作</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#RTMP"><span class="nav-number">1.</span> <span class="nav-text">RTMP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-FLV"><span class="nav-number">2.</span> <span class="nav-text">HTTP-FLV</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HLS"><span class="nav-number">3.</span> <span class="nav-text">HLS</span></a></li></ol></div>
             
 
           </div>
