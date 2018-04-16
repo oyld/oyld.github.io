@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/07/17/SQL/index.html">
 <meta property="og:site_name" content="Liduoouyang's blog">
 <meta property="og:description" content="最近自己在弄一个ERP系统，该系统用到了SQL Server，由于没有什么SQL基础，因此边做边学，记录一下join相关的东西。">
-<meta property="og:updated_time" content="2017-07-24T02:15:52.000Z">
+<meta property="og:updated_time" content="2018-04-16T11:31:59.377Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SQL join">
 <meta name="twitter:description" content="最近自己在弄一个ERP系统，该系统用到了SQL Server，由于没有什么SQL基础，因此边做边学，记录一下join相关的东西。">
@@ -303,19 +303,21 @@
       
         <p>最近自己在弄一个ERP系统，该系统用到了SQL Server，由于没有什么SQL基础，因此边做边学，记录一下join相关的东西。</p>
 <a id="more"></a>
-<h2 id="内连接"><a href="#内连接" class="headerlink" title="内连接"></a>内连接</h2><h3 id="交叉连接"><a href="#交叉连接" class="headerlink" title="交叉连接"></a>交叉连接</h3><p>相当于没有任何过滤条件的内连接，结果为两个表的笛卡尔积。</p>
+<h2 id="内连接"><a href="#内连接" class="headerlink" title="内连接"></a>内连接</h2><p>将多个表按照连接谓词的条件组合在一起，每个表中的行要满足连接谓词才能组合在一起。</p>
+<h3 id="交叉连接"><a href="#交叉连接" class="headerlink" title="交叉连接"></a>交叉连接</h3><p>相当于没有任何过滤条件的内连接，结果为两个表的笛卡尔积。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> A, B</span><br></pre></td></tr></table></figure>
 <h3 id="显示内连接"><a href="#显示内连接" class="headerlink" title="显示内连接"></a>显示内连接</h3><p>使用JOIN+ON筛选结果。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> A <span class="keyword">INNER</span> <span class="keyword">JOIN</span> B <span class="keyword">ON</span> A.ID = B.ID</span><br></pre></td></tr></table></figure>
 <h3 id="隐式内连接"><a href="#隐式内连接" class="headerlink" title="隐式内连接"></a>隐式内连接</h3><p>使用FROM列表+WHERE筛选结果。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> A, B <span class="keyword">WHERE</span> <span class="keyword">ON</span> A.ID = B.ID</span><br></pre></td></tr></table></figure>
-<h2 id="外连接"><a href="#外连接" class="headerlink" title="外连接"></a>外连接</h2><h3 id="左外连接-left-outer-join-left-join"><a href="#左外连接-left-outer-join-left-join" class="headerlink" title="左外连接(left outer join = left join)"></a>左外连接(<code>left outer join = left join</code>)</h3><p>查询结果以左表为基准，右表中符合条件的行合并到左表中。如果右表没有对应的行，则用<code>NULL</code>填充；如果右表有多个对应的行，则扩充左表，分别合并。</p>
+<h2 id="外连接"><a href="#外连接" class="headerlink" title="外连接"></a>外连接</h2><p>以一个表为基础，把其它表合并进来，外连接并不要求被合并表中的记录在基础表中都一条匹配的记录。</p>
+<h3 id="左外连接-left-outer-join-left-join"><a href="#左外连接-left-outer-join-left-join" class="headerlink" title="左外连接(left outer join = left join)"></a>左外连接(<code>left outer join = left join</code>)</h3><p>查询结果以左表为基准，右表中符合条件的行合并到左表中。如果右表没有对应的行，则用<code>NULL</code>填充；如果右表有多个对应的行，则扩充左表，分别合并。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> A <span class="keyword">LEFT</span> <span class="keyword">JOIN</span> B <span class="keyword">ON</span> A.ID = B.ID</span><br></pre></td></tr></table></figure>
-<h3 id="右外连接-right-outer-join-right-outer-join"><a href="#右外连接-right-outer-join-right-outer-join" class="headerlink" title="右外连接(right outer join = right outer join)"></a>右外连接(<code>right outer join = right outer join</code>)</h3><p>查询结果以右表为基准，左表中符合条件的行合并到右表中，如果左表没有对应的行，则用<code>NULL</code>填充；如果左表有多个对应的行，则扩充右表，分别合并。</p>
+<h3 id="右外连接-right-outer-join-right-join"><a href="#右外连接-right-outer-join-right-join" class="headerlink" title="右外连接(right outer join = right join)"></a>右外连接(<code>right outer join = right join</code>)</h3><p>查询结果以右表为基准，左表中符合条件的行合并到右表中，如果左表没有对应的行，则用<code>NULL</code>填充；如果左表有多个对应的行，则扩充右表，分别合并。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> A <span class="keyword">RIGHT</span> <span class="keyword">JOIN</span> B <span class="keyword">ON</span> A.ID = B.ID</span><br></pre></td></tr></table></figure>
 <h3 id="全连接"><a href="#全连接" class="headerlink" title="全连接"></a>全连接</h3><p>左外连接和右外连接的并集，包含被连接表的所有记录，一个表中的记录在另一个表中没有对应记录，则用<code>NULL</code>填充。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> A <span class="keyword">FULL</span> <span class="keyword">JOIN</span> B <span class="keyword">ON</span> A.ID = B.ID</span><br></pre></td></tr></table></figure>
-<p>参考：<br><a href="https://zh.wikipedia.org/wiki/%E8%BF%9E%E6%8E%A5_(SQL" target="_blank" rel="external">维基百科</a>)</p>
+<p>参考：<br><a href="https://zh.wikipedia.org/wiki/%E8%BF%9E%E6%8E%A5_(SQL" target="_blank" rel="external">维基百科</a></p>
 
       
     </div>
@@ -463,7 +465,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#内连接"><span class="nav-number">1.</span> <span class="nav-text">内连接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#交叉连接"><span class="nav-number">1.1.</span> <span class="nav-text">交叉连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#显示内连接"><span class="nav-number">1.2.</span> <span class="nav-text">显示内连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#隐式内连接"><span class="nav-number">1.3.</span> <span class="nav-text">隐式内连接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#外连接"><span class="nav-number">2.</span> <span class="nav-text">外连接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#左外连接-left-outer-join-left-join"><span class="nav-number">2.1.</span> <span class="nav-text">左外连接(left outer join = left join)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#右外连接-right-outer-join-right-outer-join"><span class="nav-number">2.2.</span> <span class="nav-text">右外连接(right outer join = right outer join)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全连接"><span class="nav-number">2.3.</span> <span class="nav-text">全连接</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#内连接"><span class="nav-number">1.</span> <span class="nav-text">内连接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#交叉连接"><span class="nav-number">1.1.</span> <span class="nav-text">交叉连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#显示内连接"><span class="nav-number">1.2.</span> <span class="nav-text">显示内连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#隐式内连接"><span class="nav-number">1.3.</span> <span class="nav-text">隐式内连接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#外连接"><span class="nav-number">2.</span> <span class="nav-text">外连接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#左外连接-left-outer-join-left-join"><span class="nav-number">2.1.</span> <span class="nav-text">左外连接(left outer join = left join)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#右外连接-right-outer-join-right-join"><span class="nav-number">2.2.</span> <span class="nav-text">右外连接(right outer join = right join)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#全连接"><span class="nav-number">2.3.</span> <span class="nav-text">全连接</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -484,7 +486,7 @@
         <div class="copyright" >
   
   &copy; 
-  <span itemprop="copyrightYear">2017</span>
+  <span itemprop="copyrightYear">2018</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
