@@ -84,16 +84,16 @@
 
 
 
-<meta name="description" content="由于公司的Linux开发机各种端口限制，想在上面写点程序推到GitHub上实在是搞不定。自己的Mac环境在C++开发方面和Linux系统还是有不小的差别，于是决定在Mac上装Linux虚拟机，以下是Mac上安装Vagrant的过程。">
+<meta name="description" content="记录一下ptmalloc的大致原理和遇到的坑。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Vagrant">
-<meta property="og:url" content="http://yoursite.com/2016/12/08/vagrant/index.html">
+<meta property="og:title" content="ptmalloc实现">
+<meta property="og:url" content="http://yoursite.com/2018/05/25/ptmalloc/index.html">
 <meta property="og:site_name" content="Liduoouyang's blog">
-<meta property="og:description" content="由于公司的Linux开发机各种端口限制，想在上面写点程序推到GitHub上实在是搞不定。自己的Mac环境在C++开发方面和Linux系统还是有不小的差别，于是决定在Mac上装Linux虚拟机，以下是Mac上安装Vagrant的过程。">
-<meta property="og:updated_time" content="2016-12-11T05:45:14.000Z">
+<meta property="og:description" content="记录一下ptmalloc的大致原理和遇到的坑。">
+<meta property="og:updated_time" content="2018-05-25T06:52:21.169Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Vagrant">
-<meta name="twitter:description" content="由于公司的Linux开发机各种端口限制，想在上面写点程序推到GitHub上实在是搞不定。自己的Mac环境在C++开发方面和Linux系统还是有不小的差别，于是决定在Mac上装Linux虚拟机，以下是Mac上安装Vagrant的过程。">
+<meta name="twitter:title" content="ptmalloc实现">
+<meta name="twitter:description" content="记录一下ptmalloc的大致原理和遇到的坑。">
 
 
 
@@ -125,7 +125,7 @@
 
 
 
-  <title> Vagrant | Liduoouyang's blog </title>
+  <title> ptmalloc实现 | Liduoouyang's blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -236,7 +236,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/12/08/vagrant/">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/05/25/ptmalloc/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="Ouyang Liduo">
@@ -260,7 +260,7 @@
             
             
               
-                Vagrant
+                ptmalloc实现
               
             
           </h1>
@@ -301,31 +301,27 @@
       
 
       
-        <p>由于公司的Linux开发机各种端口限制，想在上面写点程序推到GitHub上实在是搞不定。自己的Mac环境在C++开发方面和Linux系统还是有不小的差别，于是决定在Mac上装Linux虚拟机，以下是Mac上安装Vagrant的过程。<br><a id="more"></a></p>
-<h1 id="安装VirtualBox"><a href="#安装VirtualBox" class="headerlink" title="安装VirtualBox"></a>安装VirtualBox</h1><p>Vagrant是建立在传统的虚拟机软件基础之上的，因此我们要选择一个虚拟机。这里我选择的是VirtualBox，因为它免费且轻量级。安装VirutualBox没什么好说的，直接在<a href="https://www.virtualbox.org/wiki/Downloads?replytocom=98578" target="_blank" rel="external">官网</a>下载，双击安装就可以了。</p>
-<h1 id="安装Vagrant"><a href="#安装Vagrant" class="headerlink" title="安装Vagrant"></a>安装Vagrant</h1><p>安装好VirtualBox后，接着安装Vagrant，同样的步骤，在<a href="https://www.vagrantup.com/" target="_blank" rel="external">官网</a>下载然后安装。</p>
-<h1 id="安装Linux虚拟环境"><a href="#安装Linux虚拟环境" class="headerlink" title="安装Linux虚拟环境"></a>安装Linux虚拟环境</h1><p>基础环境安装好了，现在需要一个系统镜像，可以在<a href="http://www.vagrantbox.es/" target="_blank" rel="external">这里</a>选择自己想要安装的系统，直接下载下来。这里把操作系统环境抽象成了一个个box，包含系统镜像和相关配置文件。我选的box是<code>trusty-server-cloudimg-amd64-vagrant-disk1.box</code>。下载完成后添加box到Vagrant。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /home/oyld/vagrant</span><br><span class="line">vagrant box add [name] trusty-server-cloudimg-amd64-vagrant-disk1.box</span><br></pre></td></tr></table></figure>
-<p>这里的<code>name</code>是这个环境的名称，表示新建一个名为<code>name</code>的虚拟环境。默认名字为<code>base</code>。<br>添加box之后，接着进行初始化。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant init [name]</span><br></pre></td></tr></table></figure>
-<p>初始化后会在当前目录下生成一个配置文件<code>Vagrantfile</code>，这个配置文件不需要修改就能使用了。</p>
-<h1 id="相关操作"><a href="#相关操作" class="headerlink" title="相关操作"></a>相关操作</h1><p>Linux环境建立好之后，就可以启动虚拟机了：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant up</span><br></pre></td></tr></table></figure>
-<p>等系统完全启动后，直接<code>ssh</code>登录，像登录远程开发机一样：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant ssh</span><br></pre></td></tr></table></figure>
-<p>重启：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant reload</span><br></pre></td></tr></table></figure>
+        <p>记录一下ptmalloc的大致原理和遇到的坑。<br><a id="more"></a></p>
+<h3 id="ptmalloc大致实现"><a href="#ptmalloc大致实现" class="headerlink" title="ptmalloc大致实现"></a>ptmalloc大致实现</h3><p>各操作系统实现不同，Linux的malloc包含在glibc中。</p>
+<ol>
+<li>当分配的字节数小于128KB时，通过在各层bins中搜索，从之前预分配的内存中拿出一块合适的chunk给应用程序，如果不够可调用sbrk()向操作系统继续申请；</li>
+<li>而分配的字节数大于128KB时，分配到的是在内存映射区（stack和heap之间），采用的mmap()系统调用直接向操作系统申请，unmmap()时直接返还给操作系统。但是mmap是串行的，多线程同时mmap需要加锁，并且mmap出来的物理内存需要清零，因此性能会有一定的损失。</li>
+</ol>
 <blockquote>
-<p>修改配置文件后需要进行重启。</p>
+<p>On Linux, sbrk() is implemented as a library function that uses the brk() system call, and does some internal bookkeeping so that it can return the old break value.</p>
 </blockquote>
-<p>关机：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant halt</span><br></pre></td></tr></table></figure>
-<p>挂起：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant <span class="built_in">suspend</span></span><br></pre></td></tr></table></figure>
-<p>恢复：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vagrant resume</span><br></pre></td></tr></table></figure>
-<p>更多命令可以参考<a href="https://www.vagrantup.com/docs/cli/" target="_blank" rel="external">官方文档</a>。</p>
-<p>初次使用Vagrant，感觉真的非常的方便，系统启动、关闭都非常的快。并且在虚拟机内部，目录<code>/vagrant</code>是和宿主机共享的，这点真的超赞。相比于之前使用VMware把文件拖来拖去，不知道方便到哪里去了。</p>
+<p>注意，128KB只是一个初始的默认值，可以通过两种方式来改变：</p>
+<ol>
+<li>应用程序中修改参数。</li>
+<li>依赖ptmalloc本身的mmap分配阈值动态调整机制，该机制会根据应用程序分配内存情况动态调整使用mmap的阈值，避免过多的系统调用。</li>
+</ol>
+<p>###ptmalloc造成内存暴涨的原因是什么？如何解决？<br>top chunk的合并逻辑使得要有与top chunk相邻的且足够连续的空闲内存才能进行合并，如果与top chunk相邻的chunk不能释放，top chunk以下的chunk都无法释放，也就无法归还给操作系统，造成内存持续增长。因此ptmalloc不适用于管理长生命周期，且分配释放时间不确定的内存。解决方案：</p>
+<ol>
+<li>配置mmap阈值，malloc或reserve足够大的空间，使ptmalloc满足mmap分配阈值，从而用mmap分配内存。</li>
+<li>应用程序直接使用mmap。</li>
+<li>使用其它内存分配机制。</li>
+</ol>
+<p>###ptmalloc是如何处理多线程场景的？<br>每个进程有一个主分配区和若干个非主分配区，线程在用分配区分配内存之前都必须先对这个分配区加锁。主分配区可以访问进程的heap区和mmap区，也就是说主分配区可以使用sbrk和mmap向操作系统申请虚拟内存。而非主分配区只能访问进程的mmap区，非主分配区每次使用mmap向操作系统“批发”HEAP_MAX_SIZE（32位系统默认为1MB，64位系统默认为64MB）大小的虚拟内存，当应用程序向非主分配区请求内存时再切割成小块“零售”出去，毕竟系统调用是相对低效的，直接从用户空间分配内存快多了。也就是说非主分配区用mmap区的内存来模拟heap（sub-heap），让应用程序感觉是从heap中分配出的内存。如果一个sub-heap的内存用光了，或是sub-heap中的内存不够用时，使用 mmap分配一块新的内存块作为sub-heap，并将新的sub-heap链接在非主分配区中sub-heap的单向链表中。</p>
 
       
     </div>
@@ -352,8 +348,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/12/04/TCP/" rel="next" title="TCP">
-                <i class="fa fa-chevron-left"></i> TCP
+              <a href="/2017/07/17/SQL/" rel="next" title="SQL join">
+                <i class="fa fa-chevron-left"></i> SQL join
               </a>
             
           </div>
@@ -361,10 +357,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/01/04/无锁编程/" rel="prev" title="Non-blocking algorithm">
-                Non-blocking algorithm <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -477,7 +469,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#安装VirtualBox"><span class="nav-number">1.</span> <span class="nav-text">安装VirtualBox</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装Vagrant"><span class="nav-number">2.</span> <span class="nav-text">安装Vagrant</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装Linux虚拟环境"><span class="nav-number">3.</span> <span class="nav-text">安装Linux虚拟环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#相关操作"><span class="nav-number">4.</span> <span class="nav-text">相关操作</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ptmalloc大致实现"><span class="nav-number">1.</span> <span class="nav-text">ptmalloc大致实现</span></a></li></ol></div>
             
 
           </div>

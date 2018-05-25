@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://yoursite.com/2017/07/17/SQL/index.html">
 <meta property="og:site_name" content="Liduoouyang's blog">
 <meta property="og:description" content="最近自己在弄一个ERP系统，该系统用到了SQL Server，由于没有什么SQL基础，因此边做边学，记录一下join相关的东西。">
-<meta property="og:updated_time" content="2018-04-16T11:31:59.377Z">
+<meta property="og:updated_time" content="2018-04-16T11:35:49.575Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SQL join">
 <meta name="twitter:description" content="最近自己在弄一个ERP系统，该系统用到了SQL Server，由于没有什么SQL基础，因此边做边学，记录一下join相关的东西。">
@@ -317,7 +317,7 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> A <span class="keyword">RIGHT</span> <span class="keyword">JOIN</span> B <span class="keyword">ON</span> A.ID = B.ID</span><br></pre></td></tr></table></figure>
 <h3 id="全连接"><a href="#全连接" class="headerlink" title="全连接"></a>全连接</h3><p>左外连接和右外连接的并集，包含被连接表的所有记录，一个表中的记录在另一个表中没有对应记录，则用<code>NULL</code>填充。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> A <span class="keyword">FULL</span> <span class="keyword">JOIN</span> B <span class="keyword">ON</span> A.ID = B.ID</span><br></pre></td></tr></table></figure>
-<p>参考：<br><a href="https://zh.wikipedia.org/wiki/%E8%BF%9E%E6%8E%A5_(SQL" target="_blank" rel="external">维基百科</a></p>
+<p>参考：<br><a href="https://zh.wikipedia.org/wiki/%E8%BF%9E%E6%8E%A5_(SQL\" target="_blank" rel="external">维基百科</a>)</p>
 
       
     </div>
@@ -353,6 +353,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/25/ptmalloc/" rel="prev" title="ptmalloc实现">
+                ptmalloc实现 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -420,7 +424,7 @@
         <nav class="site-state motion-element">
           <div class="site-state-item site-state-posts">
             <a href="/archives">
-              <span class="site-state-item-count">17</span>
+              <span class="site-state-item-count">18</span>
               <span class="site-state-item-name">日志</span>
             </a>
           </div>
