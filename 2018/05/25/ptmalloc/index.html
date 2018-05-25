@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://yoursite.com/2018/05/25/ptmalloc/index.html">
 <meta property="og:site_name" content="Liduoouyang's blog">
 <meta property="og:description" content="记录一下ptmalloc的大致原理和遇到的坑。">
-<meta property="og:updated_time" content="2018-05-25T06:52:21.169Z">
+<meta property="og:updated_time" content="2018-05-25T06:55:02.686Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ptmalloc实现">
 <meta name="twitter:description" content="记录一下ptmalloc的大致原理和遇到的坑。">
@@ -315,13 +315,13 @@
 <li>应用程序中修改参数。</li>
 <li>依赖ptmalloc本身的mmap分配阈值动态调整机制，该机制会根据应用程序分配内存情况动态调整使用mmap的阈值，避免过多的系统调用。</li>
 </ol>
-<p>###ptmalloc造成内存暴涨的原因是什么？如何解决？<br>top chunk的合并逻辑使得要有与top chunk相邻的且足够连续的空闲内存才能进行合并，如果与top chunk相邻的chunk不能释放，top chunk以下的chunk都无法释放，也就无法归还给操作系统，造成内存持续增长。因此ptmalloc不适用于管理长生命周期，且分配释放时间不确定的内存。解决方案：</p>
+<h3 id="ptmalloc造成内存暴涨的原因是什么？如何解决？"><a href="#ptmalloc造成内存暴涨的原因是什么？如何解决？" class="headerlink" title="ptmalloc造成内存暴涨的原因是什么？如何解决？"></a>ptmalloc造成内存暴涨的原因是什么？如何解决？</h3><p>top chunk的合并逻辑使得要有与top chunk相邻的且足够连续的空闲内存才能进行合并，如果与top chunk相邻的chunk不能释放，top chunk以下的chunk都无法释放，也就无法归还给操作系统，造成内存持续增长。因此ptmalloc不适用于管理长生命周期，且分配释放时间不确定的内存。解决方案：</p>
 <ol>
 <li>配置mmap阈值，malloc或reserve足够大的空间，使ptmalloc满足mmap分配阈值，从而用mmap分配内存。</li>
 <li>应用程序直接使用mmap。</li>
 <li>使用其它内存分配机制。</li>
 </ol>
-<p>###ptmalloc是如何处理多线程场景的？<br>每个进程有一个主分配区和若干个非主分配区，线程在用分配区分配内存之前都必须先对这个分配区加锁。主分配区可以访问进程的heap区和mmap区，也就是说主分配区可以使用sbrk和mmap向操作系统申请虚拟内存。而非主分配区只能访问进程的mmap区，非主分配区每次使用mmap向操作系统“批发”HEAP_MAX_SIZE（32位系统默认为1MB，64位系统默认为64MB）大小的虚拟内存，当应用程序向非主分配区请求内存时再切割成小块“零售”出去，毕竟系统调用是相对低效的，直接从用户空间分配内存快多了。也就是说非主分配区用mmap区的内存来模拟heap（sub-heap），让应用程序感觉是从heap中分配出的内存。如果一个sub-heap的内存用光了，或是sub-heap中的内存不够用时，使用 mmap分配一块新的内存块作为sub-heap，并将新的sub-heap链接在非主分配区中sub-heap的单向链表中。</p>
+<h3 id="ptmalloc是如何处理多线程场景的？"><a href="#ptmalloc是如何处理多线程场景的？" class="headerlink" title="ptmalloc是如何处理多线程场景的？"></a>ptmalloc是如何处理多线程场景的？</h3><p>每个进程有一个主分配区和若干个非主分配区，线程在用分配区分配内存之前都必须先对这个分配区加锁。主分配区可以访问进程的heap区和mmap区，也就是说主分配区可以使用sbrk和mmap向操作系统申请虚拟内存。而非主分配区只能访问进程的mmap区，非主分配区每次使用mmap向操作系统“批发”HEAP_MAX_SIZE（32位系统默认为1MB，64位系统默认为64MB）大小的虚拟内存，当应用程序向非主分配区请求内存时再切割成小块“零售”出去，毕竟系统调用是相对低效的，直接从用户空间分配内存快多了。也就是说非主分配区用mmap区的内存来模拟heap（sub-heap），让应用程序感觉是从heap中分配出的内存。如果一个sub-heap的内存用光了，或是sub-heap中的内存不够用时，使用 mmap分配一块新的内存块作为sub-heap，并将新的sub-heap链接在非主分配区中sub-heap的单向链表中。</p>
 
       
     </div>
@@ -469,7 +469,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ptmalloc大致实现"><span class="nav-number">1.</span> <span class="nav-text">ptmalloc大致实现</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#ptmalloc大致实现"><span class="nav-number">1.</span> <span class="nav-text">ptmalloc大致实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ptmalloc造成内存暴涨的原因是什么？如何解决？"><span class="nav-number">2.</span> <span class="nav-text">ptmalloc造成内存暴涨的原因是什么？如何解决？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ptmalloc是如何处理多线程场景的？"><span class="nav-number">3.</span> <span class="nav-text">ptmalloc是如何处理多线程场景的？</span></a></li></ol></div>
             
 
           </div>
