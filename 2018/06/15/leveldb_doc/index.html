@@ -68,7 +68,7 @@
 <link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
 
 
-  <meta name="keywords" content="运维," />
+  <meta name="keywords" content="Hexo, NexT" />
 
 
 
@@ -84,16 +84,16 @@
 
 
 
-<meta name="description" content="Ansible批量部署QBus服务。">
+<meta name="description" content="leveldb稳当翻译。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Ansible批量部署">
-<meta property="og:url" content="http://yoursite.com/2016/06/22/ansible/index.html">
+<meta property="og:title" content="leveldb document">
+<meta property="og:url" content="http://yoursite.com/2018/06/15/leveldb_doc/index.html">
 <meta property="og:site_name" content="oyld's blog">
-<meta property="og:description" content="Ansible批量部署QBus服务。">
-<meta property="og:updated_time" content="2016-06-29T11:08:08.000Z">
+<meta property="og:description" content="leveldb稳当翻译。">
+<meta property="og:updated_time" content="2018-07-25T01:27:20.167Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Ansible批量部署">
-<meta name="twitter:description" content="Ansible批量部署QBus服务。">
+<meta name="twitter:title" content="leveldb document">
+<meta name="twitter:description" content="leveldb稳当翻译。">
 
 
 
@@ -125,7 +125,7 @@
 
 
 
-  <title> Ansible批量部署 | oyld's blog </title>
+  <title> leveldb document | oyld's blog </title>
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
@@ -236,7 +236,7 @@
   
 
   <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
-  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2016/06/22/ansible/">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/06/15/leveldb_doc/">
 
   <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
     <meta itemprop="name" content="oyld">
@@ -260,7 +260,7 @@
             
             
               
-                Ansible批量部署
+                leveldb document
               
             
           </h1>
@@ -301,25 +301,57 @@
       
 
       
-        <p>Ansible批量部署QBus服务。<br><a id="more"></a></p>
-<p>最近部署了几个比较大的QBus集群，由于需要部署的机器数量有点多，手动一台一台部署太麻烦，所以简单学了一下Ansible，感觉还不错，简单记录一下操作步骤。<br>首先在本机生成公钥：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa</span><br></pre></td></tr></table></figure>
-<p>然后将公钥拷贝到远端机器：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -i ~/.ssh/id_rsa.pub hostname</span><br></pre></td></tr></table></figure>
-<p>使用<strong>ssh-copy-id</strong>比直接<strong>scp</strong>要方便许多，它能够直接将公钥文件拷贝到远端机器的<strong>~/.ssh</strong>目录下。现在登录远端机器时就不用输密码了。</p>
-<p>接下来设置Ansible的配置文件：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ansible/hosts</span><br></pre></td></tr></table></figure>
-<p>格式如下：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[group1]</span><br><span class="line">hostname1</span><br><span class="line">hostname2</span><br><span class="line">[group2]</span><br><span class="line">hostname3</span><br><span class="line">hostname4</span><br></pre></td></tr></table></figure>
-<p>中括号中设置组名，之后的批量操作就可以对某个组内的远端机器进行了。设置好远端机器的hostname并分组后，可以用如下命令测试测试：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ansible group1 <span class="_">-a</span> <span class="string">'whoami'</span></span><br><span class="line">ansible group2 <span class="_">-a</span> <span class="string">'whoami'</span> --sudo --ask-sudo-pass</span><br></pre></td></tr></table></figure>
-<p>第一条命令用普通用户身份执行，返回的结果是当前用户名；第二条命令用<strong>root</strong>身份执行，返回的结果是<strong>root</strong>。<br>用简单的命令测试成功后，需要进行正式的部署操作了，这时需要使用<strong>ansible-playbook</strong>，把需要操作的命令放入一个yml文件中，然后传给<strong>ansible-playbook</strong>，yml文件中的命令就能批量执行了。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim playbook.yml</span><br></pre></td></tr></table></figure>
-<p>yml文件格式如下：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">- hosts: group1</span><br><span class="line">  become: yes</span><br><span class="line">  become_user: root</span><br><span class="line">  tasks:</span><br><span class="line">    - name: download</span><br><span class="line">      shell: wget http://URL/qbus2/server/deploy/install.sh &amp;&amp; wget http://URL/qbus2/server/deploy/autorun.sh</span><br><span class="line">      register: out1</span><br><span class="line">    - name: install</span><br><span class="line">      shell: sh ./autorun.sh -c &lt;集群名&gt; -b &lt;ip&gt;:9092,&lt;ip&gt;:9092,&lt;ip&gt;:9092 <span class="_">-l</span> /data/kafka <span class="_">-d</span> /data/zookeeper</span><br><span class="line">      register: out2</span><br><span class="line"></span><br><span class="line">    - debug: msg=<span class="string">"&#123;&#123; out1.stdout &#125;&#125;"</span></span><br><span class="line">    - debug: msg=<span class="string">"&#123;&#123; out2.stdout &#125;&#125;"</span></span><br></pre></td></tr></table></figure>
-<p><strong>playbook.yml</strong>里主要有两个task，第一个task是下载部署脚本，第二个task就开始执行安装了。写好<strong>playbook.yml</strong>之后，我们就来执行它：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ansible-playbook playbook.yml --ask-sudo-pass</span><br></pre></td></tr></table></figure>
-<p>这样，group1里的所有远端机器都能以root身份执行上面两个task中的命令了，执行完之后，QBus就部署成功了。</p>
+        <p>leveldb稳当翻译。<br><a id="more"></a></p>
+<h2 id="Compactions"><a href="#Compactions" class="headerlink" title="Compactions"></a>Compactions</h2><p>当L层的文件总大小超过限制，那么后台线程就会开始执行合并任务。合并过程会选择一个L层文件和跟这个文件重叠的L+1层所有文件。注意，即使L层的文件只和L+1的一个文件有部分重叠，这个L+1层的完整文件也会作为合并的输入，并且在合并之后删除。由于0层文件相互之间允许有重叠，所以0层文件合并到1层时也不太一样：会选择多个相互重叠的0层文件。也就是说合并操作包含的key在合并完成之后不会在第0层出现了。<br>合并操作把选中的文件内容进行合并，生成一些列文件到L+1层。当满足下列两种情况的任意一个时，L+1层输出文件会进行分割：</p>
+<ol>
+<li>L+1层当前输出文件大于2MB，即所有sstable文件的大小都控制在2MB之内。</li>
+<li>L+1层当前输出文件与L+2层有重叠的文件个数超过10个，这保证了后续L+1层的合并操作不会选择过多的L+2层文件作为输入。<br>合并完成后，老文件会被删除，新文件开始提供服务。<br>对于每一层的合并操作，会记住上次合并的最大key，下一次该层的合并会从紧接着这个key的文件开始，如果后面没有文件了，则又回到开头进行合并。<br>合并过程中会删除两种类型的记录：</li>
+<li>被覆盖的value。</li>
+<li>被标记为删除，并且下层文件都没有和这个key重叠。</li>
+</ol>
+<h2 id="Timing"><a href="#Timing" class="headerlink" title="Timing"></a>Timing</h2><p>level-0在合并时，会读取全部四个1MB的level-0文件，最坏情况会读取level-1的所有文件（10MB），因此最坏情况下会读写14MB数据。<br>除了level-0，其它第L层的合并会选择一个2MB的文件。最坏情况下，这个文件会和L+1层的12个文件有重叠（因为L+1层文件总大小是L层的10倍，一个L层的文件最坏情况下会有10个L+1层文件和它有重叠，并且L层文件和L+1层文件的key一般不是对齐的，所以再额外增加两个边界文件）。因此一次合并操作将会读写26MB文件。假设磁盘IO的速度为100MB/s，那么最坏情况的合并将会花费大约0.5s。<br>如果我们限制后台线程写入速度到原来的10%，那么一次合并将花费5s。如果一个用户的写入速度是10MB/s，那么将会生成大量level-0文件。大量的合并将会显著增加用户读操作的时间。解决方案如下：</p>
+<ol>
+<li>增加minor compaction阈值，缺点memtable需要更大的内存。</li>
+<li>当level-0文件数增加，人为地减少用户写入速度。</li>
+<li>努力减少大范围key的合并操作，并依赖cache中缓存的数据。</li>
+</ol>
+<h2 id="Number-of-files"><a href="#Number-of-files" class="headerlink" title="Number of files"></a>Number of files</h2><p>除了固定每个文件大小为2MB，我们可以适当增加更高层的文件大小，来减少总体文件数量，虽然这会带来更大的合并开销。另外还可以将文件分散存放到不同目录下。<br>下面是一份ext3文件系统的实验数据：</p>
+<table>
+<thead>
+<tr>
+<th>目录中文件个数</th>
+<th>打开一个文件所花费的时间（ms）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1000</td>
+<td>9</td>
+</tr>
+<tr>
+<td>10000</td>
+<td>10</td>
+</tr>
+<tr>
+<td>100000</td>
+<td>16</td>
+</tr>
+</tbody>
+</table>
+<p>所以在现代文件系统中，分散存放是没有必要的？</p>
+<h2 id="Recovery"><a href="#Recovery" class="headerlink" title="Recovery"></a>Recovery</h2><ul>
+<li>读取CURRENT文件，找到最新的MANIFEST文件</li>
+<li>读取最新MANIFEST文件</li>
+<li>删除过期文件</li>
+<li>打开所有sstable，读入cache</li>
+<li>log中的文件dump到level-0</li>
+<li>后续写操作都记录到新log中，并且序列号从恢复的序列号之后开始</li>
+</ul>
+<h2 id="Garbage-collection-of-files"><a href="#Garbage-collection-of-files" class="headerlink" title="Garbage collection of files"></a>Garbage collection of files</h2><p>每一个compact或者recovery之后，都会调用DeleteObsoleteFiles()函数。这个函数会删除满足列下条件之一的文件：</p>
+<ol>
+<li>当前log文件之前的log文件</li>
+<li>删除某些层中不再引用，并且不是作为合并输出的sstable文件</li>
+</ol>
 
       
     </div>
@@ -341,19 +373,13 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/运维/" rel="tag"># 运维</a>
-          
-        </div>
-      
 
       
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2016/04/22/ActiveMQ/" rel="next" title="ActiveMQ">
-                <i class="fa fa-chevron-left"></i> ActiveMQ
+              <a href="/2018/05/25/ptmalloc/" rel="next" title="ptmalloc实现">
+                <i class="fa fa-chevron-left"></i> ptmalloc实现
               </a>
             
           </div>
@@ -361,10 +387,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2016/06/30/Logstash源码分析/" rel="prev" title="Logstash源码分析">
-                Logstash源码分析 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -411,8 +433,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview sidebar-panel sidebar-panel-active">
+      <section class="site-overview sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
           <img class="site-author-image" itemprop="image"
                src="/images/avatar.jpeg"
@@ -458,6 +489,22 @@
 
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Compactions"><span class="nav-number">1.</span> <span class="nav-text">Compactions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Timing"><span class="nav-number">2.</span> <span class="nav-text">Timing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Number-of-files"><span class="nav-number">3.</span> <span class="nav-text">Number of files</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Recovery"><span class="nav-number">4.</span> <span class="nav-text">Recovery</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Garbage-collection-of-files"><span class="nav-number">5.</span> <span class="nav-text">Garbage collection of files</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
     </div>
