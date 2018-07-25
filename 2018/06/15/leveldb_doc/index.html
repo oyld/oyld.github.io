@@ -84,16 +84,16 @@
 
 
 
-<meta name="description" content="leveldb稳当翻译。">
+<meta name="description" content="leveldb文档翻译。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="leveldb document">
 <meta property="og:url" content="http://yoursite.com/2018/06/15/leveldb_doc/index.html">
 <meta property="og:site_name" content="oyld's blog">
-<meta property="og:description" content="leveldb稳当翻译。">
-<meta property="og:updated_time" content="2018-07-25T01:27:20.167Z">
+<meta property="og:description" content="leveldb文档翻译。">
+<meta property="og:updated_time" content="2018-07-25T01:56:28.649Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="leveldb document">
-<meta name="twitter:description" content="leveldb稳当翻译。">
+<meta name="twitter:description" content="leveldb文档翻译。">
 
 
 
@@ -301,8 +301,14 @@
       
 
       
-        <p>leveldb稳当翻译。<br><a id="more"></a></p>
-<h2 id="Compactions"><a href="#Compactions" class="headerlink" title="Compactions"></a>Compactions</h2><p>当L层的文件总大小超过限制，那么后台线程就会开始执行合并任务。合并过程会选择一个L层文件和跟这个文件重叠的L+1层所有文件。注意，即使L层的文件只和L+1的一个文件有部分重叠，这个L+1层的完整文件也会作为合并的输入，并且在合并之后删除。由于0层文件相互之间允许有重叠，所以0层文件合并到1层时也不太一样：会选择多个相互重叠的0层文件。也就是说合并操作包含的key在合并完成之后不会在第0层出现了。<br>合并操作把选中的文件内容进行合并，生成一些列文件到L+1层。当满足下列两种情况的任意一个时，L+1层输出文件会进行分割：</p>
+        <p>leveldb文档翻译。<br><a id="more"></a></p>
+<h1 id="Sorted-tables-sstable"><a href="#Sorted-tables-sstable" class="headerlink" title="Sorted tables(sstable)"></a>Sorted tables(sstable)</h1><p>一个sstable（*.ldb，这个是sstable的新后缀名，老的.sst仍然兼容）中保存了一系列按key排序的条目。每一个条目包含了key+value，或者key+deletion标记。删除标记会屏蔽低层次中过期的kv。<br>sstable文件的集合按层次组织起来。从日志文件产生的sstable被放到第0层。当0层文件数超过阈值（目前是4个）时，所有的0层sstable会和有重叠的1层sstable进行合并，生成一系列新的1层文件，每个文件按2MB切分。</p>
+<h1 id="Level-0"><a href="#Level-0" class="headerlink" title="Level 0"></a>Level 0</h1><p>当日志文件大小增长到一个阈值时（默认为4MB），会重新生成一个memtable和log文件用于之后的更新操作。后台合并线程会执行如下操作：</p>
+<ol>
+<li>将旧的memtable内容写入一个新的sstable文件，并放入level 0。</li>
+<li>删除旧memtable和log文件。</li>
+</ol>
+<h1 id="Compactions"><a href="#Compactions" class="headerlink" title="Compactions"></a>Compactions</h1><p>当L层的文件总大小超过限制，那么后台线程就会开始执行合并任务。合并过程会选择一个L层文件和跟这个文件重叠的L+1层所有文件。注意，即使L层的文件只和L+1的一个文件有部分重叠，这个L+1层的完整文件也会作为合并的输入，并且在合并之后删除。由于0层文件相互之间允许有重叠，所以0层文件合并到1层时也不太一样：会选择多个相互重叠的0层文件。也就是说合并操作包含的key在合并完成之后不会在第0层出现了。<br>合并操作把选中的文件内容进行合并，生成一些列文件到L+1层。当满足下列两种情况的任意一个时，L+1层输出文件会进行分割：</p>
 <ol>
 <li>L+1层当前输出文件大于2MB，即所有sstable文件的大小都控制在2MB之内。</li>
 <li>L+1层当前输出文件与L+2层有重叠的文件个数超过10个，这保证了后续L+1层的合并操作不会选择过多的L+2层文件作为输入。<br>合并完成后，老文件会被删除，新文件开始提供服务。<br>对于每一层的合并操作，会记住上次合并的最大key，下一次该层的合并会从紧接着这个key的文件开始，如果后面没有文件了，则又回到开头进行合并。<br>合并过程中会删除两种类型的记录：</li>
@@ -339,7 +345,7 @@
 </tbody>
 </table>
 <p>所以在现代文件系统中，分散存放是没有必要的？</p>
-<h2 id="Recovery"><a href="#Recovery" class="headerlink" title="Recovery"></a>Recovery</h2><ul>
+<h1 id="Recovery"><a href="#Recovery" class="headerlink" title="Recovery"></a>Recovery</h1><ul>
 <li>读取CURRENT文件，找到最新的MANIFEST文件</li>
 <li>读取最新MANIFEST文件</li>
 <li>删除过期文件</li>
@@ -347,7 +353,7 @@
 <li>log中的文件dump到level-0</li>
 <li>后续写操作都记录到新log中，并且序列号从恢复的序列号之后开始</li>
 </ul>
-<h2 id="Garbage-collection-of-files"><a href="#Garbage-collection-of-files" class="headerlink" title="Garbage collection of files"></a>Garbage collection of files</h2><p>每一个compact或者recovery之后，都会调用DeleteObsoleteFiles()函数。这个函数会删除满足列下条件之一的文件：</p>
+<h1 id="Garbage-collection-of-files"><a href="#Garbage-collection-of-files" class="headerlink" title="Garbage collection of files"></a>Garbage collection of files</h1><p>每一个compact或者recovery之后，都会调用DeleteObsoleteFiles()函数。这个函数会删除满足列下条件之一的文件：</p>
 <ol>
 <li>当前log文件之前的log文件</li>
 <li>删除某些层中不再引用，并且不是作为合并输出的sstable文件</li>
@@ -499,7 +505,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Compactions"><span class="nav-number">1.</span> <span class="nav-text">Compactions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Timing"><span class="nav-number">2.</span> <span class="nav-text">Timing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Number-of-files"><span class="nav-number">3.</span> <span class="nav-text">Number of files</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Recovery"><span class="nav-number">4.</span> <span class="nav-text">Recovery</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Garbage-collection-of-files"><span class="nav-number">5.</span> <span class="nav-text">Garbage collection of files</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Sorted-tables-sstable"><span class="nav-number">1.</span> <span class="nav-text">Sorted tables(sstable)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Level-0"><span class="nav-number">2.</span> <span class="nav-text">Level 0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Compactions"><span class="nav-number">3.</span> <span class="nav-text">Compactions</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Timing"><span class="nav-number">3.1.</span> <span class="nav-text">Timing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Number-of-files"><span class="nav-number">3.2.</span> <span class="nav-text">Number of files</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Recovery"><span class="nav-number">4.</span> <span class="nav-text">Recovery</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Garbage-collection-of-files"><span class="nav-number">5.</span> <span class="nav-text">Garbage collection of files</span></a></li></ol></div>
             
 
           </div>
