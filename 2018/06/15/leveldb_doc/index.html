@@ -90,7 +90,7 @@
 <meta property="og:url" content="http://yoursite.com/2018/06/15/leveldb_doc/index.html">
 <meta property="og:site_name" content="oyld's blog">
 <meta property="og:description" content="leveldb文档翻译。">
-<meta property="og:updated_time" content="2018-07-25T01:56:28.649Z">
+<meta property="og:updated_time" content="2018-07-26T06:08:57.009Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="leveldb document">
 <meta name="twitter:description" content="leveldb文档翻译。">
@@ -302,7 +302,13 @@
 
       
         <p>leveldb文档翻译。<br><a id="more"></a></p>
-<h1 id="Sorted-tables-sstable"><a href="#Sorted-tables-sstable" class="headerlink" title="Sorted tables(sstable)"></a>Sorted tables(sstable)</h1><p>一个sstable（*.ldb，这个是sstable的新后缀名，老的.sst仍然兼容）中保存了一系列按key排序的条目。每一个条目包含了key+value，或者key+deletion标记。删除标记会屏蔽低层次中过期的kv。<br>sstable文件的集合按层次组织起来。从日志文件产生的sstable被放到第0层。当0层文件数超过阈值（目前是4个）时，所有的0层sstable会和有重叠的1层sstable进行合并，生成一系列新的1层文件，每个文件按2MB切分。</p>
+<h1 id="Files"><a href="#Files" class="headerlink" title="Files"></a>Files</h1><p>leveldb的实现和Bigtable tablet很相似，但组织文件的方式有所不同。<br>每一个数据库实例由一个目录中的一组文件组成，有下列几种类型的文件：</p>
+<h2 id="Log-files-bin-log"><a href="#Log-files-bin-log" class="headerlink" title="Log files(bin log)"></a>Log files(bin log)</h2><p>一个log文件（*.log）存储最近的更新操作，每一次更新操作都会追加到当前log文件中。当log文件大小达到阈值（默认4MB），会转换成一个sstable文件，然后使用一个新的log文件记录后续的更新操作。<br>当前log文件的内容会在内存中有一份映射（memtable），所有GET操作都会先在memtable中查找，log和memtable的内容是同步的。</p>
+<h2 id="Sorted-tables-sstable"><a href="#Sorted-tables-sstable" class="headerlink" title="Sorted tables(sstable)"></a>Sorted tables(sstable)</h2><p>一个sstable（*.ldb，这个是sstable的新后缀名，老的.sst仍然兼容）中保存了一系列按key排序的条目。每一个条目包含了key+value，或者key+deletion标记。删除标记会屏蔽低层次中过期的kv。<br>sstable文件的集合按层次组织起来。从日志文件产生的sstable被放到第0层。当0层文件数超过阈值（目前是4个）时，所有的0层sstable会和有重叠的1层sstable进行合并，生成一系列新的1层文件，每个文件按2MB切分。<br>0层sstable的key可能会相互重叠，非0层的sstable不会有重叠。当第L（L&gt;0）层的文件总大小超过10^L MB时（即level-1 10MB，level-2 100MB），那么合并线程会在L层选择一个文件，在L+1层选择和这个文件有重叠的所有文件进行合并，生成的目标文件为一个或多个，放到L+1层中。新加的数据会逐步迁移到较低层，迁移过程只会使用批量读写的方式，避免了开销较大的seek操作。</p>
+<h2 id="Manifest"><a href="#Manifest" class="headerlink" title="Manifest"></a>Manifest</h2><p>一个MANIFEST文件包含了所有层中的sstable的元数据，包括key的范围和一些其它信息。当数据库实例被打开时，就会创建一个新的MANIFEST文件。MANIFEST文件是以追加增量的方式记录sstable的变化情况，包括新增、删除了哪些sstable文件等。</p>
+<h2 id="Current"><a href="#Current" class="headerlink" title="Current"></a>Current</h2><p>CURRENT文件简单的记录了当前最新的MANIFEST文件名。</p>
+<h2 id="Info-logs"><a href="#Info-logs" class="headerlink" title="Info logs"></a>Info logs</h2><p>程序相关log信息放到LOG和LOG.old文件中。</p>
+<p>Others<br>其它还有一些杂项文件。</p>
 <h1 id="Level-0"><a href="#Level-0" class="headerlink" title="Level 0"></a>Level 0</h1><p>当日志文件大小增长到一个阈值时（默认为4MB），会重新生成一个memtable和log文件用于之后的更新操作。后台合并线程会执行如下操作：</p>
 <ol>
 <li>将旧的memtable内容写入一个新的sstable文件，并放入level 0。</li>
@@ -505,7 +511,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Sorted-tables-sstable"><span class="nav-number">1.</span> <span class="nav-text">Sorted tables(sstable)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Level-0"><span class="nav-number">2.</span> <span class="nav-text">Level 0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Compactions"><span class="nav-number">3.</span> <span class="nav-text">Compactions</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Timing"><span class="nav-number">3.1.</span> <span class="nav-text">Timing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Number-of-files"><span class="nav-number">3.2.</span> <span class="nav-text">Number of files</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Recovery"><span class="nav-number">4.</span> <span class="nav-text">Recovery</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Garbage-collection-of-files"><span class="nav-number">5.</span> <span class="nav-text">Garbage collection of files</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Files"><span class="nav-number">1.</span> <span class="nav-text">Files</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Log-files-bin-log"><span class="nav-number">1.1.</span> <span class="nav-text">Log files(bin log)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Sorted-tables-sstable"><span class="nav-number">1.2.</span> <span class="nav-text">Sorted tables(sstable)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Manifest"><span class="nav-number">1.3.</span> <span class="nav-text">Manifest</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Current"><span class="nav-number">1.4.</span> <span class="nav-text">Current</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Info-logs"><span class="nav-number">1.5.</span> <span class="nav-text">Info logs</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Level-0"><span class="nav-number">2.</span> <span class="nav-text">Level 0</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Compactions"><span class="nav-number">3.</span> <span class="nav-text">Compactions</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Timing"><span class="nav-number">3.1.</span> <span class="nav-text">Timing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Number-of-files"><span class="nav-number">3.2.</span> <span class="nav-text">Number of files</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Recovery"><span class="nav-number">4.</span> <span class="nav-text">Recovery</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Garbage-collection-of-files"><span class="nav-number">5.</span> <span class="nav-text">Garbage collection of files</span></a></li></ol></div>
             
 
           </div>
